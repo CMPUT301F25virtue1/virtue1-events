@@ -28,11 +28,10 @@ public abstract class NavigationBarHandler {
         profile.setOnClickListener(v -> {
             activity.startActivity(new Intent(activity, ProfileActivity.class));
         });
-        // ACTIVITY NOT COMPLETE
-//
-//        settings.setOnClickListener(v -> {
-//            activity.startActivity(new Intent(activity, SettingsActivity.class));
-//        });
+
+        settings.setOnClickListener(v -> {
+            activity.startActivity(new Intent(activity, SettingsActivity.class));
+        });
 
         ImageView clickedIcon = null;
         Class<?> currentActivity = activity.getClass();
@@ -48,10 +47,9 @@ public abstract class NavigationBarHandler {
         else if (currentActivity == ProfileActivity.class) {
             clickedIcon = profile;
         }
-        // NOT COMPLETE ACTIVITY
-//        else if (currentActivity == SettingsActivity.class) {
-//            clickedIcon = settings;
-//        }
+        else if (currentActivity == SettingsActivity.class) {
+            clickedIcon = settings;
+        }
 
         ImageView[] allIcons = new ImageView[] {notifications, myEvents, exploreEvents, profile, settings};
         setAlpha(clickedIcon, allIcons);

@@ -7,4 +7,6 @@
     <color name="teal">#58808E</color>
     <color name="darkerTeal">#376473</color>
     <color name="red">#F85F5F</color>
+    <color name="green">#14A33A</color>
+    <color name="darkRed">#BF3E3E</color>
 </resources>
