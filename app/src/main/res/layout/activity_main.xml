@@ -5,15 +5,58 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/login_or_signup_gradient"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageView
+        android:id="@+id/img_linko_mascot"
+        android:layout_width="233dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="24dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/img_linko_logo"
+        app:srcCompat="@drawable/linko_mascot"
+        android:translationY="-5000px"/>
+
+    <ImageView
+        android:id="@+id/img_linko_logo"
+        android:layout_width="348dp"
+        android:layout_height="98dp"
+        android:layout_marginTop="132dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/linko_logo" />
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="319dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/darkerTeal"
+        android:text="@string/login"
+        android:textSize="20sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_linko_mascot" />
+
+    <Button
+        android:id="@+id/button_signup"
+        android:layout_width="319dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/darkerTeal"
+        android:text="@string/sign_up"
+        android:textSize="20sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

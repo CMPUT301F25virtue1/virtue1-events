@@ -12,6 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Linko">
         <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ExploreEventsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyEventsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

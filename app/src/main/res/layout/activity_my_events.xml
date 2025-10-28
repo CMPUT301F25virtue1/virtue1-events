@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyEventsActivity">
+
+    <include layout="@layout/navigation_bar"/>
+
+    <View
+        android:id="@+id/top_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/red"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_registered"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/teal"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Registered"
+        android:textSize="20sp"
+        app:cornerRadius="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/button_organized"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
+
+    <Button
+        android:id="@+id/button_organized"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/darkerTeal"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Organized"
+        android:textSize="20sp"
+        app:cornerRadius="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/button_registered"
+        app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_registered_events"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_registered" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_organized_events"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_organize_event" />
+
+    <TextView
+        android:id="@+id/text_no_event_registered"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_have_not_registered_in_any_events"
+        android:textColor="@color/teal"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_registered"
+        app:layout_constraintVertical_bias="0.37" />
+
+    <TextView
+        android:id="@+id/text_no_event_organized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_have_not_organized_any_events"
+        android:textColor="@color/teal"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_registered"
+        app:layout_constraintVertical_bias="0.37"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/button_organize_event"
+        android:layout_width="266dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/darkerTeal"
+        android:text="@string/organize_an_event"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:cornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_organized" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

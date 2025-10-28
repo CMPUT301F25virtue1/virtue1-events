@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/signup_gradient"
+    tools:context=".SignUpActivity">
+
+    <Button
+        android:id="@+id/button_signup"
+        android:layout_width="319dp"
+        android:layout_height="58dp"
+        android:layout_marginBottom="200dp"
+        android:backgroundTint="@color/darkerTeal"
+        android:elevation="5dp"
+        android:text="@string/sign_up"
+        android:textSize="20sp"
+        android:translationZ="5dp"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/img_linko_logo2"
+        android:layout_width="348dp"
+        android:layout_height="98dp"
+        android:layout_marginTop="100dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/linko_logo" />
+
+    <ImageView
+        android:layout_width="144dp"
+        android:layout_height="144dp"
+        android:adjustViewBounds="false"
+        android:background="@drawable/circular_profile"
+        android:elevation="5dp"
+        android:padding="30dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/input_firstname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_linko_logo2"
+        app:srcCompat="@drawable/outline_person_24" />
+
+    <EditText
+        android:id="@+id/input_email"
+        android:layout_width="314dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/signin_input_shape"
+        android:elevation="5dp"
+        android:hint="@string/email_address"
+        android:paddingStart="10dp"
+        android:textColor="@color/teal"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/input_phonenumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/input_phonenumber"
+        android:layout_width="314dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/signin_input_shape"
+        android:elevation="5dp"
+        android:hint="@string/optional_phone_number"
+        android:paddingStart="10dp"
+        android:textColor="@color/teal"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/input_firstname"
+        android:layout_width="314dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/signin_input_shape"
+        android:elevation="5dp"
+        android:hint="@string/first_name"
+        android:paddingStart="10dp"
+        android:textColor="@color/teal"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/input_lastname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/input_lastname"
+        android:layout_width="314dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/signin_input_shape"
+        android:elevation="5dp"
+        android:hint="@string/last_name"
+        android:paddingStart="10dp"
+        android:textColor="@color/teal"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/input_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
