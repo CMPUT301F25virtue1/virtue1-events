@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "53270951509",
+    "project_id": "linko-234f5",
+    "storage_bucket": "linko-234f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53270951509:android:2e4ff389656ac155ec86dc",
+        "android_client_info": {
+          "package_name": "com.example.linko"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBy4YjNpXAjeJ9ilO9YyxkhuwqbIF7B1K8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
