@@ -10,4 +10,7 @@
     <string name="you_have_not_organized_any_events">You have not organized any events!</string>
     <string name="you_have_not_registered_in_any_events">You have not registered in any events!</string>
     <string name="there_are_currently_no_available_events">There are currently no available events.</string>
+    <string name="are_you_sure_you_want_to_delete_your_profile">Are you sure you want to delete your profile?</string>
+    <string name="no_go_back">No, Go Back</string>
+    <string name="yes_delete_profile">Yes, Delete Profile</string>
 </resources>

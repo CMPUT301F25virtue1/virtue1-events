@@ -23,9 +23,9 @@ public class SettingsActivity extends AppCompatActivity {
         String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Button deleteProfile = findViewById(R.id.button_delete_profile);
 
-        UserDatabaseHandler db = new UserDatabaseHandler();
         deleteProfile.setOnClickListener(v -> {
-            db.deleteCurrentUser(this, () -> startActivity(new Intent(SettingsActivity.this, MainActivity.class)));
+            startActivity(new Intent(SettingsActivity.this, DeleteProfileActivity.class));
+            finish();
         });
 
         navigationListener(this);

@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 signUpButton.setOnClickListener(v -> {
                     startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+                    finish();
                 });
             }
             else {
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 loginButton.setOnClickListener(v -> {
                     startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
+                    finish();
                 });
             }
         });
