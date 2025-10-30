@@ -45,7 +45,23 @@ public class UserDatabaseHandler {
         });
     }
 
+    public void deleteCurrentUser(Context context, UserDeleted deleted) {
+        String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        DocumentReference userRef = usersRef.document(userId);
+        userRef.delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                deleted.userDelete();
+            }
+            else {
+                Log.e("Firestore", "Error deleting the current user", task.getException());
+            }
+        });
+    }
     public interface UserFetched {
         void userLoaded(User user);
+    }
+
+    public interface UserDeleted {
+        void userDelete();
     }
 }
