@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         inputPhone = findViewById(R.id.input_phonenumber);
         signUpButton = findViewById(R.id.button_signup);
 
-         imageProfile.setOnClickListener(v -> openFileChooser());
+        imageProfile.setOnClickListener(v -> openFileChooser());
 
         signUpButton.setOnClickListener(v -> handleSignUp());
     }
@@ -87,21 +88,16 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        String userId = UUID.randomUUID().toString();
+        String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String phoneNumber = phone.isEmpty() ? null : phone;
+        User newUser = new User(userId, firstName, lastName, email, phoneNumber, profileUriString);
 
-        addUserToFirestore(userId, firstName, lastName, email, phone, profileUriString);
+        addUserToFirestore(newUser);
     }
 
-    private void addUserToFirestore(String userId, String firstName, String lastName, String email, String phone, String profileUri) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("userId", userId);
-        user.put("firstName", firstName);
-        user.put("lastName", lastName);
-        user.put("email", email);
-        user.put("phone", phone.isEmpty() ? null : phone);
-        user.put("profileImage", profileUri);
+    private void addUserToFirestore(User userToAdd) {
 
-        usersRef.document(userId).set(user)
+        usersRef.document(userToAdd.getUserId()).set(userToAdd)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Sign-up successful!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(SignUpActivity.this, NotificationsActivity.class));
