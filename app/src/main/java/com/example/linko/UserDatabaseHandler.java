@@ -4,7 +4,13 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -19,28 +25,21 @@ public class UserDatabaseHandler {
 
     public void getCurrentUser(Context context, UserFetched fetched) {
         String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        usersRef.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
+        DocumentReference userRef = usersRef.document(userId);
+        userRef.get().addOnCompleteListener(task -> {
+            DocumentSnapshot snapshot = task.getResult();
 
-            boolean userExists = false;
-            if (value != null && !value.isEmpty()) {
-                for (QueryDocumentSnapshot snapshot : value) {
-                    if (snapshot.getString("userId").equals(userId)) {
-                        userExists = true;
-                        String firstName = snapshot.getString("firstName");
-                        String lastName = snapshot.getString("lastName");
-                        String email = snapshot.getString("email");
-                        String number = snapshot.getString("phone");
-                        String profileUri = snapshot.getString("profileUri");
-
-                        User currentUser = new User(userId, firstName, lastName, email, number, profileUri);
-                        fetched.userLoaded(currentUser);
-                    }
+            if (task.isSuccessful()) {
+                if (snapshot.exists()) {
+                    User currentUser = snapshot.toObject(User.class);
+                    fetched.userLoaded(currentUser);
+                }
+                else {
+                    fetched.userLoaded(null);
                 }
             }
-            if (!userExists) {
+            else {
+                Log.e("Firestore", "Error fetching the current user", task.getException());
                 fetched.userLoaded(null);
             }
         });

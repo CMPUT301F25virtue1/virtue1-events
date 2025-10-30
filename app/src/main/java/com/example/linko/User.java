@@ -8,6 +8,10 @@ public class User {
     private String phone;
     private String profileUri;
 
+    public User() {
+        // empty for firebase
+    }
+
     public User(String userId, String firstName, String lastName, String email, String phone, String profileUri) {
         this.userId = userId;
         this.firstName = firstName;
