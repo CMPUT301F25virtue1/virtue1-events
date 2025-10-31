@@ -26,16 +26,11 @@ public class SignUpActivity extends AppCompatActivity {
     private ImageView imageProfile;
     private EditText inputFirstName, inputLastName, inputEmail, inputPhone;
     private Button signUpButton;
-    private FirebaseFirestore db;
-    private CollectionReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-
-        db = FirebaseFirestore.getInstance();
-        usersRef = db.collection("users");
 
         imageProfile = findViewById(R.id.image_profile);
         inputFirstName = findViewById(R.id.input_firstname);
