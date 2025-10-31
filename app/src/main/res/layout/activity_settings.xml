@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:background="@drawable/rounded_tops_teal"
-        android:text="Notifications"
+        android:text="@string/notifications"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="20sp"
@@ -39,8 +39,8 @@
         android:layout_marginTop="128dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="@color/darkerTeal"
-        android:text="Lottery System Guidelines"
-        android:translationZ="5dp"
+        android:text="@string/lottery_system_guidelines"
+        android:stateListAnimator="@null"
         android:elevation="5dp"
         android:textSize="20sp"
         app:cornerRadius="5dp"
@@ -57,9 +57,9 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="@color/darkRed"
-        android:text="Delete Profile"
-        android:translationZ="5dp"
+        android:text="@string/delete_profile"
         android:elevation="5dp"
+        android:stateListAnimator="@null"
         android:textSize="20sp"
         app:cornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +102,7 @@
                     android:backgroundTint="#36000000"
                     android:backgroundTintMode="multiply"
                     android:padding="8dp"
-                    android:text="All Notifications"
+                    android:text="@string/all_notifications"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -114,7 +114,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="Receive organizer and admin notifications"
+                    android:text="@string/receive_organizer_and_admin_notifications"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -137,14 +137,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/textView6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/green"
                     android:backgroundTint="#36000000"
                     android:backgroundTintMode="multiply"
                     android:padding="8dp"
-                    android:text="Silence Notifications"
+                    android:text="@string/silence_notifications"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -152,17 +152,17 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/textView7"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="Receive no notifications"
+                    android:text="@string/receive_no_notifications"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>

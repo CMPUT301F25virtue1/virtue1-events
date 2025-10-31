@@ -13,4 +13,16 @@
     <string name="are_you_sure_you_want_to_delete_your_profile">Are you sure you want to delete your profile?</string>
     <string name="no_go_back">No, Go Back</string>
     <string name="yes_delete_profile">Yes, Delete Profile</string>
+    <string name="event_history">Event History</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="receive_no_notifications">Receive no notifications</string>
+    <string name="silence_notifications">Silence Notifications</string>
+    <string name="receive_organizer_and_admin_notifications">Receive organizer and admin notifications</string>
+    <string name="all_notifications">All Notifications</string>
+    <string name="delete_profile">Delete Profile</string>
+    <string name="lottery_system_guidelines">Lottery System Guidelines</string>
+    <string name="notifications">Notifications</string>
 </resources>
