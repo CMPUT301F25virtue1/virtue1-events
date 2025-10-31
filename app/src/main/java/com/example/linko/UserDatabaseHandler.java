@@ -4,15 +4,10 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class UserDatabaseHandler {
     private FirebaseFirestore db;
@@ -21,6 +16,18 @@ public class UserDatabaseHandler {
     public UserDatabaseHandler() {
         this.db = FirebaseFirestore.getInstance();
         this.usersRef = db.collection("users");
+    }
+
+    public void addUser(User userToAdd, UserAdded added) {
+        usersRef.document(userToAdd.getUserId()).set(userToAdd).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                added.userAdd();
+            }
+            else {
+                Log.e("Firestore", "Error adding user to database", task.getException());
+                added.userFailedToAdd(task.getException());
+            }
+        });
     }
 
     public void getCurrentUser(Context context, UserFetched fetched) {
@@ -63,5 +70,10 @@ public class UserDatabaseHandler {
 
     public interface UserDeleted {
         void userDelete();
+    }
+
+    public interface UserAdded {
+        void userAdd();
+        void userFailedToAdd(Exception e);
     }
 }

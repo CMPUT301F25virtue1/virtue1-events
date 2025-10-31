@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.service.autofill.UserData;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -92,20 +93,20 @@ public class SignUpActivity extends AppCompatActivity {
         String phoneNumber = phone.isEmpty() ? null : phone;
         User newUser = new User(userId, firstName, lastName, email, phoneNumber, profileUriString);
 
-        addUserToFirestore(newUser);
-    }
+        UserDatabaseHandler db = new UserDatabaseHandler();
+        db.addUser(newUser, new UserDatabaseHandler.UserAdded() {
+            @Override
+            public void userAdd() {
+                Toast.makeText(SignUpActivity.this, "Sign-up successful!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(SignUpActivity.this, NotificationsActivity.class));
+                finish();
+            }
 
-    private void addUserToFirestore(User userToAdd) {
-
-        usersRef.document(userToAdd.getUserId()).set(userToAdd)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Sign-up successful!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(SignUpActivity.this, NotificationsActivity.class));
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error saving user", e);
-                    Toast.makeText(this, "Error saving user: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+            @Override
+            public void userFailedToAdd(Exception e) {
+                Log.e("Firestore", "Error saving user", e);
+                Toast.makeText(SignUpActivity.this, "Error saving user: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
