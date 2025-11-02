@@ -7,6 +7,7 @@ import android.provider.Settings;
 import android.service.autofill.UserData;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -32,6 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
         TextView userName = findViewById(R.id.text_user_name);
         TextView userEmail = findViewById(R.id.text_user_email);
         TextView userPhoneNumber = findViewById(R.id.text_user_number);
+        ImageView userProfile = findViewById(R.id.image_profile);
 
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
@@ -44,6 +47,8 @@ public class ProfileActivity extends AppCompatActivity {
             userName.setText(name);
             userEmail.setText(email);
             userPhoneNumber.setText(number);
+            Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().into(userProfile);
+
         });
 
         navigationListener(this);

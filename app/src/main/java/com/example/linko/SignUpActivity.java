@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
@@ -51,12 +53,7 @@ public class SignUpActivity extends AppCompatActivity {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
 
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-        Intent chooserIntent = Intent.createChooser(galleryIntent, "Select or capture a photo");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{cameraIntent});
-
-        startActivityForResult(chooserIntent, PICK_IMAGE_REQUEST);
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
     }
 
     @Override
@@ -66,11 +63,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
             if (data != null && data.getData() != null) {
                 imageUri = data.getData();
-                imageProfile.setImageURI(imageUri);
-            } else if (data != null && data.getExtras() != null) {
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                imageProfile.setImageBitmap(photo);
-                imageUri = null;
+                Glide.with(SignUpActivity.this).load(imageUri).circleCrop().into(imageProfile);
             }
         }
     }
@@ -80,7 +73,6 @@ public class SignUpActivity extends AppCompatActivity {
         String lastName = inputLastName.getText().toString().trim();
         String email = inputEmail.getText().toString().trim();
         String phone = inputPhone.getText().toString().trim();
-        String profileUriString = (imageUri != null) ? imageUri.toString() : null;
 
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Please fill out all required fields.", Toast.LENGTH_SHORT).show();
@@ -89,10 +81,34 @@ public class SignUpActivity extends AppCompatActivity {
 
         String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         String phoneNumber = phone.isEmpty() ? null : phone;
-        User newUser = new User(userId, firstName, lastName, email, phoneNumber, profileUriString);
 
-        UserDatabaseHandler db = new UserDatabaseHandler();
-        db.addUser(newUser, new UserDatabaseHandler.UserAdded() {
+        User newUser = new User(userId, firstName, lastName, email, phoneNumber, null);
+        if (imageUri != null) {
+            ImageStorageHandler profilePictureUpload = new ImageStorageHandler();
+            profilePictureUpload.uploadProfileImage(imageUri, userId, new ImageStorageHandler.imageUploaded() {
+                @Override
+                public void onUploadSuccess(String downloadUrl) {
+                    Log.d("user", "uploading" + downloadUrl);
+                    newUser.setProfileUrl(downloadUrl);
+                    Log.d("user", newUser.getProfileUrl());
+                    addUserToDatabase(newUser);
+                }
+
+                @Override
+                public void onUploadFailed(Exception e) {
+                    Toast.makeText(SignUpActivity.this, "Error uploading profile picture: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        else {
+            // add user with null pfp
+            addUserToDatabase(newUser);
+        }
+
+    }
+
+    private void addUserToDatabase(User user) {
+        new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
             @Override
             public void userAdd() {
                 Toast.makeText(SignUpActivity.this, "Sign-up successful!", Toast.LENGTH_SHORT).show();

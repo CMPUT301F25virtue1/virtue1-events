@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Event implements Serializable {
-    private String ownerID;
+    private String ownerId;
     private String name;
     private Integer eventCapacity;
     private Integer entrantLimit;
@@ -21,10 +21,11 @@ public class Event implements Serializable {
     private List<String> invitedEntrants;
     private List<String> signedUpEntrants;
     private List<String> cancelledEntrants;
+    private String eventId;
 
     public Event() {}
     public Event(String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
-        this.ownerID = null;
+        this.ownerId = null;
         this.name = name;
         this.eventCapacity = eventCapacity;
         this.entrantLimit = entrantLimit;
@@ -39,9 +40,10 @@ public class Event implements Serializable {
         this.invitedEntrants = new ArrayList<>();
         this.signedUpEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
+        this.eventId = null;
     }
-    public Event(String ownerID, String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
-        this.ownerID = ownerID;
+    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
+        this.ownerId = ownerId;
         this.name = name;
         this.eventCapacity = eventCapacity;
         this.entrantLimit = entrantLimit;
@@ -56,10 +58,11 @@ public class Event implements Serializable {
         this.invitedEntrants = new ArrayList<>();
         this.signedUpEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
+        this.eventId = null;
     }
 
-    public String getOwnerID() {
-        return ownerID;
+    public String getOwnerId() {
+        return ownerId;
     }
 
     public String getName() {
@@ -102,8 +105,16 @@ public class Event implements Serializable {
         return eventPosterURL;
     }
 
-    public void setOwnerID(String ownerID) {
-        this.ownerID = ownerID;
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+
+    public void setEventPosterURL(String eventPosterURL) {
+        this.eventPosterURL = eventPosterURL;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
     public String getEntrantCount() {

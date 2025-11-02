@@ -236,7 +236,8 @@
         app:layout_constraintBottom_toTopOf="@+id/button_save_event_changes"
         app:layout_constraintEnd_toEndOf="@+id/text_event_description"
         app:layout_constraintStart_toStartOf="@+id/text_event_description"
-        app:srcCompat="@drawable/outline_photo_camera_24" />
+        app:srcCompat="@drawable/outline_photo_camera_24"
+        android:clipToOutline="true"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

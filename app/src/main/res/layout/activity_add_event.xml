@@ -242,19 +242,23 @@
 
         <TextView
             android:id="@+id/text_event_description"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:padding="5dp"
             android:text="You have no event description."
             android:textColor="@color/darkerTeal"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/image_event_poster"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@drawable/rounded_bottom_white"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:srcCompat="@drawable/outline_photo_camera_24" />
     </LinearLayout>
 
     <Button
