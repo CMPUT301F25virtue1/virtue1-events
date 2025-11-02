@@ -98,7 +98,8 @@ public class SignUpActivity extends AppCompatActivity {
             });
         }
         else {
-            UserDatabaseHandler db = new UserDatabaseHandler();
+            // add user with null pfp
+            addUserToDatabase(newUser);
         }
 
     }

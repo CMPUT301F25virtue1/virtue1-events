@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity">
+    tools:context=".ProfileActivity"
+    android:background="@color/lightestBlue">
 
     <View
         android:id="@+id/top_status_bar"
@@ -96,10 +97,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/darkerTeal"
-        android:text="@string/edit_profile"
-        android:textSize="16sp"
-        android:stateListAnimator="@null"
         android:elevation="5dp"
+        android:stateListAnimator="@null"
+        android:text="@string/edit_profile"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         app:cornerRadius="5dp"
         app:layout_constraintEnd_toEndOf="@+id/text_user_number"
         app:layout_constraintHorizontal_bias="1.0"

@@ -27,6 +27,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_go_back"
         app:strokeColor="@color/black"
+        android:textColor="@color/white"
         app:strokeWidth="4dp" />
 
     <Button
@@ -42,6 +43,7 @@
         android:textSize="20sp"
         android:translationZ="5dp"
         app:cornerRadius="10dp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"

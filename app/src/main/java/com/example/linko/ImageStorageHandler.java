@@ -35,6 +35,27 @@ public class ImageStorageHandler {
         });
     }
 
+    public void uploadEventImage(Uri imageUri, String eventId, imageUploaded uploaded) {
+        StorageReference profileRef = storage.getReference().child("event_posters/" + eventId + ".jpg");
+
+        profileRef.putFile(imageUri).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                profileRef.getDownloadUrl().addOnCompleteListener(urlTask -> {
+                    if (urlTask.isSuccessful()) {
+                        String downloadUrl = urlTask.getResult().toString();
+                        uploaded.onUploadSuccess(downloadUrl);
+                    } else {
+                        Log.e("ImageStorageHandler", "Failed to get download URL", urlTask.getException());
+                        uploaded.onUploadFailed(urlTask.getException());
+                    }
+                });
+            } else {
+                Log.e("ImageStorageHandler", "Upload failed", task.getException());
+                uploaded.onUploadFailed(task.getException());
+            }
+        });
+    }
+
     public interface imageUploaded {
         void onUploadSuccess(String downloadUrl);
         void onUploadFailed(Exception e);
