@@ -8,7 +8,6 @@
     tools:context=".MyEventsActivity"
     android:background="@color/lightestBlue">
 
-    <include layout="@layout/navigation_bar"/>
 
     <View
         android:id="@+id/top_status_bar"
@@ -52,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_registered" />
@@ -62,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_organize_event" />
@@ -108,5 +107,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_organized" />
 
+    <include
+        android:id="@+id/nav_bar"
+        layout="@layout/navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
