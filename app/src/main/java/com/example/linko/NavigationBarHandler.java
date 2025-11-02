@@ -15,22 +15,31 @@ public abstract class NavigationBarHandler {
 
         notifications.setOnClickListener(v -> {
             activity.startActivity(new Intent(activity, NotificationsActivity.class));
+            activity.finish();
         });
 
         myEvents.setOnClickListener(v -> {
             activity.startActivity(new Intent(activity, MyEventsActivity.class));
+            activity.finish();
+
         });
 
         exploreEvents.setOnClickListener(v -> {
             activity.startActivity(new Intent(activity, ExploreEventsActivity.class));
+            activity.finish();
+
         });
 
         profile.setOnClickListener(v -> {
             activity.startActivity(new Intent(activity, ProfileActivity.class));
+            activity.finish();
+
         });
 
         settings.setOnClickListener(v -> {
             activity.startActivity(new Intent(activity, SettingsActivity.class));
+            activity.finish();
+
         });
 
         ImageView clickedIcon = null;
