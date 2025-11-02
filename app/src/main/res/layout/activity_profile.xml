@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/image_profile"
         android:layout_width="144dp"
         android:layout_height="144dp"
         android:layout_marginStart="16dp"
@@ -23,8 +23,7 @@
         android:adjustViewBounds="false"
         android:background="@drawable/circular_profile"
         android:elevation="5dp"
-        android:padding="30dp"
-        android:scaleType="centerCrop"
+        android:scaleType="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_status_bar"
         app:srcCompat="@drawable/outline_person_24" />
@@ -52,8 +51,8 @@
         android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintStart_toEndOf="@+id/image_profile"
+        app:layout_constraintTop_toTopOf="@+id/image_profile" />
 
     <TextView
         android:id="@+id/text_user_email"
@@ -70,7 +69,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/text_user_number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/image_profile"
         app:layout_constraintTop_toBottomOf="@+id/text_user_name" />
 
     <TextView
@@ -86,9 +85,9 @@
         android:text="@string/phone_number"
         android:textColor="@color/darkerTeal"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@+id/image_profile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView" />
+        app:layout_constraintStart_toEndOf="@+id/image_profile" />
 
 
     <Button
