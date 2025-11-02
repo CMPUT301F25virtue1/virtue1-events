@@ -60,7 +60,7 @@ public class MyEventsActivity extends AppCompatActivity {
                 Log.d("firebase", "checking documents");
                 organizedEventsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-                    String ownerId = snapshot.getString("ownerID");
+                    String ownerId = snapshot.getString("ownerId");
                     Log.d("firebase", "checking owner id");
                     if (!ownerId.equals(currentUser)) {
                         continue;

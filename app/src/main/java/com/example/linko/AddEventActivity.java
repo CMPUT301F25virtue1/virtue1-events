@@ -1,7 +1,10 @@
 package com.example.linko;
 
+import static androidx.core.content.IntentCompat.getParcelableExtra;
+
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -12,19 +15,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Document;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class AddEventActivity extends AppCompatActivity {
-
+    private FirebaseFirestore db;
+    private CollectionReference eventsRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +55,11 @@ public class AddEventActivity extends AppCompatActivity {
         ImageView eventPoster = findViewById(R.id.image_event_poster);
 
         Event eventReceived = (Event) getIntent().getSerializableExtra("savedEvent");
+        // https://stackoverflow.com/questions/8017374/how-to-pass-a-uri-to-an-intent
+        Bundle extras = getIntent().getExtras();
+        String uriString = extras != null ? extras.getString("imageUri") : null;
+        Uri eventPosterUri = uriString != null ? Uri.parse(uriString) : null;
+
         if (eventReceived != null) {
             eventName.setText(eventReceived.getName());
             Integer eventCapacityNumber = eventReceived.getEventCapacity();
@@ -72,6 +84,8 @@ public class AddEventActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
             String period = sdf.format(start) + " to " + sdf.format(end);
             registrationPeriod.setText(period);
+
+            Glide.with(AddEventActivity.this).load(eventPosterUri).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
             eventDescription.setText(eventReceived.getDescription());
         }
@@ -98,34 +112,64 @@ public class AddEventActivity extends AppCompatActivity {
         editButton.setOnClickListener(v -> {
             Intent intent = new Intent(AddEventActivity.this, EditEventActivity.class);
             intent.putExtra("savedEvent", eventReceived);
+            intent.putExtra("imageUri", eventPosterUri != null ? eventPosterUri.toString() : null);
+            if (eventPosterUri != null) {
+                getContentResolver().takePersistableUriPermission(eventPosterUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
             startActivity(intent);
             finish();
         });
 
         postEvent.setOnClickListener(v -> {
+            Toast.makeText(this, "Posting event...", Toast.LENGTH_SHORT).show();
             if (eventReceived != null) {
-                EventDatabaseHandler db = new EventDatabaseHandler();
+                db = FirebaseFirestore.getInstance();
+                eventsRef = db.collection("events");
                 String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                eventReceived.setOwnerID(userId);
-                Log.d("eventreceivedcheck", eventReceived.getOwnerID());
-                db.addEvent(eventReceived, new EventDatabaseHandler.EventAdded() {
-                    @Override
-                    public void eventAdd() {
-                        Toast.makeText(AddEventActivity.this, "Event has been posted!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AddEventActivity.this, MyEventsActivity.class));
-                        finish();
-                    }
+                eventReceived.setOwnerId(userId);
+                DocumentReference docRef = eventsRef.document();
+                String eventId = docRef.getId();
+                if (eventPosterUri != null) {
+                    ImageStorageHandler eventPictureUpload = new ImageStorageHandler();
+                    eventPictureUpload.uploadEventImage(eventPosterUri, eventId, new ImageStorageHandler.imageUploaded() {
+                        @Override
+                        public void onUploadSuccess(String downloadUrl) {
+                            eventReceived.setEventPosterURL(downloadUrl);
+                            addEvent(eventReceived, docRef, eventId);
+                        }
 
-                    @Override
-                    public void eventFailedToAdd(Exception e) {
-                        Log.e("Firestore", "Error saving user", e);
-                        Toast.makeText(AddEventActivity.this, "Error saving event: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+                        @Override
+                        public void onUploadFailed(Exception e) {
+                            Toast.makeText(AddEventActivity.this, "Error uploading event poster: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else {
+                    // add event with null poster
+                    addEvent(eventReceived, docRef, eventId);
+                }
             }
             else {
                 Toast.makeText(AddEventActivity.this, "You have not provided sufficient event details to post.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void addEvent(Event event, DocumentReference docRef, String eventId) {
+        new EventDatabaseHandler().addEvent(event, new EventDatabaseHandler.EventAdded() {
+
+            @Override
+            public void eventAdd() {
+                Toast.makeText(AddEventActivity.this, "Event has been posted!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(AddEventActivity.this, MyEventsActivity.class));
+                finish();
+            }
+
+            @Override
+            public void eventFailedToAdd(Exception e) {
+                Log.e("Firestore", "Error saving user", e);
+                Toast.makeText(AddEventActivity.this, "Error saving event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }, docRef, eventId);
     }
 }

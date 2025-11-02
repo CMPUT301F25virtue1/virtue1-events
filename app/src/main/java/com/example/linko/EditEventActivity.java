@@ -3,6 +3,7 @@ package com.example.linko;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -12,10 +13,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,8 +28,11 @@ import java.util.Locale;
 
 public class EditEventActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri imageUri;
     private Calendar startCalendar = Calendar.getInstance();
     private Calendar endCalendar = Calendar.getInstance();
+    private ImageView eventPoster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +48,14 @@ public class EditEventActivity extends AppCompatActivity {
         CheckBox geolocationBox = findViewById(R.id.checkBox);
         EditText eventTimeInput = findViewById(R.id.text_event_time);
         TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
+        eventPoster = findViewById(R.id.image_event_poster);
         ImageView backButton = findViewById(R.id.button_back_button);
 
         Event eventReceived = (Event) getIntent().getSerializableExtra("savedEvent");
+        Bundle extras = getIntent().getExtras();
+        String uriString = extras != null ? extras.getString("imageUri") : null;
+        imageUri = uriString != null ? Uri.parse(uriString) : null;
+
         if (eventReceived != null) {
             eventNameInput.setText(eventReceived.getName());
             Integer eventCapacityNumber = eventReceived.getEventCapacity();
@@ -66,8 +78,11 @@ public class EditEventActivity extends AppCompatActivity {
             String period = sdf.format(start) + " to " + sdf.format(end);
             registrationPeriod.setText(period);
 
+            Glide.with(EditEventActivity.this).load(imageUri).centerCrop().into(eventPoster);
+
             eventDescriptionInput.setText(eventReceived.getDescription());
         }
+
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(EditEventActivity.this, AddEventActivity.class));
             finish();
@@ -83,6 +98,9 @@ public class EditEventActivity extends AppCompatActivity {
                 )
         );
 
+        eventPoster.setOnClickListener(v -> {
+            openFileChooser();
+        });
         saveEventChanges.setOnClickListener(v -> {
             String eventName = eventNameInput.getText().toString();
             if (eventName.isEmpty()) {
@@ -123,14 +141,37 @@ public class EditEventActivity extends AppCompatActivity {
             String eventTime = eventTimeInput.getText().toString();
             Date registrationStart = startCalendar.getTime();
             Date registrationEnd = endCalendar.getTime();
-
             Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL);
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);
+            intent.putExtra("imageUri", imageUri != null ? imageUri.toString() : null);
+            if (imageUri != null) {
+                getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
             startActivity(intent);
             finish();
         });
+    }
+    private void openFileChooser() {
+        Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        galleryIntent.setType("image/*");
+        galleryIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        galleryIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                imageUri = data.getData();
+                getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Glide.with(EditEventActivity.this).load(imageUri).centerCrop().into(eventPoster);
+            }
+        }
     }
 
     private void pickDateTime(Calendar calendar, String title, DateTimePickedCallback callback) {

@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.EventViewHolder> {
@@ -31,6 +33,11 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         Event event = eventList.get(position);
         holder.eventName.setText(event.getName());
         holder.entrantCount.setText(event.getEntrantCount());
+        Glide.with(holder.itemView.getContext())
+                .load(event.getEventPosterURL())
+                .centerCrop()
+                .placeholder(R.drawable.outline_image_24)
+                .into(holder.eventPosterPreview);
     }
 
     @Override
