@@ -6,19 +6,19 @@ public class User {
     private String lastName;
     private String email;
     private String phone;
-    private String profileUri;
+    private String profileUrl;
 
     public User() {
         // empty for firebase
     }
 
-    public User(String userId, String firstName, String lastName, String email, String phone, String profileUri) {
+    public User(String userId, String firstName, String lastName, String email, String phone, String profileUrl) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
-        this.profileUri = profileUri;
+        this.profileUrl = profileUrl;
     }
 
     public String getUserId() {
@@ -61,11 +61,11 @@ public class User {
         this.phone = phone;
     }
 
-    public String getProfileUri() {
-        return profileUri;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
-    public void setProfileUri(String profileUri) {
-        this.profileUri = profileUri;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 }
