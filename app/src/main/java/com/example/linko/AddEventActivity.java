@@ -96,7 +96,9 @@ public class AddEventActivity extends AppCompatActivity {
         });
 
         editButton.setOnClickListener(v -> {
-            startActivity(new Intent(AddEventActivity.this, EditEventActivity.class));
+            Intent intent = new Intent(AddEventActivity.this, EditEventActivity.class);
+            intent.putExtra("savedEvent", eventReceived);
+            startActivity(intent);
             finish();
         });
 

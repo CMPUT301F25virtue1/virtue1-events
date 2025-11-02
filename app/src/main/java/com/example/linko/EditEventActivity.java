@@ -43,6 +43,31 @@ public class EditEventActivity extends AppCompatActivity {
         TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
         ImageView backButton = findViewById(R.id.button_back_button);
 
+        Event eventReceived = (Event) getIntent().getSerializableExtra("savedEvent");
+        if (eventReceived != null) {
+            eventNameInput.setText(eventReceived.getName());
+            Integer eventCapacityNumber = eventReceived.getEventCapacity();
+            String eventCapacityString = eventCapacityNumber.toString();
+            eventCapacityInput.setText(eventCapacityString);
+
+            Integer entrantLimitNumber = eventReceived.getEntrantLimit();
+            if (eventReceived.getEntrantLimit() != null) {
+                String entrantLimitString = entrantLimitNumber.toString();
+                entrantLimitInput.setText(entrantLimitString);
+            }
+
+            geolocationBox .setChecked(eventReceived.isGeolocationRequired());
+            eventLocationInput.setText(eventReceived.getEventLocation());
+            eventTimeInput.setText(eventReceived.getEventTime());
+
+            Date start = eventReceived.getRegistrationStart();
+            Date end = eventReceived.getRegistrationEnd();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
+            String period = sdf.format(start) + " to " + sdf.format(end);
+            registrationPeriod.setText(period);
+
+            eventDescriptionInput.setText(eventReceived.getDescription());
+        }
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(EditEventActivity.this, AddEventActivity.class));
             finish();

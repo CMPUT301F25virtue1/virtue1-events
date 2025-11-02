@@ -79,16 +79,17 @@ public class ExploreEventsActivity extends AppCompatActivity {
                     availableEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL));
                 }
                 eventRecyclerAdapter.notifyDataSetChanged();
+                if (availableEventsList.isEmpty()) {
+                    noAvailableEvents.setVisibility(View.VISIBLE);
+                    availableRecyclerView.setVisibility(View.GONE);
+                }
+                else {
+                    noAvailableEvents.setVisibility(View.GONE);
+                    availableRecyclerView.setVisibility(View.VISIBLE);
+                }
             }
         });
 
-        if (availableEventsList.isEmpty()) {
-            noAvailableEvents.setVisibility(View.VISIBLE);
-            availableRecyclerView.setVisibility(View.GONE);
-        }
-        else {
-            noAvailableEvents.setVisibility(View.GONE);
-            availableRecyclerView.setVisibility(View.VISIBLE);
-        }
+
     }
 }

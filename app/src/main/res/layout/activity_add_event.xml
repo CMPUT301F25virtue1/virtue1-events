@@ -111,13 +111,11 @@
         android:padding="5dp"
         android:text="-"
         android:textAlignment="center"
-        android:textAllCaps="true"
+        android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textView9"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView9"
         app:layout_constraintTop_toTopOf="@+id/textView9" />
 
     <TextView
@@ -130,12 +128,11 @@
         android:text="-"
         android:textAlignment="center"
         android:textAllCaps="true"
+        android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
         app:layout_constraintTop_toTopOf="@+id/textView8" />
 
     <CheckBox
@@ -268,6 +265,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
         android:backgroundTint="@color/darkerTeal"
+        android:textColor="@color/white"
         android:padding="10dp"
         android:text="Post"
         android:textSize="24sp"

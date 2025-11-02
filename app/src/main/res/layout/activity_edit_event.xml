@@ -46,6 +46,7 @@
         android:elevation="5dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
+        android:singleLine="true"
         android:hint="Event Name"
         android:textAlignment="center"
         android:textColor="@color/darkerTeal"
@@ -96,17 +97,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white"
+        android:hint="-"
         android:minWidth="35dp"
         android:padding="5dp"
-        android:hint="-"
         android:textAlignment="center"
         android:textAllCaps="true"
+        android:singleLine="true"
+        android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textView9"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView9"
         app:layout_constraintTop_toTopOf="@+id/textView9" />
 
     <EditText
@@ -114,17 +115,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white"
+        android:hint="-"
+        android:singleLine="true"
         android:minWidth="35dp"
         android:padding="5dp"
-        android:hint="-"
         android:textAlignment="center"
         android:textAllCaps="true"
+        android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
         app:layout_constraintTop_toTopOf="@+id/textView8" />
 
     <CheckBox
@@ -145,6 +146,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_white"
         android:padding="5dp"
+        android:singleLine="true"
         android:hint="Event Location"
         android:textAlignment="center"
         android:textColor="@color/darkerTeal"
@@ -163,6 +165,7 @@
         android:padding="5dp"
         android:hint="Event Time"
         android:textAlignment="center"
+        android:singleLine="true"
         android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -219,7 +222,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/text_event_description"
         app:layout_constraintStart_toStartOf="@+id/text_event_description"
-        app:layout_constraintTop_toBottomOf="@id/image_event_poster" />
+        app:layout_constraintTop_toBottomOf="@id/image_event_poster"
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/image_event_poster"
