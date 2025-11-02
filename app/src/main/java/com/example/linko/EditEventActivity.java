@@ -13,9 +13,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,11 +28,12 @@ public class EditEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
+        EdgeToEdge.enable(this);
 
         Button saveEventChanges = findViewById(R.id.button_save_event_changes);
         EditText eventNameInput = findViewById(R.id.text_event_name);
         EditText eventCapacityInput = findViewById(R.id.text_event_capacity);
-        EditText entrantLimitInput = findViewById(R.id.text_entrant_limit);
+        EditText entrantLimitInput = findViewById(R.id.text_entrant_count);
         EditText eventLocationInput = findViewById(R.id.text_event_location);
         EditText eventDescriptionInput = findViewById(R.id.text_event_description);
         CheckBox geolocationBox = findViewById(R.id.checkBox);

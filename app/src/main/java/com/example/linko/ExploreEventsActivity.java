@@ -2,6 +2,7 @@ package com.example.linko;
 
 import static com.example.linko.NavigationBarHandler.navigationListener;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -30,13 +31,13 @@ public class ExploreEventsActivity extends AppCompatActivity {
     private CollectionReference eventsRef;
 
     private List<Event> availableEventsList;
-    private RecyclerView.Adapter eventRecyclerAdapter;
+    private EventRecyclerAdapter eventRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_explore_events);
-
         navigationListener(this);
 
         TextView noAvailableEvents = findViewById(R.id.text_no_event_available);
@@ -88,6 +89,15 @@ public class ExploreEventsActivity extends AppCompatActivity {
                     availableRecyclerView.setVisibility(View.VISIBLE);
                 }
             }
+        });
+
+        // go to the event details on click of each recycler view  item
+        eventRecyclerAdapter.setOnItemClickListener(position -> {
+            Event clickedEvent = availableEventsList.get(position);
+            Intent intent = new Intent(this, EventDetailsActivity.class);
+            intent.putExtra("clickedEvent", clickedEvent);
+            startActivity(intent);
+            finish();
         });
 
 

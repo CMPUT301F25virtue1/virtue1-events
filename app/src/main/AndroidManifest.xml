@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Linko">
         <activity
+            android:name=".EventDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditEventActivity"
             android:exported="false" />
         <activity

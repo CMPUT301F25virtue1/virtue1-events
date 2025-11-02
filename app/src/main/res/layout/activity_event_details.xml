@@ -60,7 +60,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Entrant Limit:"
+        android:text="Entrants:"
         android:textColor="@color/darkerTeal"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -232,7 +232,7 @@
         android:id="@+id/description_poster_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/button_post_event"
+        app:layout_constraintBottom_toTopOf="@+id/button_join_waitlist"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/view2"
         app:layout_constraintHorizontal_bias="0.5"
@@ -258,33 +258,39 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button_post_event"
+        android:id="@+id/button_join_waitlist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/darkerTeal"
-        android:textColor="@color/white"
+        android:backgroundTint="@color/green"
         android:padding="10dp"
-        android:text="Post"
+        android:text="Join Waitlist"
+        android:textColor="@color/white"
         android:textSize="24sp"
+        android:visibility="visible"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_edit_event"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
         app:layout_constraintStart_toStartOf="@+id/description_poster_container"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
 
-    <ImageView
-        android:id="@+id/button_edit_event"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/rounded_dark_teal"
-        android:padding="5dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button_post_event"
+    <Button
+        android:id="@+id/button_leave_waitlist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/darkRed"
+        android:padding="10dp"
+        android:text="Leave Waitlist"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:visibility="invisible"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
-        app:layout_constraintTop_toTopOf="@+id/button_post_event"
-        app:srcCompat="@drawable/outline_edit_square_24" />
+        app:layout_constraintStart_toStartOf="@+id/description_poster_container"
+        app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

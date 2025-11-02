@@ -111,7 +111,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView9" />
 
     <EditText
-        android:id="@+id/text_entrant_limit"
+        android:id="@+id/text_entrant_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white"

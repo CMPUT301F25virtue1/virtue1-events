@@ -26,6 +26,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        EdgeToEdge.enable(this);
 
         String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         TextView userName = findViewById(R.id.text_user_name);
