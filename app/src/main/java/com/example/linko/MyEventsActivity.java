@@ -27,7 +27,7 @@ import java.util.List;
 
 public class MyEventsActivity extends AppCompatActivity {
     private List<Event> organizedEventsList;
-    private RecyclerView.Adapter eventRecyclerAdapter;
+    private EventRecyclerAdapter eventRecyclerAdapter;
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
 
@@ -50,6 +50,7 @@ public class MyEventsActivity extends AppCompatActivity {
         organizedRecyclerView.setAdapter(eventRecyclerAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         organizedRecyclerView.setLayoutManager(layoutManager);
+
         // get organized events list from database
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
@@ -116,6 +117,15 @@ public class MyEventsActivity extends AppCompatActivity {
             startActivity(new Intent(MyEventsActivity.this, AddEventActivity.class));
             finish();
         });
+
+        eventRecyclerAdapter.setOnItemClickListener(position -> {
+            Event clickedEvent = organizedEventsList.get(position);
+            Intent intent = new Intent(this, OrganizerEventDetailsActivity.class);
+            intent.putExtra("clickedEvent", clickedEvent);
+            startActivity(intent);
+            finish();
+        });
+
         navigationListener(this);
 
     }

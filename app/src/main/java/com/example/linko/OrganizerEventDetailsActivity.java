@@ -9,11 +9,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 
@@ -21,13 +23,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class EventDetailsActivity extends AppCompatActivity {
+public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_event_details);
+        setContentView(R.layout.activity_organizer_event_details);
 
         // ui
         ImageView backButton = findViewById(R.id.button_back_button);
@@ -56,7 +58,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         Integer eventCapacityNumber = eventReceived.getEventCapacity();
         String eventCapacityString = eventCapacityNumber.toString();
         eventCapacity.setText(eventCapacityString);
-        Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
+        Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
         entrantCount.setText(eventReceived.getEntrantCount());
 
@@ -88,7 +90,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         backButton.setOnClickListener(v -> {
-            startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
+            startActivity(new Intent(OrganizerEventDetailsActivity.this, ExploreEventsActivity.class));
             finish();
         });
     }
