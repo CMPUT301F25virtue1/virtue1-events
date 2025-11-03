@@ -2,6 +2,7 @@ package com.example.linko;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.service.autofill.UserData;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -51,16 +52,26 @@ public class UserDatabaseHandler {
             }
         });
     }
-
     public void deleteCurrentUser(Context context, UserDeleted deleted) {
         String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference userRef = usersRef.document(userId);
         userRef.delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 deleted.userDelete();
-            }
-            else {
+            } else {
                 Log.e("Firestore", "Error deleting the current user", task.getException());
+            }
+        });
+    }
+
+    public void update(User updatedUser, UserDatabaseHandler.UserUpdated updated) {
+        DocumentReference docRef = db.collection("users").document(updatedUser.getUserId());
+        docRef.set(updatedUser).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                updated.userUpdate();
+            } else {
+                Log.e("Firestore", "Error updating user in database", task.getException());
+                updated.userFailedToUpdate(task.getException());
             }
         });
     }
@@ -75,5 +86,10 @@ public class UserDatabaseHandler {
     public interface UserAdded {
         void userAdd();
         void userFailedToAdd(Exception e);
+    }
+
+    public interface UserUpdated {
+        void userUpdate();
+        void userFailedToUpdate(Exception e);
     }
 }
