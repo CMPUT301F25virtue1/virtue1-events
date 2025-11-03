@@ -24,6 +24,8 @@ import java.util.Locale;
 
 public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
+    private Button joinWaitlist;
+    private Button leaveWaitlist;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +45,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
-        Button joinWaitlist = findViewById(R.id.button_join_waitlist);
-        Button leaveWaitlist = findViewById(R.id.button_leave_waitlist);
+        joinWaitlist = findViewById(R.id.button_join_waitlist);
+        leaveWaitlist = findViewById(R.id.button_leave_waitlist);
 
         eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
@@ -65,11 +67,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventLocation.setText(eventReceived.getEventLocation());
         eventTime.setText(eventReceived.getEventTime());
 
-
+        // check if it should be join or leave waitlist
+        checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
+
         });
 
         leaveWaitlist.setOnClickListener(v -> {
@@ -105,6 +109,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             List<String> userEventHistory = currentUser.getEventHistory();
 
             Log.d("eventReceived", eventReceived.getEventId());
+            Log.d("eventReceived", "event received" + eventReceived.getOwnerId());
+
             if (userEventsRegistered.contains(eventReceived.getEventId())) {
                 userEventsRegistered.remove(eventReceived.getEventId());
                 eventReceived.getEntrants().remove(currentUser.getUserId());
@@ -140,6 +146,22 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+        });
+    }
+
+    public void checkUserRegistered() {
+        UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
+        databaseHandler.getCurrentUser(this, currentUser -> {
+            List<String> userEventsRegistered = currentUser.getEventsRegistered();
+
+            if (userEventsRegistered.contains(eventReceived.getEventId())) {
+                joinWaitlist.setVisibility(View.INVISIBLE);
+                leaveWaitlist.setVisibility(View.VISIBLE);
+            }
+            else {
+                joinWaitlist.setVisibility(View.VISIBLE);
+                leaveWaitlist.setVisibility(View.INVISIBLE);
+            }
         });
     }
 }

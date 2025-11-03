@@ -66,7 +66,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
                     if (registrationEnd != null && !registrationEnd.after(new Date())) {
                         continue;
                     }
-                    String ownerId = snapshot.getString("ownerID");
+                    String ownerId = snapshot.getString("ownerId");
                     String eventName = snapshot.getString("name");
                     Integer eventCapacityInt = snapshot.get("eventCapacity", Integer.class);
                     Integer entrantLimit = snapshot.get("entrantLimit", Integer.class);
