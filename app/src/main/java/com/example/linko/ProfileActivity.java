@@ -48,7 +48,6 @@ public class ProfileActivity extends AppCompatActivity {
             userEmail.setText(email);
             userPhoneNumber.setText(number);
             Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().into(userProfile);
-
         });
 
         navigationListener(this);

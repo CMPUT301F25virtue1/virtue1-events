@@ -23,6 +23,7 @@ public class Event implements Serializable {
     private List<String> cancelledEntrants;
     private String eventId;
 
+
     public Event() {}
     public Event(String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
         this.ownerId = null;
@@ -138,6 +139,10 @@ public class Event implements Serializable {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public List<String> getEntrants() {
+        return entrants;
     }
 
     public String getEntrantCount() {

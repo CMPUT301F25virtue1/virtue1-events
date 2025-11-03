@@ -19,10 +19,11 @@ import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class EventDetailsActivity extends AppCompatActivity {
-
+    private Event eventReceived;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +46,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button joinWaitlist = findViewById(R.id.button_join_waitlist);
         Button leaveWaitlist = findViewById(R.id.button_leave_waitlist);
 
-        Event eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
+        eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
             Log.e("Event", "The event clicked was null.");
             finish();
@@ -64,20 +65,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventLocation.setText(eventReceived.getEventLocation());
         eventTime.setText(eventReceived.getEventTime());
 
-        Date start = eventReceived.getRegistrationStart();
-        Date end = eventReceived.getRegistrationEnd();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());String period = sdf.format(start) + " to " + sdf.format(end);
-        registrationPeriod.setText(period);
-        eventDescription.setText(eventReceived.getDescription());
 
         joinWaitlist.setOnClickListener(v -> {
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
+            changeUserWaitlist();
         });
 
         leaveWaitlist.setOnClickListener(v -> {
             joinWaitlist.setVisibility(View.VISIBLE);
             leaveWaitlist.setVisibility(View.INVISIBLE);
+            changeUserWaitlist();
         });
 
         descriptionButton.setOnClickListener(v -> {
@@ -97,6 +95,51 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
             finish();
+        });
+    }
+
+    public void changeUserWaitlist() {
+        UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
+        databaseHandler.getCurrentUser(this, currentUser -> {
+            List<String> userEventsRegistered = currentUser.getEventsRegistered();
+            List<String> userEventHistory = currentUser.getEventHistory();
+
+            Log.d("eventReceived", eventReceived.getEventId());
+            if (userEventsRegistered.contains(eventReceived.getEventId())) {
+                userEventsRegistered.remove(eventReceived.getEventId());
+                eventReceived.getEntrants().remove(currentUser.getUserId());
+            }
+            else {
+                userEventsRegistered.add(eventReceived.getEventId());
+                eventReceived.getEntrants().add(currentUser.getUserId());
+                if (!userEventHistory.contains(eventReceived.getEventId())) {
+                    userEventHistory.add(eventReceived.getEventId());
+                }
+            }
+
+            EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+            eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                @Override
+                public void eventUpdate() {
+                }
+
+                @Override
+                public void eventFailedToUpdate(Exception e) {
+                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+            databaseHandler.update(currentUser, new UserDatabaseHandler.UserUpdated() {
+                @Override
+                public void userUpdate() {
+                    Toast.makeText(EventDetailsActivity.this, "Success!", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void userFailedToUpdate(Exception e) {
+                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         });
     }
 }
