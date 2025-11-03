@@ -60,4 +60,5 @@ public class ImageStorageHandler {
         void onUploadSuccess(String downloadUrl);
         void onUploadFailed(Exception e);
     }
+
 }

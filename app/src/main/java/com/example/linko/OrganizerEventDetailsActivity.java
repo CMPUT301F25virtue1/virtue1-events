@@ -2,6 +2,8 @@ package com.example.linko;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +11,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -25,6 +30,9 @@ import java.util.Locale;
 
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri imageUri;
+    private ImageView editPoster;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +41,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         // ui
         ImageView backButton = findViewById(R.id.button_back_button);
+        ImageView backButtonForEditPoster = findViewById(R.id.button_edit_poster_back);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
         TextView entrantCount = findViewById(R.id.text_entrant_count);
@@ -45,6 +54,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView posterButton = findViewById(R.id.click_event_poster);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
         Button editEvent = findViewById(R.id.button_edit_event);
+        View backgroundDim = findViewById(R.id.background_dim);
+        ConstraintLayout editPosterContainer = findViewById(R.id.edit_poster_container);
+        Button savePoster = findViewById(R.id.button_save_poster);
+        editPoster = findViewById(R.id.image_edit_poster);
 
         Event eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
@@ -85,16 +98,83 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
 
         backButton.setOnClickListener(v -> {
-            startActivity(new Intent(OrganizerEventDetailsActivity.this, ExploreEventsActivity.class));
+            startActivity(new Intent(OrganizerEventDetailsActivity.this, MyEventsActivity.class));
             finish();
         });
 
-        editEvent.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EditEventActivity.class);
-            intent.putExtra("savedEvent", eventReceived);
-            intent.putExtra("fromActivity", "OrganizerEventDetailsActivity");
-            startActivity(intent);
-            finish();
+        backButtonForEditPoster.setOnClickListener(v -> {
+            backgroundDim.setVisibility(View.GONE);
+            editPosterContainer.setVisibility(View.GONE);
         });
+
+        editEvent.setOnClickListener(v -> {
+            backgroundDim.setVisibility(View.VISIBLE);
+            editPosterContainer.setVisibility(View.VISIBLE);
+        });
+
+        editPoster.setOnClickListener(v-> {
+            openFileChooser();
+        });
+
+        savePoster.setOnClickListener(v-> {
+            if (imageUri == null) {
+                backgroundDim.setVisibility(View.GONE);
+                editPosterContainer.setVisibility(View.GONE);
+                return;
+            }
+
+            ImageStorageHandler eventPictureUpdate = new ImageStorageHandler();
+
+            eventPictureUpdate.uploadEventImage(imageUri, eventReceived.getEventId(), new ImageStorageHandler.imageUploaded() {
+                @Override
+                public void onUploadSuccess(String downloadUrl) {
+                    eventReceived.setEventPosterURL(downloadUrl);
+                    EventDatabaseHandler db = new EventDatabaseHandler();
+                    db.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                        @Override
+                        public void eventUpdate() {
+                            Toast.makeText(OrganizerEventDetailsActivity.this, "Poster successfully updated!", Toast.LENGTH_LONG).show();
+                            Glide.with(OrganizerEventDetailsActivity.this).load(imageUri).centerCrop().into(eventPoster);
+                            backgroundDim.setVisibility(View.GONE);
+                            editPosterContainer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void eventFailedToUpdate(Exception e) {
+                            Toast.makeText(OrganizerEventDetailsActivity.this, "Error updating event poster: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onUploadFailed(Exception e) {
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Error uploading event poster: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+                }
+            });
+
+            backgroundDim.setVisibility(View.VISIBLE);
+            editPosterContainer.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void openFileChooser() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
+
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                imageUri = data.getData();
+                Glide.with(OrganizerEventDetailsActivity.this).load(imageUri).centerCrop().into(editPoster);
+            }
+        }
     }
 }

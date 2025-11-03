@@ -115,7 +115,6 @@ public class AddEventActivity extends AppCompatActivity {
             Intent intent = new Intent(AddEventActivity.this, EditEventActivity.class);
             intent.putExtra("savedEvent", eventReceived);
             intent.putExtra("imageUri", eventPosterUri != null ? eventPosterUri.toString() : null);
-            intent.putExtra("fromActivity", "AddEventActivity");
             if (eventPosterUri != null) {
                 getContentResolver().takePersistableUriPermission(eventPosterUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
