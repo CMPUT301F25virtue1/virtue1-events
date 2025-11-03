@@ -16,6 +16,8 @@ public class DeleteProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_profile);
+        EdgeToEdge.enable(this);
+
         Button deleteProfile = findViewById(R.id.button_delete_profile);
         Button goBack = findViewById(R.id.button_go_back);
 

@@ -19,6 +19,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        EdgeToEdge.enable(this);
 
         String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Button deleteProfile = findViewById(R.id.button_delete_profile);

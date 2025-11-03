@@ -19,6 +19,7 @@ public class EventDatabaseHandler {
         eventToAdd.setEventId(eventId);
         docRef.set(eventToAdd).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                Log.d("AddEvent", "Event to save: " + eventToAdd.getName() + ", eventId: " + eventToAdd.getEventId());
                 added.eventAdd();
             }
             else {
@@ -28,8 +29,24 @@ public class EventDatabaseHandler {
         });
     }
 
+    public void update(Event updatedEvent, EventDatabaseHandler.EventUpdated updated) {
+        DocumentReference docRef = db.collection("events").document(updatedEvent.getEventId());
+        docRef.set(updatedEvent).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                updated.eventUpdate();
+            } else {
+                Log.e("Firestore", "Error updating event in database", task.getException());
+                updated.eventFailedToUpdate(task.getException());
+            }
+        });
+    }
     public interface EventAdded {
         void eventAdd();
         void eventFailedToAdd(Exception e);
+    }
+
+    public interface EventUpdated {
+        void eventUpdate();
+        void eventFailedToUpdate(Exception e);
     }
 }

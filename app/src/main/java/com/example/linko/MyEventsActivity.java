@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,13 +27,14 @@ import java.util.List;
 
 public class MyEventsActivity extends AppCompatActivity {
     private List<Event> organizedEventsList;
-    private RecyclerView.Adapter eventRecyclerAdapter;
+    private EventRecyclerAdapter eventRecyclerAdapter;
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_my_events);
 
         Button registeredEvents = findViewById(R.id.button_registered);
@@ -48,6 +50,7 @@ public class MyEventsActivity extends AppCompatActivity {
         organizedRecyclerView.setAdapter(eventRecyclerAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         organizedRecyclerView.setLayoutManager(layoutManager);
+
         // get organized events list from database
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
@@ -61,8 +64,8 @@ public class MyEventsActivity extends AppCompatActivity {
                 organizedEventsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     String ownerId = snapshot.getString("ownerId");
-                    Log.d("firebase", "checking owner id");
-                    if (!ownerId.equals(currentUser)) {
+                    Log.d("firebase", "checking owner id" + currentUser + ownerId);
+                    if (!currentUser.equals(ownerId)) {
                         continue;
                     }
                     Log.d("firebase", "passed check");
@@ -77,8 +80,9 @@ public class MyEventsActivity extends AppCompatActivity {
                     Date registrationEnd = snapshot.get("registrationEnd", Date.class);
                     String eventDescription = snapshot.getString("description");
                     String eventPhotoURL = snapshot.getString("eventPosterURL");
+                    String eventId = snapshot.getString("eventId");
 
-                    organizedEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL));
+                    organizedEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
                 }
                 eventRecyclerAdapter.notifyDataSetChanged();
             }
@@ -114,6 +118,15 @@ public class MyEventsActivity extends AppCompatActivity {
             startActivity(new Intent(MyEventsActivity.this, AddEventActivity.class));
             finish();
         });
+
+        eventRecyclerAdapter.setOnItemClickListener(position -> {
+            Event clickedEvent = organizedEventsList.get(position);
+            Intent intent = new Intent(this, OrganizerEventDetailsActivity.class);
+            intent.putExtra("clickedEvent", clickedEvent);
+            startActivity(intent);
+            finish();
+        });
+
         navigationListener(this);
 
     }

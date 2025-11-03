@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,11 +16,9 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -38,11 +37,12 @@ public class EditEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
+        EdgeToEdge.enable(this);
 
         Button saveEventChanges = findViewById(R.id.button_save_event_changes);
         EditText eventNameInput = findViewById(R.id.text_event_name);
         EditText eventCapacityInput = findViewById(R.id.text_event_capacity);
-        EditText entrantLimitInput = findViewById(R.id.text_entrant_limit);
+        EditText entrantLimitInput = findViewById(R.id.text_entrant_count);
         EditText eventLocationInput = findViewById(R.id.text_event_location);
         EditText eventDescriptionInput = findViewById(R.id.text_event_description);
         CheckBox geolocationBox = findViewById(R.id.checkBox);
@@ -78,7 +78,7 @@ public class EditEventActivity extends AppCompatActivity {
             String period = sdf.format(start) + " to " + sdf.format(end);
             registrationPeriod.setText(period);
 
-            Glide.with(EditEventActivity.this).load(imageUri).centerCrop().into(eventPoster);
+            Glide.with(EditEventActivity.this).load(imageUri).centerCrop().placeholder(R.drawable.outline_photo_camera_24).into(eventPoster);
 
             eventDescriptionInput.setText(eventReceived.getDescription());
         }
