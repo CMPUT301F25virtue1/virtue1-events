@@ -44,8 +44,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
-        Button joinWaitlist = findViewById(R.id.button_join_waitlist);
-        Button leaveWaitlist = findViewById(R.id.button_leave_waitlist);
+        Button editEvent = findViewById(R.id.button_edit_event);
 
         Event eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
@@ -72,16 +71,12 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         registrationPeriod.setText(period);
         eventDescription.setText(eventReceived.getDescription());
 
-        joinWaitlist.setOnClickListener(v -> {
-            joinWaitlist.setVisibility(View.INVISIBLE);
-            leaveWaitlist.setVisibility(View.VISIBLE);
+        descriptionButton.setOnClickListener(v -> {
+            eventDescription.setVisibility(View.VISIBLE);
+            eventPoster.setVisibility(View.GONE);
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
-
-        leaveWaitlist.setOnClickListener(v -> {
-            joinWaitlist.setVisibility(View.VISIBLE);
-            leaveWaitlist.setVisibility(View.INVISIBLE);
-        });
-
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
@@ -91,6 +86,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(OrganizerEventDetailsActivity.this, ExploreEventsActivity.class));
+            finish();
+        });
+
+        editEvent.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EditEventActivity.class);
+            intent.putExtra("savedEvent", eventReceived);
+            intent.putExtra("fromActivity", "OrganizerEventDetailsActivity");
+            startActivity(intent);
             finish();
         });
     }

@@ -76,8 +76,9 @@ public class ExploreEventsActivity extends AppCompatActivity {
                     Date registrationStart = snapshot.get("registrationStart", Date.class);
                     String eventDescription = snapshot.getString("description");
                     String eventPhotoURL = snapshot.getString("eventPosterURL");
+                    String eventId = snapshot.getString("eventId");
 
-                    availableEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL));
+                    availableEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
                 }
                 eventRecyclerAdapter.notifyDataSetChanged();
                 if (availableEventsList.isEmpty()) {

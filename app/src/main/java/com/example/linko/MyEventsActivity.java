@@ -64,8 +64,8 @@ public class MyEventsActivity extends AppCompatActivity {
                 organizedEventsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     String ownerId = snapshot.getString("ownerId");
-                    Log.d("firebase", "checking owner id");
-                    if (!ownerId.equals(currentUser)) {
+                    Log.d("firebase", "checking owner id" + currentUser + ownerId);
+                    if (!currentUser.equals(ownerId)) {
                         continue;
                     }
                     Log.d("firebase", "passed check");
@@ -80,8 +80,9 @@ public class MyEventsActivity extends AppCompatActivity {
                     Date registrationEnd = snapshot.get("registrationEnd", Date.class);
                     String eventDescription = snapshot.getString("description");
                     String eventPhotoURL = snapshot.getString("eventPosterURL");
+                    String eventId = snapshot.getString("eventId");
 
-                    organizedEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL));
+                    organizedEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
                 }
                 eventRecyclerAdapter.notifyDataSetChanged();
             }

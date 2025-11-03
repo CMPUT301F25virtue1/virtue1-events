@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -53,6 +55,7 @@ public class EditEventActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         String uriString = extras != null ? extras.getString("imageUri") : null;
         imageUri = uriString != null ? Uri.parse(uriString) : null;
+        String sourceActivity = extras != null ? extras.getString("fromActivity") : null;
 
         if (eventReceived != null) {
             eventNameInput.setText(eventReceived.getName());
@@ -76,7 +79,12 @@ public class EditEventActivity extends AppCompatActivity {
             String period = sdf.format(start) + " to " + sdf.format(end);
             registrationPeriod.setText(period);
 
-            Glide.with(EditEventActivity.this).load(imageUri).centerCrop().into(eventPoster);
+            if (sourceActivity.equals("OrganizerEventDetailsActivity")) {
+                Glide.with(EditEventActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).into(eventPoster);
+            }
+            else {
+                Glide.with(EditEventActivity.this).load(imageUri).centerCrop().placeholder(R.drawable.outline_photo_camera_24).into(eventPoster);
+            }
 
             eventDescriptionInput.setText(eventReceived.getDescription());
         }
@@ -140,6 +148,31 @@ public class EditEventActivity extends AppCompatActivity {
             Date registrationStart = startCalendar.getTime();
             Date registrationEnd = endCalendar.getTime();
             Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL);
+
+            if (sourceActivity.equals("OrganizerEventDetailsActivity")) {
+                eventToSave.setEventPosterURL(eventReceived.getEventPosterURL());
+                eventToSave.setOwnerId(eventReceived.getOwnerId());
+                String eventToUpdateId = eventReceived.getEventId();
+                eventToSave.setEventId(eventToUpdateId);
+                Log.d("save", eventToUpdateId + eventToSave.getEventId());
+
+                EventDatabaseHandler db = new EventDatabaseHandler();
+                db.update(eventToSave, new EventDatabaseHandler.EventUpdated() {
+                    @Override
+                    public void eventUpdate() {
+                        Intent intent = new Intent(EditEventActivity.this, OrganizerEventDetailsActivity.class);
+                        intent.putExtra("clickedEvent", eventToSave);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void eventFailedToUpdate(Exception e) {
+                        Toast.makeText(EditEventActivity.this, "Error updating event: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+                return;
+            }
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);

@@ -80,6 +80,13 @@ public class EventDetailsActivity extends AppCompatActivity {
             leaveWaitlist.setVisibility(View.INVISIBLE);
         });
 
+        descriptionButton.setOnClickListener(v -> {
+            eventDescription.setVisibility(View.VISIBLE);
+            eventPoster.setVisibility(View.GONE);
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+        });
+
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
