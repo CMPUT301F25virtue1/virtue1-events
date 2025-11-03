@@ -27,9 +27,14 @@ import java.util.List;
 
 public class MyEventsActivity extends AppCompatActivity {
     private List<Event> organizedEventsList;
-    private EventRecyclerAdapter eventRecyclerAdapter;
+    private List<Event> registeredEventsList;
+
+    private EventRecyclerAdapter organizedEventRecyclerAdapter;
+    private EventRecyclerAdapter registeredEventRecyclerAdapter;
+
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,17 +48,76 @@ public class MyEventsActivity extends AppCompatActivity {
         TextView noEventsRegistered = findViewById(R.id.text_no_event_registered);
         TextView noEventsOrganized = findViewById(R.id.text_no_event_organized);
         RecyclerView organizedRecyclerView = findViewById(R.id.recycler_organized_events);
+        RecyclerView registeredRecyclerView = findViewById(R.id.recycler_registered_events);
 
         // create event array
         organizedEventsList = new ArrayList<>();
-        eventRecyclerAdapter = new EventRecyclerAdapter(organizedEventsList);
-        organizedRecyclerView.setAdapter(eventRecyclerAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        organizedRecyclerView.setLayoutManager(layoutManager);
+        organizedEventRecyclerAdapter = new EventRecyclerAdapter(organizedEventsList);
+        registeredEventsList = new ArrayList<>();
+        registeredEventRecyclerAdapter = new EventRecyclerAdapter(registeredEventsList);
 
-        // get organized events list from database
+        organizedRecyclerView.setAdapter(organizedEventRecyclerAdapter);
+        registeredRecyclerView.setAdapter(registeredEventRecyclerAdapter);
+
+        LinearLayoutManager organizedLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager registeredLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        registeredRecyclerView.setLayoutManager(registeredLayoutManager);
+        organizedRecyclerView.setLayoutManager(organizedLayoutManager);
+
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
+
+        // get registered events list from database
+        eventsRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null && !value.isEmpty()) {
+                String currentUser = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                Log.d("firebase", "checking documents");
+                registeredEventsList.clear();
+                for (QueryDocumentSnapshot snapshot : value) {
+
+                    List<String> entrants = (List<String>) snapshot.get("entrants");
+
+                    if (!entrants.contains(currentUser)) {
+                        Log.d("registered", "user is not registered in the event");
+
+                        continue;
+                    }
+                    Log.d("registered", "user is registered in the event");
+
+                    String ownerId = snapshot.getString("ownerId");
+                    String eventName = snapshot.getString("name");
+                    Integer eventCapacityInt = snapshot.get("eventCapacity", Integer.class);
+                    Integer entrantLimit = snapshot.get("entrantLimit", Integer.class);
+                    boolean geolocationRequirement = snapshot.getBoolean("geolocationRequired");
+                    String eventLocation = snapshot.getString("eventLocation");
+                    String eventTime = snapshot.getString("eventTime");
+                    Date registrationStart = snapshot.get("registrationStart", Date.class);
+                    Date registrationEnd = snapshot.get("registrationEnd", Date.class);
+                    String eventDescription = snapshot.getString("description");
+                    String eventPhotoURL = snapshot.getString("eventPosterURL");
+                    String eventId = snapshot.getString("eventId");
+
+                    registeredEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
+                }
+                // update the registered tab
+                if (registeredEventsList.isEmpty()) {
+                    noEventsRegistered.setVisibility(View.VISIBLE);
+                    noEventsOrganized.setVisibility(View.GONE);
+                    registeredRecyclerView.setVisibility(View.GONE);
+                }
+                else {
+                    noEventsRegistered.setVisibility(View.GONE);
+                    noEventsOrganized.setVisibility(View.GONE);
+                    registeredRecyclerView.setVisibility(View.VISIBLE);
+                }
+                registeredEventRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // get organized events list from database
         eventsRef.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
@@ -84,15 +148,14 @@ public class MyEventsActivity extends AppCompatActivity {
 
                     organizedEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
                 }
-                eventRecyclerAdapter.notifyDataSetChanged();
+                organizedEventRecyclerAdapter.notifyDataSetChanged();
             }
         });
 
-        // placeholder
+
         registeredEvents.setOnClickListener( v -> {
-            noEventsRegistered.setVisibility(View.VISIBLE);
+            Log.d("registered", String.valueOf(registeredEventsList.get(0)));
             organizeAnEvent.setVisibility(View.GONE);
-            noEventsOrganized.setVisibility(View.GONE);
             organizedRecyclerView.setVisibility(View.GONE);
             registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
             organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
@@ -110,6 +173,7 @@ public class MyEventsActivity extends AppCompatActivity {
                 organizedRecyclerView.setVisibility(View.VISIBLE);
             }
             organizeAnEvent.setVisibility(View.VISIBLE);
+            registeredRecyclerView.setVisibility(View.GONE);
             organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
             registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
@@ -119,7 +183,7 @@ public class MyEventsActivity extends AppCompatActivity {
             finish();
         });
 
-        eventRecyclerAdapter.setOnItemClickListener(position -> {
+        organizedEventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = organizedEventsList.get(position);
             Intent intent = new Intent(this, OrganizerEventDetailsActivity.class);
             intent.putExtra("clickedEvent", clickedEvent);

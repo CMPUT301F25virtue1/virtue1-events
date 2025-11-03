@@ -286,7 +286,7 @@
         android:text="Leave Waitlist"
         android:textColor="@color/white"
         android:textSize="24sp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
