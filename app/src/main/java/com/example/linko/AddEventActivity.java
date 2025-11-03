@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -36,6 +37,7 @@ public class AddEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
+        EdgeToEdge.enable(this);
 
         Button postEvent = findViewById(R.id.button_post_event);
         ImageView editButton = findViewById(R.id.button_edit_event);
@@ -46,7 +48,7 @@ public class AddEventActivity extends AppCompatActivity {
         // event display stuff
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
-        TextView entrantLimit = findViewById(R.id.text_entrant_limit);
+        TextView entrantLimit = findViewById(R.id.text_entrant_count);
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
         TextView eventLocation = findViewById(R.id.text_event_location);
         TextView eventTime = findViewById(R.id.text_event_time);

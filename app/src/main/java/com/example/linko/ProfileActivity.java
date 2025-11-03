@@ -28,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        EdgeToEdge.enable(this);
 
         String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         TextView userName = findViewById(R.id.text_user_name);
@@ -47,7 +48,6 @@ public class ProfileActivity extends AppCompatActivity {
             userEmail.setText(email);
             userPhoneNumber.setText(number);
             Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().into(userProfile);
-
         });
 
         navigationListener(this);

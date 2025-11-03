@@ -1,5 +1,8 @@
 package com.example.linko;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This is for our User objects. Comes with getters and setters for all variables.
  * @see SignUpActivity Where new User objects are created
@@ -12,6 +15,8 @@ public class User {
     private String email;
     private String phone;
     private String profileUrl;
+    private List<String> eventsRegistered;
+    private List<String> eventHistory;
 
     public User() {
         // empty for firebase
@@ -33,6 +38,8 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.profileUrl = profileUrl;
+        this.eventsRegistered = new ArrayList<>();
+        this.eventHistory = new ArrayList<>();
     }
 
     public String getUserId() {
@@ -82,4 +89,21 @@ public class User {
     public void setProfileUrl(String profileUrl) {
         this.profileUrl = profileUrl;
     }
+
+    public List<String> getEventsRegistered() {
+        return eventsRegistered;
+    }
+
+    public List<String> getEventHistory() {
+        return eventHistory;
+    }
+
+    public void setEventHistory(List<String> eventHistory) {
+        this.eventHistory = eventHistory;
+    }
+
+    public void setEventsRegistered(List<String> eventsRegistered) {
+        this.eventsRegistered = eventsRegistered;
+    }
+
 }
