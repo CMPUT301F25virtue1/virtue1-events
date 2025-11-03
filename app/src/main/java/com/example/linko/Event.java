@@ -5,6 +5,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This is for Event objects. Stores all the necessary info for events as well as
+ * lists for managing entrants. Has an empty constructor for Firebase.
+ * <p>
+ *     There are two separate constructors in this class. One for when the
+ *     Firebase ownerId is known before creation and then the main constructor
+ *     that's used more often where the ownerId isn't known ahead of time.
+ * </p>
+ * @see EditEventActivity Contains logic for editting events when UI elements are interacted with
+ * @see EventDatabaseHandler Handles the event database in Firebase
+ * @see AddEventActivity Contains logic for adding events when UI elements are interacted with
+ */
 public class Event implements Serializable {
     private String ownerId;
     private String name;
@@ -24,6 +36,25 @@ public class Event implements Serializable {
     private String eventId;
 
     public Event() {}
+
+    /**
+     * Event info object. On constructor call, makes new entrants, invitedEntrants,
+     * signedUpEntrants, and cancelledEntrants arrayLists.
+     * <p>
+     *     ownerId and eventId are added
+     *      added later when info is pulled from Firebase database
+     * </p>
+     * @param name Event name
+     * @param eventCapacity Entrant capacity for event
+     * @param entrantLimit:
+     * @param geolocationRequired Boolean used to check if geolocation is necessary for event
+     * @param eventLocation Where the event is located
+     * @param eventTime What time the event takes place
+     * @param registrationStart When registration for the event starts
+     * @param registrationEnd When event registration closes
+     * @param description Event description
+     * @param eventPosterURL Firebase URL for the events poster
+     */
     public Event(String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
         this.ownerId = null;
         this.name = name;

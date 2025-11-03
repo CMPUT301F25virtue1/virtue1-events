@@ -1,5 +1,10 @@
 package com.example.linko;
 
+/**
+ * This is for our User objects. Comes with getters and setters for all variables.
+ * @see SignUpActivity Where new User objects are created
+ * @see UserDatabaseHandler Manages User objects in the Firebase database
+ */
 public class User {
     private String userId ;
     private String firstName ;
@@ -12,6 +17,15 @@ public class User {
         // empty for firebase
     }
 
+    /**
+     * User object
+     * @param userId Device id. Stored in Firebase
+     * @param firstName Users first name
+     * @param lastName Users last name
+     * @param email Users Email
+     * @param phone Users phone number
+     * @param profileUrl Link to the pfp stored in Firebase
+     */
     public User(String userId, String firstName, String lastName, String email, String phone, String profileUrl) {
         this.userId = userId;
         this.firstName = firstName;
