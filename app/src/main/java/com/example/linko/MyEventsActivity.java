@@ -154,7 +154,16 @@ public class MyEventsActivity extends AppCompatActivity {
 
 
         registeredEvents.setOnClickListener( v -> {
-            Log.d("registered", String.valueOf(registeredEventsList.get(0)));
+            if (registeredEventsList.isEmpty()) {
+                noEventsRegistered.setVisibility(View.VISIBLE);
+                noEventsOrganized.setVisibility(View.GONE);
+                registeredRecyclerView.setVisibility(View.GONE);
+            }
+            else {
+                noEventsRegistered.setVisibility(View.GONE);
+                noEventsOrganized.setVisibility(View.GONE);
+                registeredRecyclerView.setVisibility(View.VISIBLE);
+            }
             organizeAnEvent.setVisibility(View.GONE);
             organizedRecyclerView.setVisibility(View.GONE);
             registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));

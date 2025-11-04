@@ -85,44 +85,120 @@ public class Event implements Serializable {
         return ownerId;
     }
 
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getEventCapacity() {
         return eventCapacity;
     }
 
+    public void setEventCapacity(Integer eventCapacity) {
+        this.eventCapacity = eventCapacity;
+    }
+
     public Integer getEntrantLimit() {
         return entrantLimit;
+    }
+
+    public void setEntrantLimit(Integer entrantLimit) {
+        this.entrantLimit = entrantLimit;
     }
 
     public boolean isGeolocationRequired() {
         return geolocationRequired;
     }
 
+    public void setGeolocationRequired(boolean geolocationRequired) {
+        this.geolocationRequired = geolocationRequired;
+    }
+
     public String getEventLocation() {
         return eventLocation;
+    }
+
+    public void setEventLocation(String eventLocation) {
+        this.eventLocation = eventLocation;
     }
 
     public String getEventTime() {
         return eventTime;
     }
 
+    public void setEventTime(String eventTime) {
+        this.eventTime = eventTime;
+    }
+
     public Date getRegistrationStart() {
         return registrationStart;
+    }
+
+    public void setRegistrationStart(Date registrationStart) {
+        this.registrationStart = registrationStart;
     }
 
     public Date getRegistrationEnd() {
         return registrationEnd;
     }
 
+    public void setRegistrationEnd(Date registrationEnd) {
+        this.registrationEnd = registrationEnd;
+    }
+
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getEventPosterURL() {
         return eventPosterURL;
+    }
+
+    public void setEventPosterURL(String eventPosterURL) {
+        this.eventPosterURL = eventPosterURL;
+    }
+
+    public List<String> getEntrants() {
+        return entrants;
+    }
+
+    public void setEntrants(List<String> entrants) {
+        this.entrants = entrants;
+    }
+
+    public List<String> getInvitedEntrants() {
+        return invitedEntrants;
+    }
+
+    public void setInvitedEntrants(List<String> invitedEntrants) {
+        this.invitedEntrants = invitedEntrants;
+    }
+
+    public List<String> getSignedUpEntrants() {
+        return signedUpEntrants;
+    }
+
+    public void setSignedUpEntrants(List<String> signedUpEntrants) {
+        this.signedUpEntrants = signedUpEntrants;
+    }
+
+    public List<String> getCancelledEntrants() {
+        return cancelledEntrants;
+    }
+
+    public void setCancelledEntrants(List<String> cancelledEntrants) {
+        this.cancelledEntrants = cancelledEntrants;
     }
 
     public String getEventId() {
@@ -131,18 +207,6 @@ public class Event implements Serializable {
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
-    }
-
-    public void setEventPosterURL(String eventPosterURL) {
-        this.eventPosterURL = eventPosterURL;
-    }
-
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public List<String> getEntrants() {
-        return entrants;
     }
 
     public String getEntrantCount() {

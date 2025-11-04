@@ -67,6 +67,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventLocation.setText(eventReceived.getEventLocation());
         eventTime.setText(eventReceived.getEventTime());
 
+        Date start = eventReceived.getRegistrationStart();
+        Date end = eventReceived.getRegistrationEnd();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
+        String period = sdf.format(start) + " to " + sdf.format(end);
+        registrationPeriod.setText(period);
+
         // check if it should be join or leave waitlist
         checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
@@ -135,14 +141,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
 
-            databaseHandler.update(currentUser, new UserDatabaseHandler.UserUpdated() {
+            // adding user is the same as updating
+            databaseHandler.addUser(currentUser, new UserDatabaseHandler.UserAdded() {
                 @Override
-                public void userUpdate() {
+                public void userAdd() {
                     Toast.makeText(EventDetailsActivity.this, "Success!", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
-                public void userFailedToUpdate(Exception e) {
+                public void userFailedToAdd(Exception e) {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });

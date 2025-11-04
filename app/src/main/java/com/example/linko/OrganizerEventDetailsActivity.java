@@ -80,7 +80,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         Date start = eventReceived.getRegistrationStart();
         Date end = eventReceived.getRegistrationEnd();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());String period = sdf.format(start) + " to " + sdf.format(end);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
+        String period = sdf.format(start) + " to " + sdf.format(end);
         registrationPeriod.setText(period);
         eventDescription.setText(eventReceived.getDescription());
 

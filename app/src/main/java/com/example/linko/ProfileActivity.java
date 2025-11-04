@@ -2,10 +2,12 @@ package com.example.linko;
 
 import static com.example.linko.NavigationBarHandler.navigationListener;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.service.autofill.UserData;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,11 +32,11 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         EdgeToEdge.enable(this);
 
-        String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         TextView userName = findViewById(R.id.text_user_name);
         TextView userEmail = findViewById(R.id.text_user_email);
         TextView userPhoneNumber = findViewById(R.id.text_user_number);
         ImageView userProfile = findViewById(R.id.image_profile);
+        Button editProfile = findViewById(R.id.button_edit_profile);
 
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
@@ -47,10 +49,14 @@ public class ProfileActivity extends AppCompatActivity {
             userName.setText(name);
             userEmail.setText(email);
             userPhoneNumber.setText(number);
-            Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().into(userProfile);
+            Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_24).into(userProfile);
+        });
+
+        editProfile.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class));
+            finish();
         });
 
         navigationListener(this);
-
     }
 }
