@@ -72,7 +72,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventCapacity.setText(eventCapacityString);
         Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount());
+        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
         eventLocation.setText(eventReceived.getEventLocation());

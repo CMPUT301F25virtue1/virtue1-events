@@ -86,21 +86,8 @@ public class MyEventsActivity extends AppCompatActivity {
                         continue;
                     }
                     Log.d("registered", "user is registered in the event");
-
-                    String ownerId = snapshot.getString("ownerId");
-                    String eventName = snapshot.getString("name");
-                    Integer eventCapacityInt = snapshot.get("eventCapacity", Integer.class);
-                    Integer entrantLimit = snapshot.get("entrantLimit", Integer.class);
-                    boolean geolocationRequirement = snapshot.getBoolean("geolocationRequired");
-                    String eventLocation = snapshot.getString("eventLocation");
-                    String eventTime = snapshot.getString("eventTime");
-                    Date registrationStart = snapshot.get("registrationStart", Date.class);
-                    Date registrationEnd = snapshot.get("registrationEnd", Date.class);
-                    String eventDescription = snapshot.getString("description");
-                    String eventPhotoURL = snapshot.getString("eventPosterURL");
-                    String eventId = snapshot.getString("eventId");
-
-                    registeredEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
+                    Event eventToAdd = snapshot.toObject(Event.class);
+                    registeredEventsList.add(eventToAdd);
                 }
                 // update the registered tab
                 if (registeredEventsList.isEmpty()) {
@@ -133,20 +120,8 @@ public class MyEventsActivity extends AppCompatActivity {
                         continue;
                     }
                     Log.d("firebase", "passed check");
-
-                    String eventName = snapshot.getString("name");
-                    Integer eventCapacityInt = snapshot.get("eventCapacity", Integer.class);
-                    Integer entrantLimit = snapshot.get("entrantLimit", Integer.class);
-                    boolean geolocationRequirement = snapshot.getBoolean("geolocationRequired");
-                    String eventLocation = snapshot.getString("eventLocation");
-                    String eventTime = snapshot.getString("eventTime");
-                    Date registrationStart = snapshot.get("registrationStart", Date.class);
-                    Date registrationEnd = snapshot.get("registrationEnd", Date.class);
-                    String eventDescription = snapshot.getString("description");
-                    String eventPhotoURL = snapshot.getString("eventPosterURL");
-                    String eventId = snapshot.getString("eventId");
-
-                    organizedEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
+                    Event eventToAdd = snapshot.toObject(Event.class);
+                    organizedEventsList.add(eventToAdd);
                 }
                 organizedEventRecyclerAdapter.notifyDataSetChanged();
             }
@@ -200,6 +175,13 @@ public class MyEventsActivity extends AppCompatActivity {
             finish();
         });
 
+        registeredEventRecyclerAdapter.setOnItemClickListener(position -> {
+            Event clickedEvent = registeredEventsList.get(position);
+            Intent intent = new Intent(this, EventDetailsActivity.class);
+            intent.putExtra("clickedEvent", clickedEvent);
+            startActivity(intent);
+            finish();
+        });
         navigationListener(this);
 
     }
