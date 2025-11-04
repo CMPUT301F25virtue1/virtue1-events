@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,11 +22,18 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
@@ -33,14 +41,25 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
     private ImageView editPoster;
+    private List<User> totalEntrantsList;
+    private FirebaseFirestore db;
+    private CollectionReference usersRef;
+    private UserRecyclerAdapter entrantsUserRecyclerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_event_details);
 
-        // ui
+        // top bar
         ImageView backButton = findViewById(R.id.button_back_button);
+        Button eventDetails = findViewById(R.id.button_event);
+        Button totalEntrants = findViewById(R.id.button_entrants);
+        Button system = findViewById(R.id.button_system);
+
+        // event tab ui
+        ConstraintLayout eventDetailsContainer = findViewById(R.id.event_details_container);
         ImageView backButtonForEditPoster = findViewById(R.id.button_edit_poster_back);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
@@ -59,6 +78,19 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         Button savePoster = findViewById(R.id.button_save_poster);
         editPoster = findViewById(R.id.image_edit_poster);
 
+        // entrants tab ui
+        ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
+        TextView noEntrants = findViewById(R.id.text_no_entrants);
+
+        // total entrants recycler view
+        RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
+        totalEntrantsList = new ArrayList<>();
+        entrantsUserRecyclerAdapter = new UserRecyclerAdapter(totalEntrantsList);
+        entrantsRecyclerView.setAdapter(entrantsUserRecyclerAdapter);
+
+        LinearLayoutManager entrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        entrantsRecyclerView.setLayoutManager(entrantsLayoutManager);
+
         Event eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
             Log.e("Event", "The event clicked was null.");
@@ -66,6 +98,38 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
+        db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
+
+        usersRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null && !value.isEmpty()) {
+                Log.d("firebase", "checking documents");
+                totalEntrantsList.clear();
+
+                for (QueryDocumentSnapshot snapshot : value) {
+                    List<String> userRegisteredEvents = (List<String>) snapshot.get("eventsRegistered");
+                    // if user is not registered in this event ->>>> skip
+                    if (!userRegisteredEvents.contains(eventReceived.getEventId())) {
+                        continue;
+                    }
+
+                    User userToAdd = snapshot.toObject(User.class);
+                    totalEntrantsList.add(userToAdd);
+                }
+                // update the entrants tab
+                if (totalEntrantsList.isEmpty()) {
+                    noEntrants.setVisibility(View.VISIBLE);
+                    entrantsRecyclerView.setVisibility(View.GONE);
+                } else {
+                    noEntrants.setVisibility(View.GONE);
+                    entrantsRecyclerView.setVisibility(View.VISIBLE);
+                }
+                entrantsUserRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
         eventName.setText(eventReceived.getName());
         Integer eventCapacityNumber = eventReceived.getEventCapacity();
         String eventCapacityString = eventCapacityNumber.toString();
@@ -157,6 +221,25 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             backgroundDim.setVisibility(View.VISIBLE);
             editPosterContainer.setVisibility(View.VISIBLE);
+        });
+
+        // top bar listeners
+        eventDetails.setOnClickListener(v -> {
+            eventDetailsContainer.setVisibility(View.VISIBLE);
+            entrantsContainer.setVisibility(View.GONE);
+
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+
+        });
+
+        totalEntrants.setOnClickListener(v -> {
+            eventDetailsContainer.setVisibility(View.GONE);
+            entrantsContainer.setVisibility(View.VISIBLE);
+
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+
         });
     }
 
