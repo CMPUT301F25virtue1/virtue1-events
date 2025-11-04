@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +50,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         availableRecyclerView.setLayoutManager(layoutManager);
 
+
         // get events from db
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
@@ -66,19 +68,8 @@ public class ExploreEventsActivity extends AppCompatActivity {
                     if (registrationEnd != null && !registrationEnd.after(new Date())) {
                         continue;
                     }
-                    String ownerId = snapshot.getString("ownerId");
-                    String eventName = snapshot.getString("name");
-                    Integer eventCapacityInt = snapshot.get("eventCapacity", Integer.class);
-                    Integer entrantLimit = snapshot.get("entrantLimit", Integer.class);
-                    boolean geolocationRequirement = snapshot.getBoolean("geolocationRequired");
-                    String eventLocation = snapshot.getString("eventLocation");
-                    String eventTime = snapshot.getString("eventTime");
-                    Date registrationStart = snapshot.get("registrationStart", Date.class);
-                    String eventDescription = snapshot.getString("description");
-                    String eventPhotoURL = snapshot.getString("eventPosterURL");
-                    String eventId = snapshot.getString("eventId");
-
-                    availableEventsList.add(new Event(ownerId,eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL, eventId));
+                    Event eventToAdd = snapshot.toObject(Event.class);
+                    availableEventsList.add(eventToAdd);
                 }
                 eventRecyclerAdapter.notifyDataSetChanged();
                 if (availableEventsList.isEmpty()) {
@@ -95,6 +86,11 @@ public class ExploreEventsActivity extends AppCompatActivity {
         // go to the event details on click of each recycler view  item
         eventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = availableEventsList.get(position);
+            String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            if (clickedEvent.getOwnerId().equals(userId)) {
+                Toast.makeText(ExploreEventsActivity.this, "This is your event. Go to the organized events tab to view details", Toast.LENGTH_LONG).show();
+                return;
+            }
             Intent intent = new Intent(this, EventDetailsActivity.class);
             intent.putExtra("clickedEvent", clickedEvent);
             startActivity(intent);
