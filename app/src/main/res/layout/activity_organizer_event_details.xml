@@ -9,6 +9,20 @@
     android:background="@color/lightBlue">
 
     <View
+        android:id="@+id/background_dim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.7"
+        android:background="@color/black"
+        android:translationZ="100dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <View
         android:id="@+id/top_status_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -39,8 +53,8 @@
         android:id="@+id/event_details_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -150,8 +164,8 @@
             android:id="@+id/checkBox"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:button="@drawable/empty_check"
             android:background="@drawable/rounded_dark_teal"
+            android:button="@drawable/empty_check"
             android:clickable="false"
             android:foreground="@drawable/checkbox_icon"
             app:layout_constraintBottom_toBottomOf="@+id/textView10"
@@ -205,7 +219,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/text_event_name"
             app:layout_constraintStart_toStartOf="@+id/text_event_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_time" />
+            app:layout_constraintTop_toBottomOf="@+id/text_event_time" />
 
         <TextView
             android:id="@+id/click_event_description"
@@ -243,13 +257,13 @@
             android:id="@+id/description_poster_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_edit_event"
+            android:background="@drawable/rounded_bottom_white"
             android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/button_edit_event"
             app:layout_constraintEnd_toEndOf="@+id/view2"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/view2"
-            app:layout_constraintTop_toBottomOf="@+id/view2"
-            android:background="@drawable/rounded_bottom_white">
+            app:layout_constraintTop_toBottomOf="@+id/view2">
 
             <TextView
                 android:id="@+id/text_event_description"
@@ -276,9 +290,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="32dp"
             android:backgroundTint="@color/darkerTeal"
-            android:textColor="@color/white"
             android:padding="10dp"
             android:text="Edit Event Poster"
+            android:textColor="@color/white"
             android:textSize="24sp"
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -298,76 +312,6 @@
             app:layout_constraintTop_toTopOf="@+id/button_edit_event"
             app:srcCompat="@drawable/outline_qr_code_scanner_24" />
 
-        <View
-            android:id="@+id/background_dim"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.7"
-            android:background="@color/black"
-            android:translationZ="100dp"
-            android:visibility="gone" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/edit_poster_container"
-            android:layout_width="0dp"
-            android:layout_height="500dp"
-            android:background="@color/lightBlue"
-            android:translationZ="200dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/description_poster_container"
-            app:layout_constraintStart_toStartOf="@id/description_poster_container"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <Button
-                android:id="@+id/button_save_poster"
-                android:layout_width="00dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:backgroundTint="@color/darkerTeal"
-                android:text="Save"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:cornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <ImageView
-                android:id="@+id/image_edit_poster"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/white"
-                app:layout_constraintBottom_toTopOf="@id/button_save_poster"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view6"
-                app:srcCompat="@drawable/outline_photo_camera_24" />
-
-            <View
-                android:id="@+id/view6"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/red"
-                app:layout_constraintTop_toTopOf="@id/edit_poster_container"/>
-
-            <ImageView
-                android:id="@+id/button_edit_poster_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/view6"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/view6"
-                app:layout_constraintTop_toTopOf="@+id/view6"
-                app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
@@ -385,6 +329,69 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/back_button_holder" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/edit_poster_container"
+        android:layout_width="0dp"
+        android:layout_height="500dp"
+        android:background="@color/lightBlue"
+        android:translationZ="1000dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/event_details_container"
+        app:layout_constraintEnd_toEndOf="@+id/event_details_container"
+        app:layout_constraintStart_toStartOf="@+id/event_details_container"
+        app:layout_constraintTop_toTopOf="@+id/event_details_container"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/button_save_poster"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:backgroundTint="@color/darkerTeal"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_edit_poster"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/button_save_poster"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6"
+            app:srcCompat="@drawable/outline_photo_camera_24" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/red"
+            app:layout_constraintTop_toTopOf="@id/edit_poster_container" />
+
+        <ImageView
+            android:id="@+id/button_edit_poster_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/view6"
+            app:layout_constraintTop_toTopOf="@+id/view6"
+            app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/button_entrants"

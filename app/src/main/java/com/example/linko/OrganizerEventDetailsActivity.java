@@ -72,7 +72,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventCapacity.setText(eventCapacityString);
         Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount());
+        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
         eventLocation.setText(eventReceived.getEventLocation());
@@ -80,7 +80,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         Date start = eventReceived.getRegistrationStart();
         Date end = eventReceived.getRegistrationEnd();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());String period = sdf.format(start) + " to " + sdf.format(end);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
+        String period = sdf.format(start) + " to " + sdf.format(end);
         registrationPeriod.setText(period);
         eventDescription.setText(eventReceived.getDescription());
 

@@ -24,6 +24,8 @@ import java.util.Locale;
 
 public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
+    private Button joinWaitlist;
+    private Button leaveWaitlist;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +45,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
-        Button joinWaitlist = findViewById(R.id.button_join_waitlist);
-        Button leaveWaitlist = findViewById(R.id.button_leave_waitlist);
+        joinWaitlist = findViewById(R.id.button_join_waitlist);
+        leaveWaitlist = findViewById(R.id.button_leave_waitlist);
 
         eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
@@ -59,17 +61,25 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventCapacity.setText(eventCapacityString);
         Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount());
+        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
         eventLocation.setText(eventReceived.getEventLocation());
         eventTime.setText(eventReceived.getEventTime());
 
+        Date start = eventReceived.getRegistrationStart();
+        Date end = eventReceived.getRegistrationEnd();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
+        String period = sdf.format(start) + " to " + sdf.format(end);
+        registrationPeriod.setText(period);
 
+        // check if it should be join or leave waitlist
+        checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
+
         });
 
         leaveWaitlist.setOnClickListener(v -> {
@@ -105,6 +115,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             List<String> userEventHistory = currentUser.getEventHistory();
 
             Log.d("eventReceived", eventReceived.getEventId());
+            Log.d("eventReceived", "event received" + eventReceived.getOwnerId());
+
             if (userEventsRegistered.contains(eventReceived.getEventId())) {
                 userEventsRegistered.remove(eventReceived.getEventId());
                 eventReceived.getEntrants().remove(currentUser.getUserId());
@@ -129,17 +141,34 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
 
-            databaseHandler.update(currentUser, new UserDatabaseHandler.UserUpdated() {
+            // adding user is the same as updating
+            databaseHandler.addUser(currentUser, new UserDatabaseHandler.UserAdded() {
                 @Override
-                public void userUpdate() {
+                public void userAdd() {
                     Toast.makeText(EventDetailsActivity.this, "Success!", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
-                public void userFailedToUpdate(Exception e) {
+                public void userFailedToAdd(Exception e) {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+        });
+    }
+
+    public void checkUserRegistered() {
+        UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
+        databaseHandler.getCurrentUser(this, currentUser -> {
+            List<String> userEventsRegistered = currentUser.getEventsRegistered();
+
+            if (userEventsRegistered.contains(eventReceived.getEventId())) {
+                joinWaitlist.setVisibility(View.INVISIBLE);
+                leaveWaitlist.setVisibility(View.VISIBLE);
+            }
+            else {
+                joinWaitlist.setVisibility(View.VISIBLE);
+                leaveWaitlist.setVisibility(View.INVISIBLE);
+            }
         });
     }
 }

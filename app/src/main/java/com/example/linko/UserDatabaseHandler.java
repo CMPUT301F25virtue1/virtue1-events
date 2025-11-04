@@ -64,17 +64,6 @@ public class UserDatabaseHandler {
         });
     }
 
-    public void update(User updatedUser, UserDatabaseHandler.UserUpdated updated) {
-        DocumentReference docRef = db.collection("users").document(updatedUser.getUserId());
-        docRef.set(updatedUser).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                updated.userUpdate();
-            } else {
-                Log.e("Firestore", "Error updating user in database", task.getException());
-                updated.userFailedToUpdate(task.getException());
-            }
-        });
-    }
     public interface UserFetched {
         void userLoaded(User user);
     }
@@ -88,8 +77,4 @@ public class UserDatabaseHandler {
         void userFailedToAdd(Exception e);
     }
 
-    public interface UserUpdated {
-        void userUpdate();
-        void userFailedToUpdate(Exception e);
-    }
 }
