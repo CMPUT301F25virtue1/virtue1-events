@@ -34,6 +34,7 @@ public class EditEventActivity extends AppCompatActivity {
     private ImageView eventPoster;
     private boolean registrationStartPicked = false;
     private boolean registrationEndPicked = false;
+    private boolean eventTimeStartPicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,7 @@ public class EditEventActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
                 String period = sdf.format(start.getTime());
                 eventTime.setText(period);
+                eventTimeStartPicked = true;
             });
         });
 
@@ -166,12 +168,18 @@ public class EditEventActivity extends AppCompatActivity {
                 return;
             }
 
+            if (!eventTimeStartPicked || !registrationStartPicked || !registrationEndPicked) {
+                Toast.makeText(this, "Please fill out your event detail times", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // needs firebase storage to implement
             String eventPhotoURL = null;
 
             Date eventTimeSave = eventTimeCalendar.getTime();
             Date registrationStartSave = startCalendar.getTime();
             Date registrationEndSave = endCalendar.getTime();
+
 
             Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription,eventPhotoURL);
 
