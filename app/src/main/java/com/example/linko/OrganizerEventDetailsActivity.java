@@ -130,6 +130,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         String eventCapacityString = eventCapacityNumber.toString();
         eventCapacity.setText(eventCapacityString);
         Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
+        Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(editPoster);
 
         entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
 
