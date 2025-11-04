@@ -2,10 +2,8 @@ package com.example.linko;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,9 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,7 +62,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
         TextView eventLocation = findViewById(R.id.text_event_location);
         TextView eventTime = findViewById(R.id.text_event_time);
-        TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
+        TextView registrationPeriod = findViewById(R.id.text_event_registration_start);
         TextView eventDescription = findViewById(R.id.text_event_description);
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);

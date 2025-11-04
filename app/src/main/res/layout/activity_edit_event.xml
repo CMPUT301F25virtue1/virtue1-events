@@ -175,7 +175,7 @@
         app:layout_constraintTop_toBottomOf="@+id/text_event_location" />
 
     <TextView
-        android:id="@+id/text_event_registration_period"
+        android:id="@+id/text_event_registration_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -204,9 +204,9 @@
         android:textColor="@color/darkerTeal"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/image_event_poster"
-        app:layout_constraintEnd_toEndOf="@+id/text_event_registration_period"
-        app:layout_constraintStart_toStartOf="@+id/text_event_registration_period"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_period" />
+        app:layout_constraintEnd_toEndOf="@+id/text_event_registration_start"
+        app:layout_constraintStart_toStartOf="@+id/text_event_registration_start"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_start" />
 
     <Button
         android:id="@+id/button_save_event_changes"

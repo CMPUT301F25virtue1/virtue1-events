@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,7 +45,7 @@ public class EditEventActivity extends AppCompatActivity {
         EditText eventDescriptionInput = findViewById(R.id.text_event_description);
         CheckBox geolocationBox = findViewById(R.id.checkBox);
         EditText eventTimeInput = findViewById(R.id.text_event_time);
-        TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
+        TextView registrationPeriod = findViewById(R.id.text_event_registration_start);
         eventPoster = findViewById(R.id.image_event_poster);
         ImageView backButton = findViewById(R.id.button_back_button);
 
@@ -132,16 +130,11 @@ public class EditEventActivity extends AppCompatActivity {
             // needs firebase storage to implement
             String eventPhotoURL = null;
 
-            String eventLocation = eventLocationInput.getText().toString();
-            if (eventLocation.isEmpty()) {
-                Toast.makeText(this, "Please fill out your event location.", Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             String eventTime = eventTimeInput.getText().toString();
             Date registrationStart = startCalendar.getTime();
             Date registrationEnd = endCalendar.getTime();
-            Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL);
+            Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL);
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);

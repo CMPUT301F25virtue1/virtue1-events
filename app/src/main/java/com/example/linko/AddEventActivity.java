@@ -1,7 +1,5 @@
 package com.example.linko;
 
-import static androidx.core.content.IntentCompat.getParcelableExtra;
-
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -23,8 +21,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Document;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +48,7 @@ public class AddEventActivity extends AppCompatActivity {
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
         TextView eventLocation = findViewById(R.id.text_event_location);
         TextView eventTime = findViewById(R.id.text_event_time);
-        TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
+        TextView registrationPeriod = findViewById(R.id.text_event_registration_start);
         TextView eventDescription = findViewById(R.id.text_event_description);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
 

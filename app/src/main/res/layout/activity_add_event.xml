@@ -181,7 +181,7 @@
         app:layout_constraintTop_toBottomOf="@+id/text_event_location" />
 
     <TextView
-        android:id="@+id/text_event_registration_period"
+        android:id="@+id/text_event_registration_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -210,7 +210,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/click_event_poster"
         app:layout_constraintStart_toStartOf="@id/text_event_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_period" />
+        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_start" />
 
     <TextView
         android:id="@+id/click_event_poster"
@@ -226,7 +226,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@id/text_event_name"
         app:layout_constraintStart_toEndOf="@+id/click_event_description"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_period" />
+        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_start" />
 
     <LinearLayout
         android:id="@+id/description_poster_container"
