@@ -14,6 +14,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+/**
+ * Class that contains all the logic for UI interaction with the profile settings part of the app.
+ * Also calls the DeleteProfileActivity when the delete profile button in the settings it clicked
+ * @see DeleteProfileActivity
+ */
 public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

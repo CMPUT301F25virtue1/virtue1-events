@@ -10,6 +10,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+/**
+ * This is the class for handling the delete profile logic that interacts with the UI.
+ * Calls UserDatabaseHandler to remove users from database once profile has been deleted.
+ * @see UserDatabaseHandler
+ */
 public class DeleteProfileActivity extends AppCompatActivity {
 
     @Override

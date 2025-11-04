@@ -10,6 +10,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+/**
+ * Class that contains all the logic for UI interaction with the notifications tab of the app
+ */
 public class NotificationsActivity extends AppCompatActivity {
 
     @Override

@@ -22,6 +22,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Our class for managing the UI interactive logic for event details.
+ * Calls EventDatabaseHandler to update our event in the database with any changes
+ * @see EventDatabaseHandler
+ */
 public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
     private Button joinWaitlist;
@@ -108,6 +113,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Method for editing the User Waitlist in the Firebase database
+     */
     public void changeUserWaitlist() {
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
@@ -156,6 +164,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Method to check the database to see if a user is registered for an event
+     */
     public void checkUserRegistered() {
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
