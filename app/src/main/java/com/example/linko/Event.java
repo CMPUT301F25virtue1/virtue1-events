@@ -117,14 +117,6 @@ public class Event implements Serializable {
         this.geolocationRequired = geolocationRequired;
     }
 
-    public String getEventLocation() {
-        return eventLocation;
-    }
-
-    public void setEventLocation(String eventLocation) {
-        this.eventLocation = eventLocation;
-    }
-
     public Date getEventTime() {
         return eventTime;
     }

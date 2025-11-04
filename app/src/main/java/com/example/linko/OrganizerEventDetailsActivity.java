@@ -60,9 +60,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
         TextView entrantCount = findViewById(R.id.text_entrant_count);
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
-        TextView eventLocation = findViewById(R.id.text_event_location);
-        TextView eventTime = findViewById(R.id.text_event_time);
-        TextView registrationPeriod = findViewById(R.id.text_event_registration_start);
+        TextView eventTime = findViewById(R.id.text_event_start_time);
+        TextView registrationStart = findViewById(R.id.text_event_registration_start);
+        TextView registrationEnd = findViewById(R.id.text_event_registration_end);
         TextView eventDescription = findViewById(R.id.text_event_description);
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
@@ -134,14 +134,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
-        eventLocation.setText(eventReceived.getEventLocation());
-        eventTime.setText(eventReceived.getEventTime());
 
+        Date eventStart = eventReceived.getEventTime();
         Date start = eventReceived.getRegistrationStart();
         Date end = eventReceived.getRegistrationEnd();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
-        String period = sdf.format(start) + " to " + sdf.format(end);
-        registrationPeriod.setText(period);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+        eventTime.setText(sdf.format(eventStart));
+        registrationStart.setText(sdf.format(start));
+        registrationEnd.setText(sdf.format(end));
         eventDescription.setText(eventReceived.getDescription());
 
         descriptionButton.setOnClickListener(v -> {

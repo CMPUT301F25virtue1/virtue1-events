@@ -83,6 +83,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         leaveWaitlist.setOnClickListener(v -> {
+            // if registration has ended, but event start time has not, still let the user leave waitlist
+            if (eventReceived.getRegistrationEnd().before(new Date()) && eventReceived.getEventTime().after(new Date())) {
+                changeUserWaitlist();
+                startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
+                finish();
+                Toast.makeText(EventDetailsActivity.this, "You have left the waitlist after the registration deadline. You cannot rejoin.", Toast.LENGTH_LONG).show();
+            }
             joinWaitlist.setVisibility(View.VISIBLE);
             leaveWaitlist.setVisibility(View.INVISIBLE);
             changeUserWaitlist();
@@ -103,7 +110,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         backButton.setOnClickListener(v -> {
-            startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
+            String activityFrom = getIntent().getStringExtra("activity");
+            if (activityFrom.equals("exploreEvents")) {
+                startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
+            }
+            else {
+                startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
+
+            }
             finish();
         });
     }
