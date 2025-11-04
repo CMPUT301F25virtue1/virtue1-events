@@ -11,8 +11,7 @@ public class Event implements Serializable {
     private Integer eventCapacity;
     private Integer entrantLimit;
     private boolean geolocationRequired;
-    private String eventLocation;
-    private String eventTime;
+    private Date eventTime;
     private Date registrationStart;
     private Date registrationEnd;
     private String description;
@@ -25,13 +24,12 @@ public class Event implements Serializable {
 
 
     public Event() {}
-    public Event(String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
+    public Event(String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
         this.ownerId = null;
         this.name = name;
         this.eventCapacity = eventCapacity;
         this.entrantLimit = entrantLimit;
         this.geolocationRequired = geolocationRequired;
-        this.eventLocation = eventLocation;
         this.eventTime = eventTime;
         this.registrationStart = registrationStart;
         this.registrationEnd = registrationEnd;
@@ -43,13 +41,12 @@ public class Event implements Serializable {
         this.cancelledEntrants = new ArrayList<>();
         this.eventId = null;
     }
-    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
+    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
         this.ownerId = ownerId;
         this.name = name;
         this.eventCapacity = eventCapacity;
         this.entrantLimit = entrantLimit;
         this.geolocationRequired = geolocationRequired;
-        this.eventLocation = eventLocation;
         this.eventTime = eventTime;
         this.registrationStart = registrationStart;
         this.registrationEnd = registrationEnd;
@@ -62,13 +59,12 @@ public class Event implements Serializable {
         this.eventId = null;
     }
 
-    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, String eventLocation, String eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL, String eventId) {
+    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL, String eventId) {
         this.ownerId = ownerId;
         this.name = name;
         this.eventCapacity = eventCapacity;
         this.entrantLimit = entrantLimit;
         this.geolocationRequired = geolocationRequired;
-        this.eventLocation = eventLocation;
         this.eventTime = eventTime;
         this.registrationStart = registrationStart;
         this.registrationEnd = registrationEnd;
@@ -121,19 +117,11 @@ public class Event implements Serializable {
         this.geolocationRequired = geolocationRequired;
     }
 
-    public String getEventLocation() {
-        return eventLocation;
-    }
-
-    public void setEventLocation(String eventLocation) {
-        this.eventLocation = eventLocation;
-    }
-
-    public String getEventTime() {
+    public Date getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(String eventTime) {
+    public void setEventTime(Date eventTime) {
         this.eventTime = eventTime;
     }
 

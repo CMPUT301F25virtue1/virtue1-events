@@ -63,9 +63,16 @@ public class ExploreEventsActivity extends AppCompatActivity {
                 Log.d("firebase", "checking documents");
                 availableEventsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
+                    Date registrationStart = snapshot.get("registrationStart", Date.class);
                     Date registrationEnd = snapshot.get("registrationEnd", Date.class);
-                    // event not active anymore
-                    if (registrationEnd != null && !registrationEnd.after(new Date())) {
+
+                    // if registration hasnt started yet, skip
+                    if (registrationStart != null && registrationStart.after(new Date())) {
+                        continue;
+                    }
+
+                    // if registration has ended, skip
+                    if (registrationEnd != null && registrationEnd.before(new Date())) {
                         continue;
                     }
                     Event eventToAdd = snapshot.toObject(Event.class);
@@ -93,6 +100,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
             }
             Intent intent = new Intent(this, EventDetailsActivity.class);
             intent.putExtra("clickedEvent", clickedEvent);
+            intent.putExtra("activity", "exploreEvents");
             startActivity(intent);
             finish();
         });

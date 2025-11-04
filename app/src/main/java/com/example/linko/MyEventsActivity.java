@@ -79,14 +79,20 @@ public class MyEventsActivity extends AppCompatActivity {
                 for (QueryDocumentSnapshot snapshot : value) {
 
                     List<String> entrants = (List<String>) snapshot.get("entrants");
+                    Date eventStartTime = snapshot.get("eventTime", Date.class);
+                    // only show the event in registered if it has not started yet
+                    if (eventStartTime.before(new Date())) {
+                        continue;
+                    }
 
                     if (!entrants.contains(currentUser)) {
                         Log.d("registered", "user is not registered in the event");
-
                         continue;
                     }
+
                     Log.d("registered", "user is registered in the event");
                     Event eventToAdd = snapshot.toObject(Event.class);
+
                     registeredEventsList.add(eventToAdd);
                 }
                 // update the registered tab
@@ -179,6 +185,7 @@ public class MyEventsActivity extends AppCompatActivity {
             Event clickedEvent = registeredEventsList.get(position);
             Intent intent = new Intent(this, EventDetailsActivity.class);
             intent.putExtra("clickedEvent", clickedEvent);
+            intent.putExtra("activity", "myEvents");
             startActivity(intent);
             finish();
         });

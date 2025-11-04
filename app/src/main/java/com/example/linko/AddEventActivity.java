@@ -1,7 +1,5 @@
 package com.example.linko;
 
-import static androidx.core.content.IntentCompat.getParcelableExtra;
-
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -23,8 +21,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Document;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,9 +46,9 @@ public class AddEventActivity extends AppCompatActivity {
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
         TextView entrantLimit = findViewById(R.id.text_entrant_count);
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
-        TextView eventLocation = findViewById(R.id.text_event_location);
-        TextView eventTime = findViewById(R.id.text_event_time);
-        TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
+        TextView eventTime = findViewById(R.id.text_event_start_time);
+        TextView registrationStart = findViewById(R.id.text_event_registration_start);
+        TextView registrationEnd = findViewById(R.id.text_event_registration_end);
         TextView eventDescription = findViewById(R.id.text_event_description);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
 
@@ -78,14 +74,15 @@ public class AddEventActivity extends AppCompatActivity {
             }
 
             geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
-            eventLocation.setText(eventReceived.getEventLocation());
-            eventTime.setText(eventReceived.getEventTime());
 
+            Date eventStart = eventReceived.getEventTime();
             Date start = eventReceived.getRegistrationStart();
             Date end = eventReceived.getRegistrationEnd();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
-            String period = sdf.format(start) + " to " + sdf.format(end);
-            registrationPeriod.setText(period);
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+            eventTime.setText(sdf.format(eventStart));
+            registrationStart.setText(sdf.format(start));
+            registrationEnd.setText(sdf.format(end));
+
 
             Glide.with(AddEventActivity.this).load(eventPosterUri).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
