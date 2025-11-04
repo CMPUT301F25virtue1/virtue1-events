@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <View
         android:id="@+id/top_status_bar"
@@ -54,13 +54,15 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="32dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_event">
+        app:layout_constraintTop_toBottomOf="@id/button_event"
+        tools:visibility="gone">
 
 
         <TextView
@@ -314,22 +316,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/button_event"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/teal"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="Event"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:cornerRadius="0dp"
-        app:layout_constraintEnd_toStartOf="@+id/button_entrants"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/back_button_holder" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/edit_poster_container"
         android:layout_width="0dp"
@@ -341,7 +327,7 @@
         app:layout_constraintEnd_toEndOf="@+id/event_details_container"
         app:layout_constraintStart_toStartOf="@+id/event_details_container"
         app:layout_constraintTop_toTopOf="@+id/event_details_container"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <Button
             android:id="@+id/button_save_poster"
@@ -392,6 +378,91 @@
             app:layout_constraintTop_toTopOf="@+id/view6"
             app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/event_entrants_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_entrants"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/button_send_notification"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/darkerTeal"
+            android:text="Send Notifications"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/button_export_csv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/darkerTeal"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Export Entrants as CSV"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_entrant_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_entrant_location"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/button_entrant_location"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:background="@drawable/rounded_dark_teal"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/outline_map_24" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_event_entrants"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_send_notification"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_export_csv" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button_event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/teal"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Event"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:cornerRadius="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/button_entrants"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back_button_holder" />
 
     <Button
         android:id="@+id/button_entrants"
