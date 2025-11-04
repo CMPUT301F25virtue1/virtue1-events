@@ -3,7 +3,6 @@ package com.example.linko;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -61,7 +60,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         TextView entrantCount;
         public EventViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
-            eventPosterPreview = itemView.findViewById(R.id.image_event);
+            eventPosterPreview = itemView.findViewById(R.id.image_event_poster);
             eventName = itemView.findViewById(R.id.text_event_name);
             entrantCount = itemView.findViewById(R.id.text_entrant_number);
 

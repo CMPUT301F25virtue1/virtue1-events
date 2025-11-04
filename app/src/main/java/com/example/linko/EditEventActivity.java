@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,7 +29,11 @@ public class EditEventActivity extends AppCompatActivity {
     private Uri imageUri;
     private Calendar startCalendar = Calendar.getInstance();
     private Calendar endCalendar = Calendar.getInstance();
+    private Calendar eventTimeCalendar = Calendar.getInstance();
+
     private ImageView eventPoster;
+    private boolean registrationStartPicked = false;
+    private boolean registrationEndPicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +45,11 @@ public class EditEventActivity extends AppCompatActivity {
         EditText eventNameInput = findViewById(R.id.text_event_name);
         EditText eventCapacityInput = findViewById(R.id.text_event_capacity);
         EditText entrantLimitInput = findViewById(R.id.text_entrant_count);
-        EditText eventLocationInput = findViewById(R.id.text_event_location);
         EditText eventDescriptionInput = findViewById(R.id.text_event_description);
         CheckBox geolocationBox = findViewById(R.id.checkBox);
-        EditText eventTimeInput = findViewById(R.id.text_event_time);
-        TextView registrationPeriod = findViewById(R.id.text_event_registration_period);
+        TextView eventTime = findViewById(R.id.text_event_start_time);
+        TextView registrationStart = findViewById(R.id.text_event_registration_start);
+        TextView registrationEnd = findViewById(R.id.text_event_registration_end);
         eventPoster = findViewById(R.id.image_event_poster);
         ImageView backButton = findViewById(R.id.button_back_button);
 
@@ -69,14 +71,14 @@ public class EditEventActivity extends AppCompatActivity {
             }
 
             geolocationBox .setChecked(eventReceived.isGeolocationRequired());
-            eventLocationInput.setText(eventReceived.getEventLocation());
-            eventTimeInput.setText(eventReceived.getEventTime());
-
+            Date eventStart = eventReceived.getEventTime();
             Date start = eventReceived.getRegistrationStart();
             Date end = eventReceived.getRegistrationEnd();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
-            String period = sdf.format(start) + " to " + sdf.format(end);
-            registrationPeriod.setText(period);
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+            eventTime.setText(sdf.format(eventStart));
+            registrationStart.setText(sdf.format(start));
+            registrationEnd.setText(sdf.format(end));
+
 
             Glide.with(EditEventActivity.this).load(imageUri).centerCrop().placeholder(R.drawable.outline_photo_camera_24).into(eventPoster);
 
@@ -88,19 +90,54 @@ public class EditEventActivity extends AppCompatActivity {
             finish();
         });
 
-        registrationPeriod.setOnClickListener(v ->
-                pickDateTime(startCalendar, "Start", start ->
-                        pickDateTime(endCalendar, "End", end -> {
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm a", Locale.getDefault());
-                            String period = sdf.format(start.getTime()) + " to " + sdf.format(end.getTime());
-                            registrationPeriod.setText(period);
-                        })
-                )
+
+        eventTime.setOnClickListener(v -> {
+            if (!registrationStartPicked || !registrationEndPicked) {
+                Toast.makeText(this, "Please pick registration start and end times first.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            pickDateTime(eventTimeCalendar, "Start", start -> {
+                // must be AFTER registration end
+                if (start.before(endCalendar)) {
+                    Toast.makeText(this, "Event start time must be after registration end.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+                String period = sdf.format(start.getTime());
+                eventTime.setText(period);
+            });
+        });
+
+        registrationStart.setOnClickListener(v ->
+                pickDateTime(startCalendar, "Start", start -> {
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+                    String period = sdf.format(start.getTime());
+                    registrationStart.setText(period);
+                    registrationStartPicked = true;
+                })
         );
+
+        registrationEnd.setOnClickListener(v -> {
+            if (!registrationStartPicked) {
+                Toast.makeText(this, "Please pick the registration start time first.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            pickDateTime(endCalendar, "End", end -> {
+                if (end.before(startCalendar)) {
+                    Toast.makeText(this, "Registration end must be after registration start.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+                String period = sdf.format(end.getTime());
+                registrationEnd.setText(period);
+                registrationEndPicked = true;
+            });
+        });
 
         eventPoster.setOnClickListener(v -> {
             openFileChooser();
         });
+
         saveEventChanges.setOnClickListener(v -> {
             String eventName = eventNameInput.getText().toString();
             if (eventName.isEmpty()) {
@@ -132,16 +169,11 @@ public class EditEventActivity extends AppCompatActivity {
             // needs firebase storage to implement
             String eventPhotoURL = null;
 
-            String eventLocation = eventLocationInput.getText().toString();
-            if (eventLocation.isEmpty()) {
-                Toast.makeText(this, "Please fill out your event location.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            Date eventTimeSave = eventTimeCalendar.getTime();
+            Date registrationStartSave = startCalendar.getTime();
+            Date registrationEndSave = endCalendar.getTime();
 
-            String eventTime = eventTimeInput.getText().toString();
-            Date registrationStart = startCalendar.getTime();
-            Date registrationEnd = endCalendar.getTime();
-            Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement,eventLocation, eventTime, registrationStart,registrationEnd, eventDescription,eventPhotoURL);
+            Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription,eventPhotoURL);
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);
@@ -175,7 +207,8 @@ public class EditEventActivity extends AppCompatActivity {
     }
 
     private void pickDateTime(Calendar calendar, String title, DateTimePickedCallback callback) {
-        // Date Picker
+        Calendar now = Calendar.getInstance();
+
         DatePickerDialog datePicker = new DatePickerDialog(this,
                 (view, year, month, dayOfMonth) -> {
                     calendar.set(year, month, dayOfMonth);
@@ -184,7 +217,12 @@ public class EditEventActivity extends AppCompatActivity {
                             (timeView, hourOfDay, minute) -> {
                                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                                 calendar.set(Calendar.MINUTE, minute);
-                                callback.onDateTimePicked(calendar);
+
+                                if (calendar.getTimeInMillis() <= now.getTimeInMillis()) {
+                                    Toast.makeText(this, "Please select a time in the future.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    callback.onDateTimePicked(calendar);
+                                }
                             },
                             calendar.get(Calendar.HOUR_OF_DAY),
                             calendar.get(Calendar.MINUTE),
@@ -192,12 +230,14 @@ public class EditEventActivity extends AppCompatActivity {
                     );
                     timePicker.setTitle(title + " Time");
                     timePicker.show();
-
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
+        // buffer just in case
+        datePicker.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
+
         datePicker.setTitle(title + " Date");
         datePicker.show();
     }

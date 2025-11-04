@@ -8,6 +8,96 @@
     tools:context=".AddEventActivity"
     android:background="@color/lightBlue">
 
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:text="Event Start Time"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_start_time"
+        app:layout_constraintStart_toStartOf="@+id/text_event_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:text="Registration Starts"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_start_time"
+        app:layout_constraintStart_toStartOf="@+id/text_event_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_start_time" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/darkerTeal"
+        android:text="Registration Ends"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_start_time"
+        app:layout_constraintStart_toStartOf="@+id/text_event_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_start" />
+
+    <TextView
+        android:id="@+id/text_event_start_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_bottom_white"
+        android:minWidth="35dp"
+        android:padding="5dp"
+        android:text="Event Start Time"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/darkerTeal"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+    <TextView
+        android:id="@+id/text_event_registration_start"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="5dp"
+        android:text="Registration Start"
+        android:textAlignment="center"
+        android:textColor="@color/darkerTeal"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <TextView
+        android:id="@+id/text_event_registration_end"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_bottom_white"
+        android:padding="5dp"
+        android:text="Registration End"
+        android:textAlignment="center"
+        android:textColor="@color/darkerTeal"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
     <View
         android:id="@+id/top_status_bar"
         android:layout_width="match_parent"
@@ -97,6 +187,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white"
+        android:inputType="number"
         android:hint="-"
         android:minWidth="35dp"
         android:padding="5dp"
@@ -115,6 +206,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white"
+        android:inputType="number"
         android:hint="-"
         android:singleLine="true"
         android:minWidth="35dp"
@@ -140,73 +232,22 @@
         app:layout_constraintTop_toTopOf="@+id/textView10" />
 
     <EditText
-        android:id="@+id/text_event_location"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rounded_white"
-        android:padding="5dp"
-        android:singleLine="true"
-        android:hint="Event Location"
-        android:textAlignment="center"
-        android:textColor="@color/darkerTeal"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintStart_toStartOf="@+id/text_event_name"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-    <EditText
-        android:id="@+id/text_event_time"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_white"
-        android:padding="5dp"
-        android:hint="Event Time"
-        android:textAlignment="center"
-        android:singleLine="true"
-        android:textColor="@color/darkerTeal"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/text_event_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_location" />
-
-    <TextView
-        android:id="@+id/text_event_registration_period"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_white"
-        android:padding="5dp"
-        android:hint="Registration Period"
-        android:textAlignment="center"
-        android:textColor="@color/darkerTeal"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
-        app:layout_constraintStart_toStartOf="@+id/text_event_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_time" />
-
-    <EditText
         android:id="@+id/text_event_description"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/rounded_white"
-        android:padding="5dp"
+        android:gravity="top|start"
         android:hint="You have no event description."
         android:maxHeight="500dp"
+        android:padding="5dp"
         android:textAlignment="viewStart"
-        android:gravity="top|start"
         android:textColor="@color/darkerTeal"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/image_event_poster"
-        app:layout_constraintEnd_toEndOf="@+id/text_event_registration_period"
-        app:layout_constraintStart_toStartOf="@+id/text_event_registration_period"
-        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_period" />
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@id/text_event_registration_end" />
 
     <Button
         android:id="@+id/button_save_event_changes"
