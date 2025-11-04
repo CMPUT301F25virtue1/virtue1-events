@@ -6,6 +6,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Handles the logic for dealing with events in the Firebase Database.
+ * Called whenever an event needs to be added to the database, edited, deleted, or looked at.
+ * @see EditEventActivity
+ * @see EventDetailsActivity
+ * @see AddEventActivity
+ * @see MyEventsActivity
+ */
 public class EventDatabaseHandler {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
@@ -15,6 +23,13 @@ public class EventDatabaseHandler {
         this.eventsRef = db.collection("events");
     }
 
+    /**
+     * Adds event to the Firebase database
+     * @param eventToAdd The event were adding to the database
+     * @param added Checks exceptions
+     * @param docRef Reference to where the event is in the database. Nessicery to allow us to read, write, and edit out events
+     * @param eventId The Firebase Id for the event
+     */
     public void addEvent(Event eventToAdd, EventDatabaseHandler.EventAdded added, DocumentReference docRef, String eventId) {
         eventToAdd.setEventId(eventId);
         docRef.set(eventToAdd).addOnCompleteListener(task -> {
@@ -29,6 +44,11 @@ public class EventDatabaseHandler {
         });
     }
 
+    /**
+     * Updates our event in the database when things change
+     * @param updatedEvent Our updated event
+     * @param updated Checks exceptions
+     */
     public void update(Event updatedEvent, EventDatabaseHandler.EventUpdated updated) {
         DocumentReference docRef = db.collection("events").document(updatedEvent.getEventId());
         docRef.set(updatedEvent).addOnCompleteListener(task -> {

@@ -23,6 +23,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+/**
+ * Class that contains the logic for interactions with the UI for user profiles.
+ * Gets the current user from the Firebase database using the UserDatabaseHandler.
+ * Also calls the EditProfileActivity class to edit the profile.
+ * @see UserDatabaseHandler
+ * @see EditProfileActivity
+ */
 public class ProfileActivity extends AppCompatActivity {
 
 

@@ -26,6 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Handles all of the UI logic for adding events. Calls the Database Handler when necessary to upload the
+ * event to the Firebase Database
+ *
+ * @see EventDatabaseHandler
+ */
 public class AddEventActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
@@ -154,6 +160,14 @@ public class AddEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * "Posts" the event and calls the Database handler to add it to the Firebase database
+     * @param event The event object itself
+     * @param docRef Used to document where the event is in Firebase and allows for reading and writing of it to the database
+     * @param eventId The Firebase Id for the event
+     *
+     * @see EventDatabaseHandler
+     */
     private void addEvent(Event event, DocumentReference docRef, String eventId) {
         new EventDatabaseHandler().addEvent(event, new EventDatabaseHandler.EventAdded() {
 
