@@ -44,16 +44,22 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private List<User> totalEntrantsList;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private UserRecyclerAdapter entrantsUserRecyclerAdapter;
 
-    private EventRecyclerAdapter entrantsUserRecyclerAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_event_details);
 
-        // ui
+        // top bar
         ImageView backButton = findViewById(R.id.button_back_button);
+        Button eventDetails = findViewById(R.id.button_event);
+        Button totalEntrants = findViewById(R.id.button_entrants);
+        Button system = findViewById(R.id.button_system);
+
+        // event tab ui
+        ConstraintLayout eventDetailsContainer = findViewById(R.id.event_details_container);
         ImageView backButtonForEditPoster = findViewById(R.id.button_edit_poster_back);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
@@ -71,6 +77,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         ConstraintLayout editPosterContainer = findViewById(R.id.edit_poster_container);
         Button savePoster = findViewById(R.id.button_save_poster);
         editPoster = findViewById(R.id.image_edit_poster);
+
+        // entrants tab ui
+        ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
         TextView noEntrants = findViewById(R.id.text_no_entrants);
 
         // total entrants recycler view
@@ -214,7 +223,24 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             editPosterContainer.setVisibility(View.VISIBLE);
         });
 
+        // top bar listeners
+        eventDetails.setOnClickListener(v -> {
+            eventDetailsContainer.setVisibility(View.VISIBLE);
+            entrantsContainer.setVisibility(View.GONE);
 
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+
+        });
+
+        totalEntrants.setOnClickListener(v -> {
+            eventDetailsContainer.setVisibility(View.GONE);
+            entrantsContainer.setVisibility(View.VISIBLE);
+
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+
+        });
     }
 
     private void openFileChooser() {

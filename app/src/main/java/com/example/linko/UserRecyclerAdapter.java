@@ -13,37 +13,42 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.EventViewHolder> {
+public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapter.UserViewHolder> {
 
-    private List<Event> eventList;
+    private List<User> userList;
     private OnItemClickListener listener;
 
-    public EventRecyclerAdapter(List<Event> eventList) {
-        this.eventList = eventList;
+    public UserRecyclerAdapter(List<User> usersList) {
+        this.userList = usersList;
     }
 
     @NonNull
     @Override
-    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_event, parent, false);
-        return new EventViewHolder(view,listener);
+    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
+        return new UserViewHolder(view,listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        Event event = eventList.get(position);
-        holder.eventName.setText(event.getName());
-        holder.entrantCount.setText(event.getEntrantCount());
+    public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
+        User user = userList.get(position);
+        holder.userName.setText(user.getFirstName() + " " + user.getLastName());
+        holder.userEmail.setText(user.getEmail());
+        String number = user.getPhone();
+        if (number == null) {
+            number = "N/A";
+        }
+        holder.userPhoneNumber.setText(number);
         Glide.with(holder.itemView.getContext())
-                .load(event.getEventPosterURL())
-                .centerCrop()
-                .placeholder(R.drawable.outline_image_24)
-                .into(holder.eventPosterPreview);
+                .load(user.getProfileUrl())
+                .circleCrop()
+                .placeholder(R.drawable.outline_person_24)
+                .into(holder.userProfilePicture);
     }
 
     @Override
     public int getItemCount() {
-        return eventList.size();
+        return userList.size();
     }
 
     public interface OnItemClickListener {
@@ -54,15 +59,18 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         this.listener = listener;
     }
 
-    public class EventViewHolder extends RecyclerView.ViewHolder {
-        ImageView eventPosterPreview;
-        TextView eventName;
-        TextView entrantCount;
-        public EventViewHolder(@NonNull View itemView, OnItemClickListener listener) {
+    public class UserViewHolder extends RecyclerView.ViewHolder {
+        ImageView userProfilePicture;
+        TextView userName;
+        TextView userEmail;
+        TextView userPhoneNumber;
+
+        public UserViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
-            eventPosterPreview = itemView.findViewById(R.id.image_event_poster);
-            eventName = itemView.findViewById(R.id.text_event_name);
-            entrantCount = itemView.findViewById(R.id.text_entrant_number);
+            userProfilePicture = itemView.findViewById(R.id.image_user_profile);
+            userName = itemView.findViewById(R.id.text_user_name);
+            userEmail = itemView.findViewById(R.id.text_user_email);
+            userPhoneNumber = itemView.findViewById(R.id.text_user_phone);
 
             itemView.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
