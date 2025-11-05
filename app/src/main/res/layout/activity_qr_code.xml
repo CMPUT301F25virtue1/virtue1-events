@@ -1,0 +1,40 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/lightestBlue">
+
+    <TextView
+        android:id="@+id/qrTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event QR Code"
+        android:textColor="@color/darkerTeal"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:layout_marginBottom="24dp"/>
+
+    <ImageView
+        android:id="@+id/qrCodeImage"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_white"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/downloadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download QR Code"
+        android:backgroundTint="@color/teal"
+        android:textColor="@color/white"
+        android:padding="12dp"
+        android:elevation="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp" />
+
+</LinearLayout>

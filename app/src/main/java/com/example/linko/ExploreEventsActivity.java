@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
+import android.widget.ImageView;
+import androidx.activity.result.ActivityResultLauncher;
+import com.journeyapps.barcodescanner.ScanOptions;
+import com.journeyapps.barcodescanner.ScanContract;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +41,18 @@ public class ExploreEventsActivity extends AppCompatActivity {
 
     private List<Event> availableEventsList;
     private EventRecyclerAdapter eventRecyclerAdapter;
+
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
+            registerForActivityResult(new ScanContract(), result -> {
+                if (result.getContents() != null) {
+                    String scannedEventId = result.getContents();
+
+                    Intent intent = new Intent(ExploreEventsActivity.this, EventDetailsActivity.class);
+                    intent.putExtra("event_id", scannedEventId);
+                    intent.putExtra("activity", "exploreEvents");
+                    startActivity(intent);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +124,16 @@ public class ExploreEventsActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        ImageView qrScanButton = findViewById(R.id.button_qr_scanner);
+        qrScanButton.setOnClickListener(v -> {
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Scan an event QR code");
+            options.setBeepEnabled(true);
+            options.setOrientationLocked(true);
+            barcodeLauncher.launch(options);
+        });
+
 
 
     }
