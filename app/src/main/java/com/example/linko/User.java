@@ -5,8 +5,8 @@ import java.util.List;
 
 /**
  * This is for our User objects. Comes with getters and setters for all variables.
- * @see SignUpActivity Where new User objects are created
- * @see UserDatabaseHandler Manages User objects in the Firebase database
+ * @see SignUpActivity
+ * @see UserDatabaseHandler
  */
 public class User {
     private String userId ;
