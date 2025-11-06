@@ -8,22 +8,6 @@
     tools:context=".ExploreEventsActivity"
     android:background="@color/lightestBlue">
 
-    <View
-        android:id="@+id/background_dim"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:alpha="0.7"
-        android:background="@color/black"
-        android:translationZ="100dp"
-        android:visibility="gone"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_available_events"
         android:layout_width="match_parent"
@@ -45,6 +29,7 @@
         android:drawableEnd="@drawable/outline_search_24"
         android:elevation="5dp"
         android:hint="Search Events..."
+        android:textColor="@color/darkerTeal"
         android:singleLine="true"
         android:scrollHorizontally="true"
         android:padding="10dp"
@@ -111,123 +96,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_status_bar" />
 
-
     <include
         android:id="@+id/nav_bar"
         layout="@layout/navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="85dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/filter_popup_container"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        android:background="@color/lightBlue"
-        android:translationZ="1000dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/nav_bar"
-        app:layout_constraintEnd_toEndOf="@id/button_qr_scanner"
-        app:layout_constraintStart_toStartOf="@+id/input_search"
-        app:layout_constraintTop_toBottomOf="@id/top_status_bar"
-        tools:visibility="gone">
-
-        <Button
-            android:id="@+id/button_clear_filter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/darkerTeal"
-            android:text="Clear Filter Dates"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <View
-            android:id="@+id/view6"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/red"
-            app:layout_constraintTop_toTopOf="@id/filter_popup_container" />
-
-        <ImageView
-            android:id="@+id/button_filter_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/view6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/view6"
-            app:layout_constraintTop_toTopOf="@+id/view6"
-            app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:text="From:"
-            android:textColor="@color/darkerTeal"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView14"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view6" />
-
-        <TextView
-            android:id="@+id/textView14"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="To:"
-            android:textColor="@color/darkerTeal"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/button_clear_filter"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-        <TextView
-            android:id="@+id/filter_user_start"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_white"
-            android:padding="10dp"
-            android:text="-"
-            android:textAlignment="center"
-            android:textColor="@color/darkerTeal"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView3"
-            app:layout_constraintTop_toTopOf="@+id/textView3" />
-
-        <TextView
-            android:id="@+id/filter_user_end"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_white"
-            android:padding="10dp"
-            android:text="-"
-            android:textAlignment="center"
-            android:textColor="@color/darkerTeal"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView14"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView3"
-            app:layout_constraintTop_toTopOf="@+id/textView14" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
