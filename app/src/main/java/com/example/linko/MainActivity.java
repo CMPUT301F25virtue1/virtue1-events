@@ -20,6 +20,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ *
+ */
 public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef;

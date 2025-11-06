@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This is the class for handling the my events page logic that interacts with the UI.
+ */
 public class MyEventsActivity extends AppCompatActivity {
     private List<Event> organizedEventsList;
     private List<Event> registeredEventsList;

@@ -31,6 +31,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This is the class for handling the event details for the organizer logic that interacts with the UI.
+ */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -244,7 +247,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * This method contains the logic for selecting an image file for the event details
+     */
     private void openFileChooser() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
