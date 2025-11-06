@@ -78,7 +78,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
-        entrantsUserRecyclerAdapter = new UserRecyclerAdapter(totalEntrantsList);
+        entrantsUserRecyclerAdapter = new UserRecyclerAdapter(totalEntrantsList, false);
         entrantsRecyclerView.setAdapter(entrantsUserRecyclerAdapter);
 
         LinearLayoutManager entrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);

@@ -1,5 +1,6 @@
 package com.example.linko;
 
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,9 +22,10 @@ import java.util.List;
 public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapter.UserViewHolder> {
 
     private List<User> userList;
-
-    public UserRecyclerAdapter(List<User> usersList) {
+    private boolean fromAdmin;
+    public UserRecyclerAdapter(List<User> usersList, boolean fromAdmin) {
         this.userList = usersList;
+        this.fromAdmin = fromAdmin;
     }
 
     @NonNull
@@ -41,11 +45,23 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
             number = "N/A";
         }
         holder.userPhoneNumber.setText(number);
-        Glide.with(holder.itemView.getContext())
-                .load(user.getProfileUrl())
-                .circleCrop()
-                .placeholder(R.drawable.outline_person_24)
-                .into(holder.userProfilePicture);
+
+        if (fromAdmin) {
+            Glide.with(holder.itemView.getContext()).load(user.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_black_24).into(holder.userProfilePicture);
+            holder.userProfilePicture.setBackgroundResource(R.drawable.circular_profile_white);
+            holder.userName.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
+            holder.userPhoneNumber.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
+            holder.userEmail.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
+            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.teal)));
+        }
+        else {
+            Glide.with(holder.itemView.getContext()).load(user.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_24).into(holder.userProfilePicture);
+            holder.userProfilePicture.setBackgroundResource(R.drawable.circular_profile);
+            holder.userName.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerTeal)));
+            holder.userPhoneNumber.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerTeal)));
+            holder.userEmail.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerTeal)));
+            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
+        }
     }
 
     @Override
@@ -54,6 +70,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
+        CardView card;
         ImageView userProfilePicture;
         TextView userName;
         TextView userEmail;
@@ -61,6 +78,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
+            card = itemView.findViewById(R.id.card);
             userProfilePicture = itemView.findViewById(R.id.image_user_profile);
             userName = itemView.findViewById(R.id.text_user_name);
             userEmail = itemView.findViewById(R.id.text_user_email);

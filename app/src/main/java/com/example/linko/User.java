@@ -2,6 +2,7 @@ package com.example.linko;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is for our User objects. Comes with getters and setters for all variables.
@@ -17,6 +18,7 @@ public class User {
     private String profileUrl;
     private List<String> eventsRegistered;
     private List<String> eventHistory;
+    private boolean isAdmin;
 
     public User() {
         // empty for firebase
@@ -40,6 +42,7 @@ public class User {
         this.profileUrl = profileUrl;
         this.eventsRegistered = new ArrayList<>();
         this.eventHistory = new ArrayList<>();
+        this.isAdmin = false;
     }
 
     public String getUserId() {
@@ -106,4 +109,23 @@ public class User {
         this.eventsRegistered = eventsRegistered;
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(userId);
+    }
 }

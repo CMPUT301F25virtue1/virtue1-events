@@ -31,6 +31,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
     private Button joinWaitlist;
     private Button leaveWaitlist;
+    private TextView entrantCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.button_back_button);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
-        TextView entrantCount = findViewById(R.id.text_entrant_count);
+        entrantCount = findViewById(R.id.text_entrant_count);
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
         TextView eventTime = findViewById(R.id.text_event_start_time);
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
@@ -69,7 +70,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventCapacity.setText(eventCapacityString);
         Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        if (eventReceived.getEntrantLimit() != null) {
+            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        }
+        else {
+            entrantCount.setText(eventReceived.getEntrantCount());
+        }
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
 
@@ -95,6 +101,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 return;
             }
 
+            Integer eventEntrantLimit = eventReceived.getEntrantLimit();
+            if (eventEntrantLimit != null) {
+                if (eventReceived.getEntrants().size() >= eventEntrantLimit) {
+                    Toast.makeText(EventDetailsActivity.this, "This event's entrant limit has been reached.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
@@ -115,6 +129,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 finish();
                 Toast.makeText(EventDetailsActivity.this, "You have left the waitlist after the registration deadline. You cannot rejoin.", Toast.LENGTH_LONG).show();
             }
+
             joinWaitlist.setVisibility(View.VISIBLE);
             leaveWaitlist.setVisibility(View.INVISIBLE);
             changeUserWaitlist();
@@ -191,7 +206,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void eventFailedToUpdate(Exception e) {
+                public void eventUpdateFailed(Exception e) {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
@@ -208,6 +223,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+            if (eventReceived.getEntrantLimit() != null) {
+                entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+            }
+            else {
+                entrantCount.setText(eventReceived.getEntrantCount());
+            }
         });
     }
 

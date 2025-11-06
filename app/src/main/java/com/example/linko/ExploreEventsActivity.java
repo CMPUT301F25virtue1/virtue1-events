@@ -57,6 +57,14 @@ public class ExploreEventsActivity extends AppCompatActivity {
     private List<Event> availableEventsList;
     private List<Event> originalEventsList;
     private EventRecyclerAdapter eventRecyclerAdapter;
+    private EditText searchBar;
+    private Calendar userFilterStart = Calendar.getInstance();
+    private Calendar userFilterEnd = Calendar.getInstance();
+    private boolean userFilterStartPicked = false;
+    private boolean userFilterEndPicked = false;
+    private TextView noAvailableEvents;
+    private TextView noEventsMatchFilter;
+    private RecyclerView availableRecyclerView;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
             registerForActivityResult(new ScanContract(), result -> {
@@ -89,14 +97,6 @@ public class ExploreEventsActivity extends AppCompatActivity {
                     });
                 }
             });
-    private EditText searchBar;
-    private Calendar userFilterStart = Calendar.getInstance();
-    private Calendar userFilterEnd = Calendar.getInstance();
-    private boolean userFilterStartPicked = false;
-    private boolean userFilterEndPicked = false;
-    private TextView noAvailableEvents;
-    private TextView noEventsMatchFilter;
-    private RecyclerView availableRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +116,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
         // recycler view setup
         availableRecyclerView = findViewById(R.id.recycler_available_events);
         availableEventsList = new ArrayList<>();
-        eventRecyclerAdapter = new EventRecyclerAdapter(availableEventsList);
+        eventRecyclerAdapter = new EventRecyclerAdapter(availableEventsList, false);
         availableRecyclerView.setAdapter(eventRecyclerAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         availableRecyclerView.setLayoutManager(layoutManager);
