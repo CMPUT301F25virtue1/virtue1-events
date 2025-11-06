@@ -160,7 +160,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
             }
         });
 
-        // filter (future improvement maybe: let filters persist after switching activities)
+        // filter
         filterButton.setOnClickListener(v -> {
             backgroundDim.setVisibility(View.VISIBLE);
             filterContainer.setVisibility(View.VISIBLE);
