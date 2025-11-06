@@ -30,6 +30,7 @@
         app:srcCompat="@drawable/outline_person_24" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_event_history"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/lightBlue"

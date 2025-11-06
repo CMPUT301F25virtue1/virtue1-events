@@ -19,7 +19,6 @@ import java.util.List;
 public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapter.UserViewHolder> {
 
     private List<User> userList;
-    private OnItemClickListener listener;
 
     public UserRecyclerAdapter(List<User> usersList) {
         this.userList = usersList;
@@ -29,7 +28,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
-        return new UserViewHolder(view,listener);
+        return new UserViewHolder(view);
     }
 
     @Override
@@ -54,33 +53,18 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
         return userList.size();
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
-
     public class UserViewHolder extends RecyclerView.ViewHolder {
         ImageView userProfilePicture;
         TextView userName;
         TextView userEmail;
         TextView userPhoneNumber;
 
-        public UserViewHolder(@NonNull View itemView, OnItemClickListener listener) {
+        public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             userProfilePicture = itemView.findViewById(R.id.image_user_profile);
             userName = itemView.findViewById(R.id.text_user_name);
             userEmail = itemView.findViewById(R.id.text_user_email);
             userPhoneNumber = itemView.findViewById(R.id.text_user_phone);
-
-            itemView.setOnClickListener(v -> {
-                int pos = getBindingAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION && listener != null) {
-                    listener.onItemClick(pos);
-                }
-            });
         }
     }
 }
