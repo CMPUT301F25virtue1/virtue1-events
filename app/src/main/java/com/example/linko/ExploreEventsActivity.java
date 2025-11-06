@@ -111,13 +111,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
         searchBar = findViewById(R.id.input_search);
 
         // filter views
-        ConstraintLayout filterContainer = findViewById(R.id.filter_popup_container);
         ImageView filterButton = findViewById(R.id.button_filter_events);
-        Button filterClearButton = findViewById(R.id.button_clear_filter);
-        View backgroundDim = findViewById(R.id.background_dim);
-        ImageView backButtonFilter = findViewById(R.id.button_filter_back);
-        TextView userStartFilter = findViewById(R.id.filter_user_start);
-        TextView userEndFilter = findViewById(R.id.filter_user_end);
 
         // recycler view setup
         availableRecyclerView = findViewById(R.id.recycler_available_events);
@@ -167,8 +161,6 @@ public class ExploreEventsActivity extends AppCompatActivity {
             }
         });
 
-
-
         // go to the event details on click of each recycler view  item
         eventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = availableEventsList.get(position);
@@ -214,106 +206,17 @@ public class ExploreEventsActivity extends AppCompatActivity {
 
         // filter
         filterButton.setOnClickListener(v -> {
-            backgroundDim.setVisibility(View.VISIBLE);
-            filterContainer.setVisibility(View.VISIBLE);
-        });
-
-        backButtonFilter.setOnClickListener(v -> {
-            // if user picked both of the filters then safely go back
-            if (userFilterStartPicked && userFilterEndPicked) {
-                backgroundDim.setVisibility(View.GONE);
-                filterContainer.setVisibility(View.GONE);
+            EventFilterDialog filterDialog = EventFilterDialog.newInstance(userFilterStart, userFilterEnd, userFilterStartPicked, userFilterEndPicked);
+            filterDialog.setOnFilterAppliedListener(((start, end, startPicked, endPicked) -> {
+                // store vars so filter is saved when user opens it again
+                userFilterStart = start;
+                userFilterEnd = end;
+                userFilterStartPicked = startPicked;
+                userFilterEndPicked = endPicked;
                 applyCurrentFilters();
-            }
-            else {
-                // if user cleared or just clicked accidentally and wants to go out without setting filter
-                if (userStartFilter.getText().toString().equals("-") && userEndFilter.getText().toString().equals("-")) {
-                    backgroundDim.setVisibility(View.GONE);
-                    filterContainer.setVisibility(View.GONE);
-
-                    // reset the bools
-                    userFilterStartPicked = false;
-                    userFilterEndPicked = false;
-                    applyCurrentFilters();
-                }
-                // if user picked one but not the other
-                else {
-                    Toast.makeText(this, "Please pick both filter dates or clear them.", Toast.LENGTH_SHORT).show();
-                }
-            }
+            }));
+            filterDialog.show(getSupportFragmentManager(), "eventFilterDialog");
         });
-
-        userStartFilter.setOnClickListener(v -> {
-            pickDateTime(userFilterStart, "Start", start -> {
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
-                String period = sdf.format(start.getTime());
-                userStartFilter.setText(period);
-                userFilterStartPicked = true;
-            });
-        });
-
-        userEndFilter.setOnClickListener(v -> {
-            if (!userFilterStartPicked) {
-                Toast.makeText(this, "Please pick your filter start time first.", Toast.LENGTH_SHORT).show();
-            }
-            pickDateTime(userFilterEnd, "End", end -> {
-                if (end.before(userFilterStart)) {
-                    Toast.makeText(this, "Filter end must be after filter start.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
-                String period = sdf.format(end.getTime());
-                userEndFilter.setText(period);
-                userFilterEndPicked = true;
-            });
-        });
-
-        filterClearButton.setOnClickListener(v -> {
-            userStartFilter.setText("-");
-            userEndFilter.setText("-");
-            userFilterStartPicked = false;
-            userFilterEndPicked = false;
-        });
-    }
-
-    private void pickDateTime(Calendar calendar, String title, ExploreEventsActivity.DateTimePickedCallback callback) {
-        Calendar now = Calendar.getInstance();
-
-        DatePickerDialog datePicker = new DatePickerDialog(this,
-                (view, year, month, dayOfMonth) -> {
-                    calendar.set(year, month, dayOfMonth);
-
-                    TimePickerDialog timePicker = new TimePickerDialog(this,
-                            (timeView, hourOfDay, minute) -> {
-                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                calendar.set(Calendar.MINUTE, minute);
-
-                                if (calendar.getTimeInMillis() <= now.getTimeInMillis()) {
-                                    Toast.makeText(this, "Please select a time in the future.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    callback.onDateTimePicked(calendar);
-                                }
-                            },
-                            calendar.get(Calendar.HOUR_OF_DAY),
-                            calendar.get(Calendar.MINUTE),
-                            false // 12hr formatting
-                    );
-                    timePicker.setTitle(title + " Time");
-                    timePicker.show();
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
-        // buffer just in case
-        datePicker.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
-
-        datePicker.setTitle(title + " Date");
-        datePicker.show();
-    }
-
-    interface DateTimePickedCallback {
-        void onDateTimePicked(Calendar calendar);
     }
 
     private void applyCurrentFilters() {
