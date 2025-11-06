@@ -15,8 +15,7 @@ public class SearchBarHandler {
 
         String query = userSearchInput.toLowerCase();
         for (Event e : eventsToSearchThrough) {
-            if (e.getName().toLowerCase().contains(query) ||
-                    e.getDescription().toLowerCase().contains(query)) {
+            if (e.getName().toLowerCase().contains(query) || e.getDescription().toLowerCase().contains(query)) {
                 results.add(e);
             }
         }
