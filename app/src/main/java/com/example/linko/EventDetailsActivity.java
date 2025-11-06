@@ -223,8 +223,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
-
-            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+            if (eventReceived.getEntrantLimit() != null) {
+                entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+            }
+            else {
+                entrantCount.setText(eventReceived.getEntrantCount());
+            }
         });
     }
 
