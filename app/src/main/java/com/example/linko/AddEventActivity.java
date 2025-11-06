@@ -197,7 +197,7 @@ public class AddEventActivity extends AppCompatActivity {
             }
 
             @Override
-            public void eventFailedToAdd(Exception e) {
+            public void eventAddFailed(Exception e) {
                 Log.e("Firestore", "Error saving user", e);
                 Toast.makeText(AddEventActivity.this, "Error saving event: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }

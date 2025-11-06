@@ -31,6 +31,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
     private Button joinWaitlist;
     private Button leaveWaitlist;
+    private TextView entrantCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.button_back_button);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
-        TextView entrantCount = findViewById(R.id.text_entrant_count);
+        entrantCount = findViewById(R.id.text_entrant_count);
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
         TextView eventTime = findViewById(R.id.text_event_start_time);
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
@@ -191,7 +192,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void eventFailedToUpdate(Exception e) {
+                public void eventUpdateFailed(Exception e) {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
@@ -208,6 +209,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+
+            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
         });
     }
 

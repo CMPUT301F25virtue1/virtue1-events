@@ -77,7 +77,7 @@ public class EditEventPosterDialog extends DialogFragment {
                         }
 
                         @Override
-                        public void eventFailedToUpdate(Exception e) {
+                        public void eventUpdateFailed(Exception e) {
                             Toast.makeText(getContext(), "Error updating event poster: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });

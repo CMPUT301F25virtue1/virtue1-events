@@ -1,11 +1,15 @@
 package com.example.linko;
 
 import android.util.Log;
+import android.view.View;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -42,7 +46,7 @@ public class EventDatabaseHandler {
             }
             else {
                 Log.e("Firestore", "Error adding event to database", task.getException());
-                added.eventFailedToAdd(task.getException());
+                added.eventAddFailed(task.getException());
             }
         });
     }
@@ -59,7 +63,7 @@ public class EventDatabaseHandler {
                 updated.eventUpdate();
             } else {
                 Log.e("Firestore", "Error updating event in database", task.getException());
-                updated.eventFailedToUpdate(task.getException());
+                updated.eventUpdateFailed(task.getException());
             }
         });
     }
@@ -80,18 +84,86 @@ public class EventDatabaseHandler {
         });
     }
 
+    public void deleteEvent(Event event, EventDeleted deleted) {
+        // remove the event poster from firebase storage
+        if (event.getEventPosterURL() != null && !event.getEventPosterURL().isEmpty()) {
+            FirebaseStorage.getInstance().getReferenceFromUrl(event.getEventPosterURL())
+                    .delete()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Storage", "Event poster deleted");
+                        } else {
+                            Log.e("Storage", "Error deleting poster", task.getException());
+                        }
+                    });
+        }
+
+        String eventIdToDelete = event.getEventId();
+        // hard delete it from database, and user event lists
+        eventsRef.document(eventIdToDelete).delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // delete event from any event history/registered events list for users
+                CollectionReference usersRef = db.collection("users");
+                usersRef.get().addOnCompleteListener(deleteTask -> {
+                    if (!deleteTask.isSuccessful()) {
+                        Log.e("Firestore", "Error fetching users", deleteTask.getException());
+                        return;
+                    }
+                    QuerySnapshot users = deleteTask.getResult();
+                    for (QueryDocumentSnapshot snapshot : users) {
+                        List<String> userRegisteredEvents = (List<String>) snapshot.get("eventsRegistered");
+                        List<String> userEventHistory = (List<String>) snapshot.get("eventHistory");
+
+                        if (userRegisteredEvents.contains(eventIdToDelete)) {
+                            userRegisteredEvents.remove(eventIdToDelete);
+                        }
+
+                        if (userEventHistory.contains(eventIdToDelete)) {
+                            userEventHistory.remove(eventIdToDelete);
+                        }
+                        User userToUpdate = snapshot.toObject(User.class);
+                        userToUpdate.setEventsRegistered(userRegisteredEvents);
+                        userToUpdate.setEventHistory(userEventHistory);
+
+                        UserDatabaseHandler userDb = new UserDatabaseHandler();
+                        userDb.addUser(userToUpdate, new UserDatabaseHandler.UserAdded() {
+                            @Override
+                            public void userAdd() {
+                                Log.d("FirebaseDeleteEvent", "Successfully updated user event lists");
+                            }
+
+                            @Override
+                            public void userFailedToAdd(Exception e) {
+                                Log.e("FirebaseDeleteEvent", "Error updating user event lists" + e.getMessage());
+                            }
+                        });
+                    }
+                });
+                deleted.eventDelete();
+            } else {
+                Log.e("Firestore", "Error deleting event: " + event.getName(), task.getException());
+                deleted.eventDeleteFailed(task.getException());
+            }
+        });
+    }
+
     public interface EventAdded {
         void eventAdd();
-        void eventFailedToAdd(Exception e);
+        void eventAddFailed(Exception e);
     }
 
     public interface EventUpdated {
         void eventUpdate();
-        void eventFailedToUpdate(Exception e);
+        void eventUpdateFailed(Exception e);
     }
 
     public interface EventFetched {
         void eventFetch(Event event);
         void eventFetchFailed(Exception e);
+    }
+
+    public interface EventDeleted {
+        void eventDelete();
+        void eventDeleteFailed(Exception e);
     }
 }
