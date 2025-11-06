@@ -55,6 +55,7 @@ public class EditEventActivity extends AppCompatActivity {
         EditText eventCapacityInput = findViewById(R.id.text_event_capacity);
         EditText entrantLimitInput = findViewById(R.id.text_entrant_count);
         EditText eventDescriptionInput = findViewById(R.id.text_event_description);
+        EditText eventGuidelinesInput = findViewById(R.id.text_event_guidelines);
         CheckBox geolocationBox = findViewById(R.id.checkBox);
         TextView eventTime = findViewById(R.id.text_event_start_time);
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
@@ -180,15 +181,17 @@ public class EditEventActivity extends AppCompatActivity {
                 return;
             }
 
-            // needs firebase storage to implement
-            String eventPhotoURL = null;
-
             Date eventTimeSave = eventTimeCalendar.getTime();
             Date registrationStartSave = startCalendar.getTime();
             Date registrationEndSave = endCalendar.getTime();
 
+            String eventGuidelines = eventGuidelinesInput.getText().toString();
+            if (eventGuidelines.isEmpty()) {
+                Toast.makeText(this, "Please fill out your event guidelines.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            Event eventToSave = new Event(null,eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription,eventPhotoURL, null);
+            Event eventToSave = new Event(null,eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription, eventGuidelines, null, null);
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);
