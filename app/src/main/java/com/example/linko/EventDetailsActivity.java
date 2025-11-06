@@ -78,15 +78,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         registrationStart.setText(sdf.format(start));
         registrationEnd.setText(sdf.format(end));
 
+        checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
             Date now = new Date();
 
             if (now.before(start)) {
-                Toast.makeText(
-                        EventDetailsActivity.this,
-                        "Can't join waitlist — registration hasn't started yet.",
-                        Toast.LENGTH_SHORT
-                ).show();
+                Toast.makeText(EventDetailsActivity.this, "Can't join waitlist — registration hasn't started yet.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (now.after(end)) {
+                Toast.makeText(EventDetailsActivity.this, "This event's registration period has ended.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -96,8 +97,15 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         leaveWaitlist.setOnClickListener(v -> {
+            Date now = new Date();
+
+            if (now.after(eventStart)) {
+                Toast.makeText(EventDetailsActivity.this, "This event has started already.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // if registration has ended, but event start time has not, still let the user leave waitlist
-            if (eventReceived.getRegistrationEnd().before(new Date()) && eventReceived.getEventTime().after(new Date())) {
+            if (eventReceived.getRegistrationEnd().before(now) && eventReceived.getEventTime().after(now)) {
                 changeUserWaitlist();
                 startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
                 finish();
@@ -133,14 +141,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
             finish();
         });
-//        Button qrButton = findViewById(R.id.qrButton);
-//        qrButton.setOnClickListener(v -> {
-//            Intent intent = new Intent(EventDetailsActivity.this, QRCodeActivity.class);
-//            intent.putExtra("event_id", eventReceived.getEventId());
-//            startActivity(intent);
-//        });
-
-
     }
 
     /**

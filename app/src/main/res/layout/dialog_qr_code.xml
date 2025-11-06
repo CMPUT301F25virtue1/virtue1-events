@@ -5,7 +5,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/lightBlue"
-    android:padding="12dp"
     android:elevation="10dp"
     android:layout_gravity="center">
 
@@ -22,51 +21,57 @@
         android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="Event QR Code"
         android:textColor="@color/white"
-        android:textStyle="bold"
         android:textSize="18sp"
-        app:layout_constraintTop_toTopOf="@id/dialog_top_bar"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/dialog_top_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="@id/dialog_top_bar" />
 
     <ImageView
         android:id="@+id/button_close_dialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="Close"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
-        app:tint="@color/white"
-        app:layout_constraintTop_toTopOf="@id/dialog_top_bar"
         app:layout_constraintBottom_toBottomOf="@id/dialog_top_bar"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/dialog_top_bar"
+        app:srcCompat="@drawable/outline_close_24" />
 
     <ImageView
         android:id="@+id/image_qr_code"
         android:layout_width="260dp"
         android:layout_height="260dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_white"
+        android:contentDescription="QR code image"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/dialog_top_bar"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="QR code image"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_top_bar" />
 
     <Button
         android:id="@+id/button_download_qr"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Download"
-        android:textSize="16sp"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/darkerTeal"
-        app:cornerRadius="10dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/image_qr_code"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/darkerTeal"
+        android:text="Download"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_qr_code" />
 </androidx.constraintlayout.widget.ConstraintLayout>

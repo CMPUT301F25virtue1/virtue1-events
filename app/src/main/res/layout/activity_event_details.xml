@@ -179,7 +179,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
         app:layout_constraintTop_toTopOf="@+id/textView8"
- />
+        />
 
     <TextView
         android:id="@+id/text_event_start_time"
@@ -301,9 +301,10 @@
 
     <Button
         android:id="@+id/button_join_waitlist"
-        android:layout_width="359dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="628dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
         android:backgroundTint="@color/green"
         android:padding="10dp"
         android:text="Join Waitlist"
@@ -311,9 +312,9 @@
         android:textSize="24sp"
         android:visibility="visible"
         app:cornerRadius="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.461"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
+        app:layout_constraintStart_toStartOf="@+id/description_poster_container"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
 
     <Button
@@ -321,6 +322,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
         android:backgroundTint="@color/darkRed"
         android:padding="10dp"
         android:text="Leave Waitlist"
@@ -328,9 +330,9 @@
         android:textSize="24sp"
         android:visibility="gone"
         app:cornerRadius="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
+        app:layout_constraintStart_toStartOf="@+id/description_poster_container"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

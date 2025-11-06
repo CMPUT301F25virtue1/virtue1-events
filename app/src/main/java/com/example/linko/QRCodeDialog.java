@@ -1,7 +1,10 @@
 package com.example.linko;
 
+import android.content.ContentValues;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +19,12 @@ import androidx.fragment.app.DialogFragment;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.io.OutputStream;
+
 public class QRCodeDialog extends DialogFragment {
 
     private static final String ARG_EVENT_ID = "event_id";
+    private Bitmap qrBitmap;
 
     public static QRCodeDialog newInstance(String eventId) {
         QRCodeDialog dialog = new QRCodeDialog();
@@ -34,7 +40,6 @@ public class QRCodeDialog extends DialogFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_qr_code, container, false);
 
-        // ✅ match the XML IDs exactly
         ImageView qrImage = view.findViewById(R.id.image_qr_code);
         Button downloadButton = view.findViewById(R.id.button_download_qr);
         ImageView closeButton = view.findViewById(R.id.button_close_dialog);
@@ -49,19 +54,44 @@ public class QRCodeDialog extends DialogFragment {
 
         try {
             BarcodeEncoder encoder = new BarcodeEncoder();
-            Bitmap bitmap = encoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 800, 800);
-            qrImage.setImageBitmap(bitmap);
+            qrBitmap = encoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 800, 800);
+            qrImage.setImageBitmap(qrBitmap);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "Failed to generate QR Code", Toast.LENGTH_SHORT).show();
         }
 
-        downloadButton.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Download feature coming soon!", Toast.LENGTH_SHORT).show()
-        );
+        downloadButton.setOnClickListener(v -> saveImageInGallery());
 
         closeButton.setOnClickListener(v -> dismiss());
 
         return view;
+    }
+
+    private void saveImageInGallery() {
+        String fileName = "Linko_QR_" + System.currentTimeMillis() + ".png";
+        OutputStream outputStream;
+        try {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+            // makes linko directory in the gallery if it doesnt exist already
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Linko");
+
+            Uri imageUri = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            if (imageUri != null) {
+                outputStream = requireContext().getContentResolver().openOutputStream(imageUri);
+                qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                if (outputStream != null) outputStream.close();
+
+                Toast.makeText(getContext(), "QR code saved to gallery!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Failed to put QR code inside gallery.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Failed to save image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 }

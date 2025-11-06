@@ -238,7 +238,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         });
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {
-            String eventId = "YOUR_EVENT_ID_HERE"; // replace with your actual event ID from Firestore or intent
+            String eventId = eventReceived.getEventId();
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });

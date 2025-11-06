@@ -46,11 +46,31 @@ public class ExploreEventsActivity extends AppCompatActivity {
             registerForActivityResult(new ScanContract(), result -> {
                 if (result.getContents() != null) {
                     String scannedEventId = result.getContents();
+                    Log.d("scannedevent", scannedEventId);
+                    EventDatabaseHandler findEvent = new EventDatabaseHandler();
+                    findEvent.fetchEventById(scannedEventId, new EventDatabaseHandler.EventFetched() {
+                        @Override
+                        public void eventFetch(Event event) {
+                            Log.d("eventqr", "event" + event.getEventId());
+                            // just in case organizer scans their own qr code
+                            String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                            if (event.getOwnerId().equals(userId)) {
+                                Toast.makeText(ExploreEventsActivity.this, "This is your event. Go to the organized events tab to view details", Toast.LENGTH_LONG).show();
+                                return;
+                            }
 
-                    Intent intent = new Intent(ExploreEventsActivity.this, EventDetailsActivity.class);
-                    intent.putExtra("event_id", scannedEventId);
-                    intent.putExtra("activity", "exploreEvents");
-                    startActivity(intent);
+                            Intent intent = new Intent(ExploreEventsActivity.this, EventDetailsActivity.class);
+                            intent.putExtra("clickedEvent", event);
+                            intent.putExtra("activity", "exploreEvents");
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void eventFetchFailed(Exception e) {
+                            Toast.makeText(ExploreEventsActivity.this, "Event not found" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             });
 
@@ -63,13 +83,13 @@ public class ExploreEventsActivity extends AppCompatActivity {
 
         TextView noAvailableEvents = findViewById(R.id.text_no_event_available);
         RecyclerView availableRecyclerView = findViewById(R.id.recycler_available_events);
+
         // layout
         availableEventsList = new ArrayList<>();
         eventRecyclerAdapter = new EventRecyclerAdapter(availableEventsList);
         availableRecyclerView.setAdapter(eventRecyclerAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         availableRecyclerView.setLayoutManager(layoutManager);
-
 
         // get events from db
         db = FirebaseFirestore.getInstance();
@@ -79,7 +99,6 @@ public class ExploreEventsActivity extends AppCompatActivity {
                 Log.e("Firestore", error.toString());
             }
             if (value != null && !value.isEmpty()) {
-                String currentUser = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 Log.d("firebase", "checking documents");
                 availableEventsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
