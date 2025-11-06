@@ -21,16 +21,33 @@
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:background="@drawable/rounded_tops_teal"
         android:text="@string/notifications"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/button_delete_profile"
-        app:layout_constraintStart_toStartOf="@+id/button_delete_profile"
-        app:layout_constraintTop_toBottomOf="@+id/top_status_bar"
-        app:layout_constraintVertical_bias="0.19" />
+        app:layout_constraintEnd_toEndOf="@+id/button_enter_admin"
+        app:layout_constraintStart_toStartOf="@+id/button_enter_admin"
+        app:layout_constraintTop_toBottomOf="@+id/button_enter_admin" />
+
+    <Button
+        android:id="@+id/button_enter_admin"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="128dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="@color/darkestTeal"
+        android:elevation="5dp"
+        android:stateListAnimator="@null"
+        android:text="Enter Admin Mode"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:cornerRadius="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
 
 
     <Button

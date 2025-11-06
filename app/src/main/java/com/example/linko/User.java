@@ -17,6 +17,7 @@ public class User {
     private String profileUrl;
     private List<String> eventsRegistered;
     private List<String> eventHistory;
+    private boolean isAdmin;
 
     public User() {
         // empty for firebase
@@ -40,6 +41,7 @@ public class User {
         this.profileUrl = profileUrl;
         this.eventsRegistered = new ArrayList<>();
         this.eventHistory = new ArrayList<>();
+        this.isAdmin = false;
     }
 
     public String getUserId() {
@@ -106,4 +108,11 @@ public class User {
         this.eventsRegistered = eventsRegistered;
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 }
