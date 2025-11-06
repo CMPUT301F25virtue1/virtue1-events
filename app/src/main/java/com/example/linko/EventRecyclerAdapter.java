@@ -13,6 +13,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+/**
+ * Custom recycler adapter for events, boosts performance by saving events in the cache for later
+ */
 public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.EventViewHolder> {
 
     private List<Event> eventList;

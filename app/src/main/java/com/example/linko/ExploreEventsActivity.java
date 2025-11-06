@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This is the class for handling the explore events logic that interacts with the UI.
+ */
 public class ExploreEventsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;

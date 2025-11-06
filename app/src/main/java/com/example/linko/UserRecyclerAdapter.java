@@ -13,6 +13,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+/**
+ * Custom user recycler adapter to improve performance and cache any user info for later use
+ */
 public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapter.UserViewHolder> {
 
     private List<User> userList;

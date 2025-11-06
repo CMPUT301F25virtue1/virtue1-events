@@ -13,9 +13,9 @@ import java.util.List;
  *     Firebase ownerId is known before creation and then the main constructor
  *     that's used more often where the ownerId isn't known ahead of time.
  * </p>
- * @see EditEventActivity Contains logic for editting events when UI elements are interacted with
- * @see EventDatabaseHandler Handles the event database in Firebase
- * @see AddEventActivity Contains logic for adding events when UI elements are interacted with
+ * @see EditEventActivity
+ * @see EventDatabaseHandler
+ * @see AddEventActivity
  */
 public class Event implements Serializable {
     private String ownerId;

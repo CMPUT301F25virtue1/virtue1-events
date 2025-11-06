@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.widget.ImageView;
 
+/**
+ * This is the class for handling the navigation bar logic that interacts with the UI. Allows the user
+ * to navigate between the other main activity screens with ease.
+ */
 public abstract class NavigationBarHandler {
     public static void navigationListener(Activity activity) {
         // init all the navigation icons

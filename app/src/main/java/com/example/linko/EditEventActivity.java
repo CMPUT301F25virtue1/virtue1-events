@@ -23,6 +23,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * This is the class for handling the edit event logic that interacts with the UI.
+ * Allows user to edit an event they plan on organizing before they post it. To access this,
+ * User clicks on the little pencil icon in the bottom right corner to enter edit mode.
+ * <p>
+ *     Once in edit mode, user can set the event name, capacity, entrant limit, if geolocation is required
+ *     Event/registration times, event descriptions and set a photo for the event before they post.
+ * </p>
+ */
 public class EditEventActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -193,6 +202,10 @@ public class EditEventActivity extends AppCompatActivity {
             finish();
         });
     }
+
+    /**
+     * Method for allowing user to select a file from their device to set as an image for the event
+     */
     private void openFileChooser() {
         Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         galleryIntent.setType("image/*");
@@ -214,6 +227,13 @@ public class EditEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the logic for the date and time select pop ups for the event start, registration start,
+     * and registration ends times.
+     * @param calendar A calender object from the Java Calender class
+     * @param title Says whether its a start or end time
+     * @param callback Runs the lambda code from when we called pickDateTime earlier when callback is called
+     */
     private void pickDateTime(Calendar calendar, String title, DateTimePickedCallback callback) {
         Calendar now = Calendar.getInstance();
 

@@ -18,6 +18,15 @@ import com.bumptech.glide.Glide;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ *This is the class for handling the edit profile logic that interacts with the UI.
+ * Allows user to edit any of their profile information. User accesses this functionality by selecting
+ * the Edit Profile button on the ProfileActivity screen
+ * <p>
+ *     User can edit their first and last name, email, phone number, and profile photo here.
+ * </p>
+ * @see ProfileActivity
+ */
 public class EditProfileActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -76,6 +85,9 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Method for allowing user to select a file to be their profile pic
+     */
     private void openFileChooser() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
@@ -95,6 +107,10 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method for saving the changes the user made to their profile
+     * @param savedUser The user were saving the changes for
+     */
     private void saveUserChanges(User savedUser) {
         String firstName = inputFirstName.getText().toString().trim();
         String lastName = inputLastName.getText().toString().trim();
@@ -140,7 +156,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Updates the database with the updated user info
+     * @param user The user that was just edited and waiting to be updated
+     */
     private void updateUser(User user) {
         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
             @Override

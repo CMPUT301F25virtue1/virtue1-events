@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * This is the class for handling the sign up for a profile logic that interacts with the UI.
+ */
 public class SignUpActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -49,6 +52,9 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(v -> handleSignUp());
     }
 
+    /**
+     * Contains the logic for selecting a file for the user to set as their profile photo
+     */
     private void openFileChooser() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
@@ -68,6 +74,10 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Contains the logic for adding the new profile to the database. To do this it uses the UserDatabaseHandler
+     * class. Also ensures that the user fills out all required fields before signup can be completed.
+     */
     private void handleSignUp() {
         String firstName = inputFirstName.getText().toString().trim();
         String lastName = inputLastName.getText().toString().trim();
@@ -107,6 +117,11 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Adds user to the Firebase database using UserDatabaseHandler. Also catches errors for when the user
+     * is not added to the database
+     * @param user The user to be added to the database
+     */
     private void addUserToDatabase(User user) {
         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
             @Override
