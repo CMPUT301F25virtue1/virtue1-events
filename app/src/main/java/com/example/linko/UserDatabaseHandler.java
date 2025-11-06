@@ -10,6 +10,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Handles all the logic for dealing with the user in the Firebase database. Is called whenever we
+ * need to use, edit, add, or delete a user within the database
+ */
 public class UserDatabaseHandler {
     private FirebaseFirestore db;
     private CollectionReference usersRef;
@@ -19,6 +23,12 @@ public class UserDatabaseHandler {
         this.usersRef = db.collection("users");
     }
 
+    /**'
+     * Logic for adding user to database
+     * @param userToAdd User to add to database
+     * @param added A UserDatabaseHandler object used to tell the caller if the user was successfully
+     *              added or if there was an error
+     */
     public void addUser(User userToAdd, UserAdded added) {
         usersRef.document(userToAdd.getUserId()).set(userToAdd).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -31,6 +41,12 @@ public class UserDatabaseHandler {
         });
     }
 
+    /**
+     * This contains the logic for getting the info for the current devices user.
+     * @param context Androids built in context object. Typically caller uses "this" here
+     * @param fetched A UserDatabaseHandler object used to tell the caller if the user is actually in
+     *                the Firebase database.
+     */
     public void getCurrentUser(Context context, UserFetched fetched) {
         String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference userRef = usersRef.document(userId);
@@ -52,6 +68,13 @@ public class UserDatabaseHandler {
             }
         });
     }
+
+    /**
+     * This contains the logic for deleting the current user from the Firebase database
+     * @param context Androids built in context object. Typically caller uses "this" here
+     * @param deleted A UserDatabaseHandler object used to tell the caller if the current user was
+     *                deleted or if there was an error in the deletion
+     */
     public void deleteCurrentUser(Context context, UserDeleted deleted) {
         String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference userRef = usersRef.document(userId);

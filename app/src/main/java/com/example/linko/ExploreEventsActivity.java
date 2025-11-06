@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
@@ -30,6 +31,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
+import android.widget.ImageView;
+import androidx.activity.result.ActivityResultLauncher;
+import com.journeyapps.barcodescanner.ScanOptions;
+import com.journeyapps.barcodescanner.ScanContract;
+
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +46,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This is the class for handling the explore events logic that interacts with the UI.
+ */
 public class ExploreEventsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -47,6 +58,37 @@ public class ExploreEventsActivity extends AppCompatActivity {
     private List<Event> originalEventsList;
     private EventRecyclerAdapter eventRecyclerAdapter;
 
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
+            registerForActivityResult(new ScanContract(), result -> {
+                if (result.getContents() != null) {
+                    String scannedEventId = result.getContents();
+                    Log.d("scannedevent", scannedEventId);
+                    EventDatabaseHandler findEvent = new EventDatabaseHandler();
+                    findEvent.fetchEventById(scannedEventId, new EventDatabaseHandler.EventFetched() {
+                        @Override
+                        public void eventFetch(Event event) {
+                            Log.d("eventqr", "event" + event.getEventId());
+                            // just in case organizer scans their own qr code
+                            String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                            if (event.getOwnerId().equals(userId)) {
+                                Toast.makeText(ExploreEventsActivity.this, "This is your event. Go to the organized events tab to view details", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
+                            Intent intent = new Intent(ExploreEventsActivity.this, EventDetailsActivity.class);
+                            intent.putExtra("clickedEvent", event);
+                            intent.putExtra("activity", "exploreEvents");
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void eventFetchFailed(Exception e) {
+                            Toast.makeText(ExploreEventsActivity.this, "Event not found" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
     private EditText searchBar;
     private Calendar userFilterStart = Calendar.getInstance();
     private Calendar userFilterEnd = Calendar.getInstance();
@@ -63,6 +105,9 @@ public class ExploreEventsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_explore_events);
         navigationListener(this);
 
+        TextView noAvailableEvents = findViewById(R.id.text_no_event_available);
+
+        // layout
         noAvailableEvents = findViewById(R.id.text_no_event_available);
         noEventsMatchFilter = findViewById(R.id.text_no_event_from_filter);
         searchBar = findViewById(R.id.input_search);
@@ -86,7 +131,6 @@ public class ExploreEventsActivity extends AppCompatActivity {
                 Log.e("Firestore", error.toString());
             }
             if (value != null && !value.isEmpty()) {
-                String currentUser = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 Log.d("firebase", "checking documents");
                 availableEventsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
@@ -133,6 +177,16 @@ public class ExploreEventsActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        ImageView qrScanButton = findViewById(R.id.button_qr_scanner);
+        qrScanButton.setOnClickListener(v -> {
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Scan an event QR code");
+            options.setBeepEnabled(true);
+            options.setOrientationLocked(true);
+            barcodeLauncher.launch(options);
+        });
+
 
         // search bar
         searchBar.addTextChangedListener(new TextWatcher() {

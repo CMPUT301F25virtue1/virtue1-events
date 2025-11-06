@@ -4,7 +4,10 @@ import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
 
 /**
  * Handles the logic for dealing with events in the Firebase Database.
@@ -60,6 +63,23 @@ public class EventDatabaseHandler {
             }
         });
     }
+
+    public void fetchEventById(String eventId, EventDatabaseHandler.EventFetched fetched) {
+        DocumentReference docRef = eventsRef.document(eventId);
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                Event event = documentSnapshot.toObject(Event.class);
+                Log.d("eventfetchfunc", "infetcheventbyid" + event.getEventId());
+                fetched.eventFetch(event);
+            } else {
+                Log.e("Firestore", "Error fetching event: " + eventId, task.getException());
+                fetched.eventFetchFailed(task.getException());
+            }
+        });
+    }
+
     public interface EventAdded {
         void eventAdd();
         void eventFailedToAdd(Exception e);
@@ -68,5 +88,10 @@ public class EventDatabaseHandler {
     public interface EventUpdated {
         void eventUpdate();
         void eventFailedToUpdate(Exception e);
+    }
+
+    public interface EventFetched {
+        void eventFetch(Event event);
+        void eventFetchFailed(Exception e);
     }
 }

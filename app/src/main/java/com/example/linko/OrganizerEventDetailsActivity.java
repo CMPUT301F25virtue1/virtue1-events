@@ -31,6 +31,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This is the class for handling the event details for the organizer logic that interacts with the UI.
+ */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     private Uri imageUri;
@@ -178,6 +181,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
 
+        });
+        findViewById(R.id.button_qr_code).setOnClickListener(v -> {
+            String eventId = eventReceived.getEventId();
+            QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
+            dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
     }
 }

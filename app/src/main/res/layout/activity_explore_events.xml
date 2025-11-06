@@ -96,13 +96,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_status_bar" />
 
-
     <include
         android:id="@+id/nav_bar"
         layout="@layout/navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="85dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
