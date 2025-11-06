@@ -44,6 +44,7 @@
         android:background="@drawable/signin_input_shape"
         android:drawableEnd="@drawable/outline_search_24"
         android:elevation="5dp"
+        android:textColor="@color/darkerTeal"
         android:hint="Search Events..."
         android:singleLine="true"
         android:scrollHorizontally="true"

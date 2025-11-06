@@ -105,8 +105,6 @@ public class ExploreEventsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_explore_events);
         navigationListener(this);
 
-        TextView noAvailableEvents = findViewById(R.id.text_no_event_available);
-
         // layout
         noAvailableEvents = findViewById(R.id.text_no_event_available);
         noEventsMatchFilter = findViewById(R.id.text_no_event_from_filter);

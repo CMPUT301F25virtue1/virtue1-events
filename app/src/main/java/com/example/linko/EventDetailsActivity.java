@@ -77,7 +77,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventTime.setText(sdf.format(eventStart));
         registrationStart.setText(sdf.format(start));
         registrationEnd.setText(sdf.format(end));
-
+        eventDescription.setText(eventReceived.getDescription());
         checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
             Date now = new Date();
