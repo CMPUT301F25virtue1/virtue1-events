@@ -78,18 +78,34 @@ public class EventDetailsActivity extends AppCompatActivity {
         registrationStart.setText(sdf.format(start));
         registrationEnd.setText(sdf.format(end));
 
-        // check if it should be join or leave waitlist
         checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
+            Date now = new Date();
+
+            if (now.before(start)) {
+                Toast.makeText(EventDetailsActivity.this, "Can't join waitlist — registration hasn't started yet.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (now.after(end)) {
+                Toast.makeText(EventDetailsActivity.this, "This event's registration period has ended.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
-
         });
 
         leaveWaitlist.setOnClickListener(v -> {
+            Date now = new Date();
+
+            if (now.after(eventStart)) {
+                Toast.makeText(EventDetailsActivity.this, "This event has started already.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // if registration has ended, but event start time has not, still let the user leave waitlist
-            if (eventReceived.getRegistrationEnd().before(new Date()) && eventReceived.getEventTime().after(new Date())) {
+            if (eventReceived.getRegistrationEnd().before(now) && eventReceived.getEventTime().after(now)) {
                 changeUserWaitlist();
                 startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
                 finish();

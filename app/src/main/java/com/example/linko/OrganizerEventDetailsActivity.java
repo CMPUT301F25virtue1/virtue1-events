@@ -240,6 +240,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
 
         });
+        findViewById(R.id.button_qr_code).setOnClickListener(v -> {
+            String eventId = eventReceived.getEventId();
+            QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
+            dialog.show(getSupportFragmentManager(), "QRCodeDialog");
+        });
     }
 
     /**
