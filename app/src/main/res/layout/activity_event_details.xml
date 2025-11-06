@@ -301,10 +301,9 @@
 
     <Button
         android:id="@+id/button_join_waitlist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="359dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="628dp"
         android:backgroundTint="@color/green"
         android:padding="10dp"
         android:text="Join Waitlist"
@@ -312,8 +311,8 @@
         android:textSize="24sp"
         android:visibility="visible"
         app:cornerRadius="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/qrButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.461"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
 
@@ -322,7 +321,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
         android:backgroundTint="@color/darkRed"
         android:padding="10dp"
         android:text="Leave Waitlist"
@@ -330,28 +328,9 @@
         android:textSize="24sp"
         android:visibility="gone"
         app:cornerRadius="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/qrButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
-
-    <Button
-        android:id="@+id/qrButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:padding="12dp"
-        android:elevation="5dp"
-        android:backgroundTint="@color/teal"
-        android:text="Generate QR Code"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:cornerRadius="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

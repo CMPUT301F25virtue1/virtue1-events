@@ -133,12 +133,12 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
             finish();
         });
-        Button qrButton = findViewById(R.id.qrButton);
-        qrButton.setOnClickListener(v -> {
-            Intent intent = new Intent(EventDetailsActivity.this, QRCodeActivity.class);
-            intent.putExtra("event_id", eventReceived.getEventId());
-            startActivity(intent);
-        });
+//        Button qrButton = findViewById(R.id.qrButton);
+//        qrButton.setOnClickListener(v -> {
+//            Intent intent = new Intent(EventDetailsActivity.this, QRCodeActivity.class);
+//            intent.putExtra("event_id", eventReceived.getEventId());
+//            startActivity(intent);
+//        });
 
 
     }

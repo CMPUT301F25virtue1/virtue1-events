@@ -237,7 +237,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
 
         });
+        findViewById(R.id.button_qr_code).setOnClickListener(v -> {
+            String eventId = "YOUR_EVENT_ID_HERE"; // replace with your actual event ID from Firestore or intent
+            QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
+            dialog.show(getSupportFragmentManager(), "QRCodeDialog");
+        });
     }
+
 
     private void openFileChooser() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);

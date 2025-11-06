@@ -16,10 +16,6 @@
         android:theme="@style/Theme.Linko">
 
         <activity
-            android:name=".QRCodeActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
         <activity
