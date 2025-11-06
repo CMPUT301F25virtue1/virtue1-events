@@ -44,6 +44,7 @@ public class Event implements Serializable {
      *     ownerId and eventId are added
      *     added later when info is pulled from Firebase database
      * </p>
+     * @param ownerId Owner ID
      * @param name Event name
      * @param eventCapacity Entrant capacity for event
      * @param entrantLimit:
@@ -53,43 +54,8 @@ public class Event implements Serializable {
      * @param registrationEnd When event registration closes
      * @param description Event description
      * @param eventPosterURL Firebase URL for the events poster
+     * @param eventId Event ID
      */
-
-    public Event(String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
-        this.ownerId = null;
-        this.name = name;
-        this.eventCapacity = eventCapacity;
-        this.entrantLimit = entrantLimit;
-        this.geolocationRequired = geolocationRequired;
-        this.eventTime = eventTime;
-        this.registrationStart = registrationStart;
-        this.registrationEnd = registrationEnd;
-        this.description = description;
-        this.eventPosterURL = eventPosterURL;
-        this.entrants = new ArrayList<>();
-        this.invitedEntrants = new ArrayList<>();
-        this.signedUpEntrants = new ArrayList<>();
-        this.cancelledEntrants = new ArrayList<>();
-        this.eventId = null;
-    }
-    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, Boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL) {
-        this.ownerId = ownerId;
-        this.name = name;
-        this.eventCapacity = eventCapacity;
-        this.entrantLimit = entrantLimit;
-        this.geolocationRequired = geolocationRequired;
-        this.eventTime = eventTime;
-        this.registrationStart = registrationStart;
-        this.registrationEnd = registrationEnd;
-        this.description = description;
-        this.eventPosterURL = eventPosterURL;
-        this.entrants = new ArrayList<>();
-        this.invitedEntrants = new ArrayList<>();
-        this.signedUpEntrants = new ArrayList<>();
-        this.cancelledEntrants = new ArrayList<>();
-        this.eventId = null;
-    }
-
     public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL, String eventId) {
         this.ownerId = ownerId;
         this.name = name;

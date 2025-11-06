@@ -31,6 +31,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
     private Button joinWaitlist;
     private Button leaveWaitlist;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

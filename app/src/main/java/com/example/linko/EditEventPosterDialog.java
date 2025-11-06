@@ -18,14 +18,11 @@ import com.bumptech.glide.Glide;
 
 public class EditEventPosterDialog extends DialogFragment {
     private static final int PICK_IMAGE_REQUEST = 1;
-
     private ImageView editPoster;
     private Button saveButton;
     private ImageView closeButton;
-
     private Uri imageUri;
     private Event eventReceived;
-
     private OnPosterUpdatedListener onPosterUpdatedListener;
 
     public static EditEventPosterDialog newInstance(Event event) {

@@ -33,7 +33,6 @@ import java.util.Locale;
  * </p>
  */
 public class EditEventActivity extends AppCompatActivity {
-
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
     private Calendar startCalendar = Calendar.getInstance();
@@ -99,7 +98,6 @@ public class EditEventActivity extends AppCompatActivity {
             startActivity(new Intent(EditEventActivity.this, AddEventActivity.class));
             finish();
         });
-
 
         eventTime.setOnClickListener(v -> {
             if (!registrationStartPicked || !registrationEndPicked) {
@@ -190,7 +188,7 @@ public class EditEventActivity extends AppCompatActivity {
             Date registrationEndSave = endCalendar.getTime();
 
 
-            Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription,eventPhotoURL);
+            Event eventToSave = new Event(null,eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription,eventPhotoURL, null);
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);
