@@ -70,7 +70,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventCapacity.setText(eventCapacityString);
         Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        if (eventReceived.getEntrantLimit() != null) {
+            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        }
+        else {
+            entrantCount.setText(eventReceived.getEntrantCount());
+        }
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
 
@@ -96,6 +101,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 return;
             }
 
+            Integer eventEntrantLimit = eventReceived.getEntrantLimit();
+            if (eventEntrantLimit != null) {
+                if (eventReceived.getEntrants().size() >= eventEntrantLimit) {
+                    Toast.makeText(EventDetailsActivity.this, "This event's entrant limit has been reached.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
@@ -116,6 +129,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 finish();
                 Toast.makeText(EventDetailsActivity.this, "You have left the waitlist after the registration deadline. You cannot rejoin.", Toast.LENGTH_LONG).show();
             }
+
             joinWaitlist.setVisibility(View.VISIBLE);
             leaveWaitlist.setVisibility(View.INVISIBLE);
             changeUserWaitlist();
