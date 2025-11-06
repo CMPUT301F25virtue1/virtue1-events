@@ -175,7 +175,7 @@
         android:layout_height="0dp"
         android:background="@drawable/rounded_tops_dark_teal"
         app:layout_constraintBottom_toBottomOf="@id/click_event_description"
-        app:layout_constraintEnd_toEndOf="@id/click_event_poster"
+        app:layout_constraintEnd_toEndOf="@id/click_event_guidelines"
         app:layout_constraintStart_toStartOf="@id/click_event_description"
         app:layout_constraintTop_toTopOf="@id/click_event_description" />
 
@@ -249,7 +249,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/click_event_poster"
-        app:layout_constraintStart_toStartOf="@id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
         app:layout_constraintTop_toBottomOf="@+id/text_event_registration_end" />
 
     <TextView
@@ -263,8 +263,24 @@
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@id/text_event_name"
+        app:layout_constraintEnd_toStartOf="@+id/click_event_guidelines"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/click_event_description"
+        app:layout_constraintTop_toTopOf="@+id/click_event_description" />
+
+    <TextView
+        android:id="@+id/click_event_guidelines"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:padding="5dp"
+        android:text="Guidelines"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toEndOf="@+id/click_event_poster"
         app:layout_constraintTop_toTopOf="@+id/click_event_description" />
 
     <LinearLayout
@@ -298,6 +314,17 @@
             android:background="@drawable/rounded_bottom_white"
             android:visibility="gone"
             app:srcCompat="@drawable/outline_photo_camera_24" />
+
+        <TextView
+            android:id="@+id/text_event_guidelines"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:text="You have no event guidelines."
+            android:textColor="@color/darkerTeal"
+            android:textSize="16sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <Button

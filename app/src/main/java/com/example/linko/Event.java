@@ -27,6 +27,7 @@ public class Event implements Serializable {
     private Date registrationStart;
     private Date registrationEnd;
     private String description;
+    private String guidelines;
     private String eventPosterURL;
     private List<String> entrants;
     private List<String> invitedEntrants;
@@ -56,7 +57,7 @@ public class Event implements Serializable {
      * @param eventPosterURL Firebase URL for the events poster
      * @param eventId Event ID
      */
-    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String eventPosterURL, String eventId) {
+    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String guidelines, String eventPosterURL, String eventId) {
         this.ownerId = ownerId;
         this.name = name;
         this.eventCapacity = eventCapacity;
@@ -66,6 +67,7 @@ public class Event implements Serializable {
         this.registrationStart = registrationStart;
         this.registrationEnd = registrationEnd;
         this.description = description;
+        this.guidelines = guidelines;
         this.eventPosterURL = eventPosterURL;
         this.entrants = new ArrayList<>();
         this.invitedEntrants = new ArrayList<>();
@@ -144,6 +146,14 @@ public class Event implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getGuidelines() {
+        return guidelines;
+    }
+
+    public void setGuidelines(String guidelines) {
+        this.guidelines = guidelines;
     }
 
     public String getEventPosterURL() {
