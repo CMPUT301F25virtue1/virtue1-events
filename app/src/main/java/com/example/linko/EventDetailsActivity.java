@@ -31,6 +31,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
     private Button joinWaitlist;
     private Button leaveWaitlist;
+    private TextView entrantCount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +43,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.button_back_button);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
-        TextView entrantCount = findViewById(R.id.text_entrant_count);
+        entrantCount = findViewById(R.id.text_entrant_count);
         CheckBox geolocationCheck = findViewById(R.id.checkBox);
         TextView eventTime = findViewById(R.id.text_event_start_time);
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
         TextView registrationEnd = findViewById(R.id.text_event_registration_end);
         TextView eventDescription = findViewById(R.id.text_event_description);
+        TextView eventGuidelines = findViewById(R.id.text_event_guidelines);
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
+        TextView guidelinesButton = findViewById(R.id.click_event_guidelines);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
         joinWaitlist = findViewById(R.id.button_join_waitlist);
         leaveWaitlist = findViewById(R.id.button_leave_waitlist);
@@ -66,7 +70,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventCapacity.setText(eventCapacityString);
         Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        if (eventReceived.getEntrantLimit() != null) {
+            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        }
+        else {
+            entrantCount.setText(eventReceived.getEntrantCount());
+        }
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
 
@@ -77,24 +86,50 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventTime.setText(sdf.format(eventStart));
         registrationStart.setText(sdf.format(start));
         registrationEnd.setText(sdf.format(end));
-
-        // check if it should be join or leave waitlist
+        eventDescription.setText(eventReceived.getDescription());
+        eventGuidelines.setText(eventReceived.getGuidelines());
         checkUserRegistered();
         joinWaitlist.setOnClickListener(v -> {
+            Date now = new Date();
+
+            if (now.before(start)) {
+                Toast.makeText(EventDetailsActivity.this, "Can't join waitlist — registration hasn't started yet.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (now.after(end)) {
+                Toast.makeText(EventDetailsActivity.this, "This event's registration period has ended.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Integer eventEntrantLimit = eventReceived.getEntrantLimit();
+            if (eventEntrantLimit != null) {
+                if (eventReceived.getEntrants().size() >= eventEntrantLimit) {
+                    Toast.makeText(EventDetailsActivity.this, "This event's entrant limit has been reached.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
             joinWaitlist.setVisibility(View.INVISIBLE);
             leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
-
         });
 
         leaveWaitlist.setOnClickListener(v -> {
+            Date now = new Date();
+
+            if (now.after(eventStart)) {
+                Toast.makeText(EventDetailsActivity.this, "This event has started already.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // if registration has ended, but event start time has not, still let the user leave waitlist
-            if (eventReceived.getRegistrationEnd().before(new Date()) && eventReceived.getEventTime().after(new Date())) {
+            if (eventReceived.getRegistrationEnd().before(now) && eventReceived.getEventTime().after(now)) {
                 changeUserWaitlist();
                 startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
                 finish();
                 Toast.makeText(EventDetailsActivity.this, "You have left the waitlist after the registration deadline. You cannot rejoin.", Toast.LENGTH_LONG).show();
             }
+
             joinWaitlist.setVisibility(View.VISIBLE);
             leaveWaitlist.setVisibility(View.INVISIBLE);
             changeUserWaitlist();
@@ -103,15 +138,28 @@ public class EventDetailsActivity extends AppCompatActivity {
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
             eventPoster.setVisibility(View.GONE);
+            eventGuidelines.setVisibility(View.GONE);
             descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
             posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
 
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
+            eventGuidelines.setVisibility(View.GONE);
             descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
             posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+        });
+
+        guidelinesButton.setOnClickListener(v -> {
+            eventDescription.setVisibility(View.GONE);
+            eventPoster.setVisibility(View.GONE);
+            eventGuidelines.setVisibility(View.VISIBLE);
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
 
         backButton.setOnClickListener(v -> {
@@ -158,7 +206,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void eventFailedToUpdate(Exception e) {
+                public void eventUpdateFailed(Exception e) {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
@@ -175,6 +223,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+            if (eventReceived.getEntrantLimit() != null) {
+                entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+            }
+            else {
+                entrantCount.setText(eventReceived.getEntrantCount());
+            }
         });
     }
 

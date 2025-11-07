@@ -43,7 +43,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@color/darkerTeal"
+        android:background="@drawable/rounded_tops_dark_teal"
         android:text="Registration Ends"
         android:textAlignment="center"
         android:textColor="@color/white"
@@ -73,7 +73,7 @@
         android:id="@+id/text_event_registration_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/rounded_bottom_white"
         android:padding="5dp"
         android:text="Registration Start"
         android:textAlignment="center"
@@ -244,10 +244,28 @@
         android:textAlignment="viewStart"
         android:textColor="@color/darkerTeal"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/image_event_poster"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
         app:layout_constraintStart_toStartOf="@+id/text_event_name"
-        app:layout_constraintTop_toBottomOf="@id/text_event_registration_end" />
+        app:layout_constraintTop_toBottomOf="@id/text_event_registration_end"
+        app:layout_constraintBottom_toTopOf="@id/text_event_guidelines"/>
+
+    <EditText
+        android:id="@+id/text_event_guidelines"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_white"
+        android:gravity="top|start"
+        android:hint="You have no event guidelines."
+        android:maxHeight="500dp"
+        android:padding="5dp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/darkerTeal"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@id/text_event_description"
+        app:layout_constraintBottom_toTopOf="@id/image_event_poster"/>
 
     <Button
         android:id="@+id/button_save_event_changes"
@@ -273,7 +291,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/rounded_white"
-        app:layout_constraintTop_toBottomOf="@id/text_event_description"
+        app:layout_constraintTop_toBottomOf="@id/text_event_guidelines"
         app:layout_constraintBottom_toTopOf="@+id/button_save_event_changes"
         app:layout_constraintEnd_toEndOf="@+id/text_event_description"
         app:layout_constraintStart_toStartOf="@+id/text_event_description"

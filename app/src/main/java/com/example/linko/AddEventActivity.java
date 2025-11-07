@@ -35,6 +35,7 @@ import java.util.Locale;
 public class AddEventActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +47,7 @@ public class AddEventActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.button_back_button);
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
+        TextView guidelinesButton = findViewById(R.id.click_event_guidelines);
 
         // event display stuff
         TextView eventName = findViewById(R.id.text_event_name);
@@ -56,6 +58,7 @@ public class AddEventActivity extends AppCompatActivity {
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
         TextView registrationEnd = findViewById(R.id.text_event_registration_end);
         TextView eventDescription = findViewById(R.id.text_event_description);
+        TextView eventGuidelines = findViewById(R.id.text_event_guidelines);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
 
         Event eventReceived = (Event) getIntent().getSerializableExtra("savedEvent");
@@ -72,7 +75,7 @@ public class AddEventActivity extends AppCompatActivity {
 
             Integer entrantLimitNumber = eventReceived.getEntrantLimit();
             if (eventReceived.getEntrantLimit() == null) {
-                eventCapacity.setText("N/A");
+                entrantLimit.setText("N/A");
             }
             else {
                 String entrantLimitString = entrantLimitNumber.toString();
@@ -93,20 +96,35 @@ public class AddEventActivity extends AppCompatActivity {
             Glide.with(AddEventActivity.this).load(eventPosterUri).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
 
             eventDescription.setText(eventReceived.getDescription());
+            eventGuidelines.setText(eventReceived.getGuidelines());
+
         }
 
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
             eventPoster.setVisibility(View.GONE);
+            eventGuidelines.setVisibility(View.GONE);
             descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
             posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
 
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
+            eventGuidelines.setVisibility(View.GONE);
             descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
             posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+        });
+
+        guidelinesButton.setOnClickListener(v -> {
+            eventDescription.setVisibility(View.GONE);
+            eventPoster.setVisibility(View.GONE);
+            eventGuidelines.setVisibility(View.VISIBLE);
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
 
         backButton.setOnClickListener(v -> {
@@ -179,7 +197,7 @@ public class AddEventActivity extends AppCompatActivity {
             }
 
             @Override
-            public void eventFailedToAdd(Exception e) {
+            public void eventAddFailed(Exception e) {
                 Log.e("Firestore", "Error saving user", e);
                 Toast.makeText(AddEventActivity.this, "Error saving event: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }

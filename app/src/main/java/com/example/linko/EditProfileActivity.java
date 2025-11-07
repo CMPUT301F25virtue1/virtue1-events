@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see ProfileActivity
  */
 public class EditProfileActivity extends AppCompatActivity {
-
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
     private ImageView userProfile;

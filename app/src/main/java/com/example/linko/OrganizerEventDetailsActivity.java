@@ -36,9 +36,7 @@ import java.util.Locale;
  */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
-    private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
-    private ImageView editPoster;
     private List<User> totalEntrantsList;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
@@ -58,7 +56,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         // event tab ui
         ConstraintLayout eventDetailsContainer = findViewById(R.id.event_details_container);
-        ImageView backButtonForEditPoster = findViewById(R.id.button_edit_poster_back);
         TextView eventName = findViewById(R.id.text_event_name);
         TextView eventCapacity = findViewById(R.id.text_event_capacity);
         TextView entrantCount = findViewById(R.id.text_entrant_count);
@@ -67,14 +64,12 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
         TextView registrationEnd = findViewById(R.id.text_event_registration_end);
         TextView eventDescription = findViewById(R.id.text_event_description);
+        TextView eventGuidelines = findViewById(R.id.text_event_guidelines);
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
+        TextView guidelinesButton = findViewById(R.id.click_event_guidelines);
         ImageView eventPoster = findViewById(R.id.image_event_poster);
         Button editEvent = findViewById(R.id.button_edit_event);
-        View backgroundDim = findViewById(R.id.background_dim);
-        ConstraintLayout editPosterContainer = findViewById(R.id.edit_poster_container);
-        Button savePoster = findViewById(R.id.button_save_poster);
-        editPoster = findViewById(R.id.image_edit_poster);
 
         // entrants tab ui
         ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
@@ -83,7 +78,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
-        entrantsUserRecyclerAdapter = new UserRecyclerAdapter(totalEntrantsList);
+        entrantsUserRecyclerAdapter = new UserRecyclerAdapter(totalEntrantsList, false);
         entrantsRecyclerView.setAdapter(entrantsUserRecyclerAdapter);
 
         LinearLayoutManager entrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -133,10 +128,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         String eventCapacityString = eventCapacityNumber.toString();
         eventCapacity.setText(eventCapacityString);
         Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
-        Glide.with(OrganizerEventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(editPoster);
 
-        entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
-
+        if (eventReceived.getEntrantLimit() != null) {
+            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        }
+        else {
+            entrantCount.setText(eventReceived.getEntrantCount());
+        }
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
 
         Date eventStart = eventReceived.getEventTime();
@@ -147,18 +145,33 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         registrationStart.setText(sdf.format(start));
         registrationEnd.setText(sdf.format(end));
         eventDescription.setText(eventReceived.getDescription());
+        eventGuidelines.setText(eventReceived.getGuidelines());
 
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
             eventPoster.setVisibility(View.GONE);
+            eventGuidelines.setVisibility(View.GONE);
             descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
             posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
+
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
+            eventGuidelines.setVisibility(View.GONE);
             descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
             posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+        });
+
+        guidelinesButton.setOnClickListener(v -> {
+            eventDescription.setVisibility(View.GONE);
+            eventPoster.setVisibility(View.GONE);
+            eventGuidelines.setVisibility(View.VISIBLE);
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
 
         backButton.setOnClickListener(v -> {
@@ -166,60 +179,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             finish();
         });
 
-        backButtonForEditPoster.setOnClickListener(v -> {
-            backgroundDim.setVisibility(View.GONE);
-            editPosterContainer.setVisibility(View.GONE);
-        });
-
         editEvent.setOnClickListener(v -> {
-            backgroundDim.setVisibility(View.VISIBLE);
-            editPosterContainer.setVisibility(View.VISIBLE);
-        });
-
-        editPoster.setOnClickListener(v-> {
-            openFileChooser();
-        });
-
-        savePoster.setOnClickListener(v-> {
-            if (imageUri == null) {
-                backgroundDim.setVisibility(View.GONE);
-                editPosterContainer.setVisibility(View.GONE);
-                return;
-            }
-
-            ImageStorageHandler eventPictureUpdate = new ImageStorageHandler();
-
-            eventPictureUpdate.uploadEventImage(imageUri, eventReceived.getEventId(), new ImageStorageHandler.imageUploaded() {
-                @Override
-                public void onUploadSuccess(String downloadUrl) {
-                    eventReceived.setEventPosterURL(downloadUrl);
-                    EventDatabaseHandler db = new EventDatabaseHandler();
-                    db.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
-                        @Override
-                        public void eventUpdate() {
-                            Toast.makeText(OrganizerEventDetailsActivity.this, "Poster successfully updated!", Toast.LENGTH_LONG).show();
-                            Glide.with(OrganizerEventDetailsActivity.this).load(imageUri).centerCrop().into(eventPoster);
-                            backgroundDim.setVisibility(View.GONE);
-                            editPosterContainer.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void eventFailedToUpdate(Exception e) {
-                            Toast.makeText(OrganizerEventDetailsActivity.this, "Error updating event poster: " + e.getMessage(), Toast.LENGTH_LONG).show();
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onUploadFailed(Exception e) {
-                    Toast.makeText(OrganizerEventDetailsActivity.this, "Error uploading event poster: " + e.getMessage(), Toast.LENGTH_LONG).show();
-
-                }
-            });
-
-            backgroundDim.setVisibility(View.VISIBLE);
-            editPosterContainer.setVisibility(View.VISIBLE);
+            EditEventPosterDialog editDialog = EditEventPosterDialog.newInstance(eventReceived);
+            editDialog.setOnPosterUpdatedListener(newPosterUrl -> Glide.with(OrganizerEventDetailsActivity.this).load(newPosterUrl).centerCrop().into(eventPoster));
+            editDialog.show(getSupportFragmentManager(), "EditPosterDialog");
         });
 
         // top bar listeners
@@ -240,27 +203,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
 
         });
-    }
-
-    /**
-     * This method contains the logic for selecting an image file for the event details
-     */
-    private void openFileChooser() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setType("image/*");
-
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
-            if (data != null && data.getData() != null) {
-                imageUri = data.getData();
-                Glide.with(OrganizerEventDetailsActivity.this).load(imageUri).centerCrop().into(editPoster);
-            }
-        }
+        findViewById(R.id.button_qr_code).setOnClickListener(v -> {
+            String eventId = eventReceived.getEventId();
+            QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
+            dialog.show(getSupportFragmentManager(), "QRCodeDialog");
+        });
     }
 }

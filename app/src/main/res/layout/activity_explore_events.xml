@@ -28,7 +28,10 @@
         android:background="@drawable/signin_input_shape"
         android:drawableEnd="@drawable/outline_search_24"
         android:elevation="5dp"
+        android:textColor="@color/darkerTeal"
         android:hint="Search Events..."
+        android:singleLine="true"
+        android:scrollHorizontally="true"
         android:padding="10dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/button_filter_events"
@@ -80,10 +83,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_status_bar" />
 
+    <TextView
+        android:id="@+id/text_no_event_from_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No events match your filters."
+        android:textColor="@color/teal"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/top_status_bar" />
+
     <include
         android:id="@+id/nav_bar"
         layout="@layout/navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="85dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

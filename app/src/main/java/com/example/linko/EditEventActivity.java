@@ -33,7 +33,6 @@ import java.util.Locale;
  * </p>
  */
 public class EditEventActivity extends AppCompatActivity {
-
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
     private Calendar startCalendar = Calendar.getInstance();
@@ -43,6 +42,7 @@ public class EditEventActivity extends AppCompatActivity {
     private ImageView eventPoster;
     private boolean registrationStartPicked = false;
     private boolean registrationEndPicked = false;
+    private boolean eventTimeStartPicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,7 @@ public class EditEventActivity extends AppCompatActivity {
         EditText eventCapacityInput = findViewById(R.id.text_event_capacity);
         EditText entrantLimitInput = findViewById(R.id.text_entrant_count);
         EditText eventDescriptionInput = findViewById(R.id.text_event_description);
+        EditText eventGuidelinesInput = findViewById(R.id.text_event_guidelines);
         CheckBox geolocationBox = findViewById(R.id.checkBox);
         TextView eventTime = findViewById(R.id.text_event_start_time);
         TextView registrationStart = findViewById(R.id.text_event_registration_start);
@@ -83,6 +84,12 @@ public class EditEventActivity extends AppCompatActivity {
             Date eventStart = eventReceived.getEventTime();
             Date start = eventReceived.getRegistrationStart();
             Date end = eventReceived.getRegistrationEnd();
+            startCalendar.setTime(start);
+            endCalendar.setTime(end);
+            eventTimeCalendar.setTime(eventStart);
+            eventTimeStartPicked = true;
+            registrationStartPicked = true;
+            registrationEndPicked = true;
             SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
             eventTime.setText(sdf.format(eventStart));
             registrationStart.setText(sdf.format(start));
@@ -92,13 +99,13 @@ public class EditEventActivity extends AppCompatActivity {
             Glide.with(EditEventActivity.this).load(imageUri).centerCrop().placeholder(R.drawable.outline_photo_camera_24).into(eventPoster);
 
             eventDescriptionInput.setText(eventReceived.getDescription());
+            eventGuidelinesInput.setText(eventReceived.getGuidelines());
         }
 
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(EditEventActivity.this, AddEventActivity.class));
             finish();
         });
-
 
         eventTime.setOnClickListener(v -> {
             if (!registrationStartPicked || !registrationEndPicked) {
@@ -114,6 +121,7 @@ public class EditEventActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
                 String period = sdf.format(start.getTime());
                 eventTime.setText(period);
+                eventTimeStartPicked = true;
             });
         });
 
@@ -175,14 +183,22 @@ public class EditEventActivity extends AppCompatActivity {
                 return;
             }
 
-            // needs firebase storage to implement
-            String eventPhotoURL = null;
+            if (!eventTimeStartPicked || !registrationStartPicked || !registrationEndPicked) {
+                Toast.makeText(this, "Please fill out your event detail times", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             Date eventTimeSave = eventTimeCalendar.getTime();
             Date registrationStartSave = startCalendar.getTime();
             Date registrationEndSave = endCalendar.getTime();
 
-            Event eventToSave = new Event(eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription,eventPhotoURL);
+            String eventGuidelines = eventGuidelinesInput.getText().toString();
+            if (eventGuidelines.isEmpty()) {
+                Toast.makeText(this, "Please fill out your event guidelines.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Event eventToSave = new Event(null,eventName,eventCapacityInt,entrantLimit,geolocationRequirement, eventTimeSave, registrationStartSave,registrationEndSave, eventDescription, eventGuidelines, null, null);
 
             Intent intent = new Intent(EditEventActivity.this, AddEventActivity.class);
             intent.putExtra("savedEvent", eventToSave);

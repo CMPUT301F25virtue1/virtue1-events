@@ -9,6 +9,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.List;
 
 /**
  * Handles all the logic for dealing with the user in the Firebase database. Is called whenever we
@@ -87,8 +90,95 @@ public class UserDatabaseHandler {
         });
     }
 
+    public void fetchUserById(String userId, UserDatabaseHandler.UserFetchedFromId fetched) {
+        DocumentReference docRef = usersRef.document(userId);
+
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                User user = documentSnapshot.toObject(User.class);
+                fetched.userFetch(user);
+            } else {
+                Log.e("Firestore", "Error fetching user: " + userId, task.getException());
+                fetched.userFetchFailed(task.getException());
+            }
+        });
+    }
+
+    public void deleteUserById(String userId, UserDatabaseHandler.UserDeletedFromId deleted) {
+        DocumentReference userRef = usersRef.document(userId);
+
+        userRef.delete().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Firestore", "Error deleting user", task.getException());
+                deleted.userDeleteFailed(task.getException());
+                return;
+            }
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference eventsRef = db.collection("events");
+
+            // update event lists
+            eventsRef.get().addOnCompleteListener(eventsTask -> {
+                if (!eventsTask.isSuccessful() || eventsTask.getResult() == null) {
+                    Log.e("Firestore", "Error fetching events", eventsTask.getException());
+                    deleted.userDeleteFailed(eventsTask.getException());
+                    return;
+                }
+
+                for (QueryDocumentSnapshot snapshot : eventsTask.getResult()) {
+                    Event event = snapshot.toObject(Event.class);
+
+                    // remove userId from all event entrant lists
+                    List<String> entrants = event.getEntrants();
+                    if (entrants.contains(userId)) {
+                        entrants.remove(userId);
+                        event.setEntrants(entrants);
+                    }
+
+                    List<String> cancelledEntrants = event.getCancelledEntrants();
+                    if (cancelledEntrants.contains(userId)) {
+                        cancelledEntrants.remove(userId);
+                        event.setCancelledEntrants(cancelledEntrants);
+                    }
+
+                    List<String> invitedEntrants = event.getInvitedEntrants();
+                    if (invitedEntrants.contains(userId)) {
+                        invitedEntrants.remove(userId);
+                        event.setInvitedEntrants(invitedEntrants);
+                    }
+
+                    List<String> signedUpEntrants = event.getSignedUpEntrants();
+                    if (signedUpEntrants.contains(userId)) {
+                        signedUpEntrants.remove(userId);
+                        event.setSignedUpEntrants(signedUpEntrants);
+                    }
+
+                    EventDatabaseHandler eventUpdateHelper = new EventDatabaseHandler();
+                    eventUpdateHelper.update(event, new EventDatabaseHandler.EventUpdated() {
+                        @Override
+                        public void eventUpdate() {
+                            Log.d("Databasedelete", "Event entrant lists updated");
+                        }
+
+                        @Override
+                        public void eventUpdateFailed(Exception e) {
+                            Log.e("Databasedelete", "Event entrant lists failed to update", e);
+                        }
+                    });
+                }
+                deleted.userDelete();
+            });
+        });
+    }
+
+
     public interface UserFetched {
         void userLoaded(User user);
+    }
+
+    public interface UserFetchedFromId {
+        void userFetch(User user);
+        void userFetchFailed(Exception e);
     }
 
     public interface UserDeleted {
@@ -100,4 +190,8 @@ public class UserDatabaseHandler {
         void userFailedToAdd(Exception e);
     }
 
+    public interface UserDeletedFromId {
+        void userDelete();
+        void userDeleteFailed(Exception e);
+    }
 }

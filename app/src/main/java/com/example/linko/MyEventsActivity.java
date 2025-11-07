@@ -55,9 +55,9 @@ public class MyEventsActivity extends AppCompatActivity {
 
         // create event array
         organizedEventsList = new ArrayList<>();
-        organizedEventRecyclerAdapter = new EventRecyclerAdapter(organizedEventsList);
+        organizedEventRecyclerAdapter = new EventRecyclerAdapter(organizedEventsList, false);
         registeredEventsList = new ArrayList<>();
-        registeredEventRecyclerAdapter = new EventRecyclerAdapter(registeredEventsList);
+        registeredEventRecyclerAdapter = new EventRecyclerAdapter(registeredEventsList, false);
 
         organizedRecyclerView.setAdapter(organizedEventRecyclerAdapter);
         registeredRecyclerView.setAdapter(registeredEventRecyclerAdapter);
