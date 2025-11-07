@@ -156,6 +156,13 @@ public class EventFilterDialog extends DialogFragment {
     public void setOnFilterAppliedListener(OnFilterAppliedListener listener) {
         this.listener = listener;
     }
+
+    /**
+      This method contains the logic for the date and time selection pop ups.
+      @param calendar
+      @param title
+      @param callback
+    */
     private void pickDateTime(Calendar calendar, String title, EventFilterDialog.DateTimePickedCallback callback) {
         Calendar now = Calendar.getInstance();
 
