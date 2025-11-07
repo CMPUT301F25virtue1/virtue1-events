@@ -75,7 +75,7 @@ public class AddEventActivity extends AppCompatActivity {
 
             Integer entrantLimitNumber = eventReceived.getEntrantLimit();
             if (eventReceived.getEntrantLimit() == null) {
-                eventCapacity.setText("N/A");
+                entrantLimit.setText("N/A");
             }
             else {
                 String entrantLimitString = entrantLimitNumber.toString();

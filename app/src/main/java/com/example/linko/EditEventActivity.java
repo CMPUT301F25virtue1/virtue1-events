@@ -84,6 +84,12 @@ public class EditEventActivity extends AppCompatActivity {
             Date eventStart = eventReceived.getEventTime();
             Date start = eventReceived.getRegistrationStart();
             Date end = eventReceived.getRegistrationEnd();
+            startCalendar.setTime(start);
+            endCalendar.setTime(end);
+            eventTimeCalendar.setTime(eventStart);
+            eventTimeStartPicked = true;
+            registrationStartPicked = true;
+            registrationEndPicked = true;
             SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
             eventTime.setText(sdf.format(eventStart));
             registrationStart.setText(sdf.format(start));
@@ -93,6 +99,7 @@ public class EditEventActivity extends AppCompatActivity {
             Glide.with(EditEventActivity.this).load(imageUri).centerCrop().placeholder(R.drawable.outline_photo_camera_24).into(eventPoster);
 
             eventDescriptionInput.setText(eventReceived.getDescription());
+            eventGuidelinesInput.setText(eventReceived.getGuidelines());
         }
 
         backButton.setOnClickListener(v -> {
