@@ -16,6 +16,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 
+/**
+ * This class adds contains the logic for adding an event poster to an event
+ */
 public class EditEventPosterDialog extends DialogFragment {
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView editPoster;
@@ -101,6 +104,9 @@ public class EditEventPosterDialog extends DialogFragment {
         void onPosterUpdated(String newPosterUrl);
     }
 
+    /**
+     * This method contains the logic that allows the user to select a file for the poster image
+     */
     private void openFileChooser() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");

@@ -21,6 +21,9 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.OutputStream;
 
+/**
+ * This class handles the logic for the QR code functionality
+ */
 public class QRCodeDialog extends DialogFragment {
 
     private static final String ARG_EVENT_ID = "event_id";
@@ -68,6 +71,9 @@ public class QRCodeDialog extends DialogFragment {
         return view;
     }
 
+    /**
+     * Contains the logic for saving a generated QR code in the users image gallery
+     */
     private void saveImageInGallery() {
         String fileName = "Linko_QR_" + System.currentTimeMillis() + ".png";
         OutputStream outputStream;

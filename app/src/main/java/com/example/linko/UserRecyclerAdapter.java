@@ -69,6 +69,9 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
         return userList.size();
     }
 
+    /**
+     * Stores all the ID's for the user view for later use
+     */
     public class UserViewHolder extends RecyclerView.ViewHolder {
         CardView card;
         ImageView userProfilePicture;

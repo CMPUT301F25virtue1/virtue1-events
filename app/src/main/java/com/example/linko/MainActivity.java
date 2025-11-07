@@ -21,7 +21,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- *
+ * The homepage for the app that you get when you first launch it. Has prompts for sign up and login
  */
 public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;

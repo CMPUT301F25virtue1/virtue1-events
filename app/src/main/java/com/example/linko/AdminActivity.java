@@ -35,11 +35,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- This class contains the UI interaction logic for the Admin mode.
- <p>
- Implements a swipe to delete feature for admin for Events, Orginizers, Users, and profiles.
- </p>
-*/
+ *This class contains the UI interaction logic for the Admin mode.
+ *<p>
+ *Implements a swipe to delete feature for admin for Events, Organizers, Users, and profiles.
+ *</p>
+ */
 public class AdminActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;

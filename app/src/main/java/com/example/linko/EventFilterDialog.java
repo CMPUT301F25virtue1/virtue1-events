@@ -21,9 +21,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
-  This class contains the logic for the ui interactions with the event filter.
-  Allows the user to filter the dates and times of events.
-*/
+  * This class contains the logic for the ui interactions with the event filter.
+  * Allows the user to filter the dates and times of events.
+  */
 public class EventFilterDialog extends DialogFragment {
 
     private Calendar filterStart;
@@ -158,11 +158,11 @@ public class EventFilterDialog extends DialogFragment {
     }
 
     /**
-      This method contains the logic for the date and time selection pop ups.
-      @param calendar
-      @param title
-      @param callback
-    */
+     * This method contains the logic for the date and time selection popups
+     * @param calendar Calender object were using
+     * @param title Whether this is the start or end time
+     * @param callback A callback for running the lambda code later from the caller
+     */
     private void pickDateTime(Calendar calendar, String title, EventFilterDialog.DateTimePickedCallback callback) {
         Calendar now = Calendar.getInstance();
 
