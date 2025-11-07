@@ -20,6 +20,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+  This class contains the logic for the ui interactions with the event filter.
+  Allows the user to filter the dates and times of events.
+*/
 public class EventFilterDialog extends DialogFragment {
 
     private Calendar filterStart;
