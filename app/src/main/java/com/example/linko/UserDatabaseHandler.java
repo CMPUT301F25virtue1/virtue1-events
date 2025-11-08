@@ -90,6 +90,11 @@ public class UserDatabaseHandler {
         });
     }
 
+    /**
+     * Fetches the desired user from the Firebase database
+     * @param userId User ID in the database
+     * @param fetched Catches errors if theres an error or fetches the user
+     */
     public void fetchUserById(String userId, UserDatabaseHandler.UserFetchedFromId fetched) {
         DocumentReference docRef = usersRef.document(userId);
 
@@ -105,6 +110,11 @@ public class UserDatabaseHandler {
         });
     }
 
+    /**
+     * Deleted the desired user from the Firebase database
+     * @param userId The user ID we want to delete
+     * @param deleted Either confirms the user was deleted or throws an exception
+     */
     public void deleteUserById(String userId, UserDatabaseHandler.UserDeletedFromId deleted) {
         DocumentReference userRef = usersRef.document(userId);
 

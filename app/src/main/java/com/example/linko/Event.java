@@ -36,7 +36,12 @@ public class Event implements Serializable {
     private String eventId;
 
 
-    public Event() {}
+    public Event() {
+        this.entrants = new ArrayList<>();
+        this.invitedEntrants = new ArrayList<>();
+        this.signedUpEntrants = new ArrayList<>();
+        this.cancelledEntrants = new ArrayList<>();
+    }
 
     /**
      * Event info object. On constructor call, makes new entrants, invitedEntrants,

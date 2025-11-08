@@ -186,7 +186,7 @@ public class AddEventActivity extends AppCompatActivity {
      *
      * @see EventDatabaseHandler
      */
-    private void addEvent(Event event, DocumentReference docRef, String eventId) {
+    public void addEvent(Event event, DocumentReference docRef, String eventId) {
         new EventDatabaseHandler().addEvent(event, new EventDatabaseHandler.EventAdded() {
 
             @Override

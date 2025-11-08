@@ -68,6 +68,11 @@ public abstract class NavigationBarHandler {
         setAlpha(clickedIcon, allIcons);
     }
 
+    /**
+     * Sets alpha values for icons so the user can see what is "highlighted" or selected
+     * @param highlight The image in the nav bar the user selected
+     * @param icons A check to see if it matches an existing icon
+     */
     public static void setAlpha(ImageView highlight, ImageView[] icons) {
         // to "highlight" the selected icon
         for (ImageView icon : icons) {

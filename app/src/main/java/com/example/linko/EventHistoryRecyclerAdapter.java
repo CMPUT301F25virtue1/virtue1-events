@@ -42,6 +42,9 @@ public class EventHistoryRecyclerAdapter extends RecyclerView.Adapter<EventHisto
         return eventList.size();
     }
 
+    /**
+     * Used to hold the ID's of the view for later use
+     */
     public class EventViewHolder extends RecyclerView.ViewHolder {
         TextView eventName;
 

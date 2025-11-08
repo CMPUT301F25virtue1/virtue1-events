@@ -8,7 +8,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 /**
- *
+ * This class handles the logic for storing an image used in the Firebase database
  */
 public class ImageStorageHandler {
     private FirebaseStorage storage;
@@ -38,6 +38,12 @@ public class ImageStorageHandler {
         });
     }
 
+    /**
+     * Contains the logic for uploading an event image to the database
+     * @param imageUri An identifier for the image
+     * @param eventId The Firebase ID for the event the image is from
+     * @param uploaded Confirms if the image was properly uploaded
+     */
     public void uploadEventImage(Uri imageUri, String eventId, imageUploaded uploaded) {
         StorageReference profileRef = storage.getReference().child("event_posters/" + eventId + ".jpg");
 

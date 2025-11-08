@@ -73,6 +73,9 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         this.listener = listener;
     }
 
+    /**
+     * Used to hold all the ID's for an event view for later use
+     */
     public class EventViewHolder extends RecyclerView.ViewHolder {
 
         CardView card;
