@@ -92,13 +92,13 @@ public class EditProfileActivityTest {
 
     @Test
     public void testTypingInfo() {
-        onView(withId(R.id.input_firstname)).perform(typeText("John"), closeSoftKeyboard()).check(matches(withText("John")));;
+        onView(withId(R.id.input_firstname)).perform(typeText("John"), closeSoftKeyboard()).check(matches(withText("John")));
 
-        onView(withId(R.id.input_lastname)).perform(typeText("Doe"), closeSoftKeyboard()).check(matches(withText("Doe")));;
+        onView(withId(R.id.input_lastname)).perform(typeText("Doe"), closeSoftKeyboard()).check(matches(withText("Doe")));
 
-        onView(withId(R.id.input_email)).perform(typeText("JD@email.com"), closeSoftKeyboard()).check(matches(withText("JD@email.com")));;
+        onView(withId(R.id.input_email)).perform(typeText("JD@email.com"), closeSoftKeyboard()).check(matches(withText("JD@email.com")));
 
-        onView(withId(R.id.input_phonenumber)).perform(typeText("123456789"), closeSoftKeyboard()).check(matches(withText("123456789")));;
+        onView(withId(R.id.input_phonenumber)).perform(typeText("123456789"), closeSoftKeyboard()).check(matches(withText("123456789")));
 
     }
 
