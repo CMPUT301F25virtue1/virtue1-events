@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -117,68 +118,91 @@ public class UserDatabaseHandler {
      */
     public void deleteUserById(String userId, UserDatabaseHandler.UserDeletedFromId deleted) {
         DocumentReference userRef = usersRef.document(userId);
-
-        userRef.delete().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Firestore", "Error deleting user", task.getException());
-                deleted.userDeleteFailed(task.getException());
-                return;
-            }
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference eventsRef = db.collection("events");
-
-            // update event lists
-            eventsRef.get().addOnCompleteListener(eventsTask -> {
-                if (!eventsTask.isSuccessful() || eventsTask.getResult() == null) {
-                    Log.e("Firestore", "Error fetching events", eventsTask.getException());
-                    deleted.userDeleteFailed(eventsTask.getException());
-                    return;
+        fetchUserById(userId, new UserFetchedFromId() {
+            @Override
+            public void userFetch(User user) {
+                // remove the user pfp from firebase storage
+                if (user.getProfileUrl() != null && !user.getProfileUrl().isEmpty()) {
+                    FirebaseStorage.getInstance().getReferenceFromUrl(user.getProfileUrl())
+                            .delete()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Log.d("Storage", "User profile picture deleted");
+                                } else {
+                                    Log.e("Storage", "Error deleting profile picture", task.getException());
+                                }
+                            });
                 }
 
-                for (QueryDocumentSnapshot snapshot : eventsTask.getResult()) {
-                    Event event = snapshot.toObject(Event.class);
-
-                    // remove userId from all event entrant lists
-                    List<String> entrants = event.getEntrants();
-                    if (entrants.contains(userId)) {
-                        entrants.remove(userId);
-                        event.setEntrants(entrants);
+                userRef.delete().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.e("Firestore", "Error deleting user", task.getException());
+                        deleted.userDeleteFailed(task.getException());
+                        return;
                     }
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    CollectionReference eventsRef = db.collection("events");
 
-                    List<String> cancelledEntrants = event.getCancelledEntrants();
-                    if (cancelledEntrants.contains(userId)) {
-                        cancelledEntrants.remove(userId);
-                        event.setCancelledEntrants(cancelledEntrants);
-                    }
-
-                    List<String> invitedEntrants = event.getInvitedEntrants();
-                    if (invitedEntrants.contains(userId)) {
-                        invitedEntrants.remove(userId);
-                        event.setInvitedEntrants(invitedEntrants);
-                    }
-
-                    List<String> signedUpEntrants = event.getSignedUpEntrants();
-                    if (signedUpEntrants.contains(userId)) {
-                        signedUpEntrants.remove(userId);
-                        event.setSignedUpEntrants(signedUpEntrants);
-                    }
-
-                    EventDatabaseHandler eventUpdateHelper = new EventDatabaseHandler();
-                    eventUpdateHelper.update(event, new EventDatabaseHandler.EventUpdated() {
-                        @Override
-                        public void eventUpdate() {
-                            Log.d("Databasedelete", "Event entrant lists updated");
+                    // update event lists (ONLY
+                    eventsRef.get().addOnCompleteListener(eventsTask -> {
+                        if (!eventsTask.isSuccessful() || eventsTask.getResult() == null) {
+                            Log.e("Firestore", "Error fetching events", eventsTask.getException());
+                            deleted.userDeleteFailed(eventsTask.getException());
+                            return;
                         }
 
-                        @Override
-                        public void eventUpdateFailed(Exception e) {
-                            Log.e("Databasedelete", "Event entrant lists failed to update", e);
+                        for (QueryDocumentSnapshot snapshot : eventsTask.getResult()) {
+                            Event event = snapshot.toObject(Event.class);
+
+                            // remove userId from all event entrant lists
+                            List<String> entrants = event.getEntrants();
+                            if (entrants.contains(userId)) {
+                                entrants.remove(userId);
+                                event.setEntrants(entrants);
+                            }
+
+                            List<String> cancelledEntrants = event.getCancelledEntrants();
+                            if (cancelledEntrants.contains(userId)) {
+                                cancelledEntrants.remove(userId);
+                                event.setCancelledEntrants(cancelledEntrants);
+                            }
+
+                            List<String> invitedEntrants = event.getInvitedEntrants();
+                            if (invitedEntrants.contains(userId)) {
+                                invitedEntrants.remove(userId);
+                                event.setInvitedEntrants(invitedEntrants);
+                            }
+
+                            List<String> signedUpEntrants = event.getSignedUpEntrants();
+                            if (signedUpEntrants.contains(userId)) {
+                                signedUpEntrants.remove(userId);
+                                event.setSignedUpEntrants(signedUpEntrants);
+                            }
+
+                            EventDatabaseHandler eventUpdateHelper = new EventDatabaseHandler();
+                            eventUpdateHelper.update(event, new EventDatabaseHandler.EventUpdated() {
+                                @Override
+                                public void eventUpdate() {
+                                    Log.d("Databasedelete", "Event entrant lists updated");
+                                }
+
+                                @Override
+                                public void eventUpdateFailed(Exception e) {
+                                    Log.e("Databasedelete", "Event entrant lists failed to update", e);
+                                }
+                            });
                         }
+                        deleted.userDelete();
                     });
-                }
-                deleted.userDelete();
-            });
+                });
+            }
+
+            @Override
+            public void userFetchFailed(Exception e) {
+                deleted.userDeleteFailed(e);
+            }
         });
+
     }
 
 
