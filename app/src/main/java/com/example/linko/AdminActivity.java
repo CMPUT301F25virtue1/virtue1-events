@@ -107,6 +107,7 @@ public class AdminActivity extends AppCompatActivity {
                     public void eventDelete() {
                         Toast.makeText(AdminActivity.this, "Events successfully deleted!", Toast.LENGTH_SHORT).show();
                         allEventsList.remove(eventToDelete);
+                        originalEventsList.remove(eventToDelete);
                         eventRecyclerAdapter.notifyDataSetChanged();
                     }
 
@@ -140,33 +141,34 @@ public class AdminActivity extends AppCompatActivity {
                 // delete all events that have the organizer's id as their owner
                 db = FirebaseFirestore.getInstance();
                 eventsRef = db.collection("events");
-                eventsRef.addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.e("Firestore", error.toString());
-                    }
-                    if (value != null && !value.isEmpty()) {
-                        Log.d("firebase", "checking documents");
-                        for (QueryDocumentSnapshot snapshot : value) {
-                            Event eventToDelete = snapshot.toObject(Event.class);
-                            if (eventToDelete.getOwnerId().equals(organizerId)) {
-                                deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
-                                    @Override
-                                    public void eventDelete() {
-                                        Toast.makeText(AdminActivity.this, "Event successfully deleted!", Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    @Override
-                                    public void eventDeleteFailed(Exception e) {
-                                        Toast.makeText(AdminActivity.this, "Error deleting event.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
+                eventsRef.get().addOnSuccessListener(query -> {
+                    for (QueryDocumentSnapshot snapshot : query) {
+                        Event eventToDelete = snapshot.toObject(Event.class);
+                        if (eventToDelete.getOwnerId().equals(organizerId)) {
+                            deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
+                                @Override
+                                public void eventDelete() {
+                                    // delete from lists since not using snapshot listener (update manually)
+                                    allEventsList.remove(eventToDelete);
+                                    originalEventsList.remove(eventToDelete);
+                                    eventRecyclerAdapter.notifyDataSetChanged();
+                                }
+                                @Override
+                                public void eventDeleteFailed(Exception e) {
+                                    Toast.makeText(AdminActivity.this, "Error deleting event.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
-                });
+                    // remove organizer
+                    allOrganizerList.remove(organizerToDelete);
+                    organizerRecyclerAdapter.notifyDataSetChanged();
+                    Toast.makeText(AdminActivity.this, "Organizer deleted!", Toast.LENGTH_SHORT).show();
 
-                allOrganizerList.remove(organizerToDelete);
-                organizerRecyclerAdapter.notifyDataSetChanged();
+                }).addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error fetching events", e);
+                    organizerRecyclerAdapter.notifyDataSetChanged();
+                });
             }
         };
         // attach swipe to delete to the all organizers recyclerview
@@ -175,43 +177,37 @@ public class AdminActivity extends AppCompatActivity {
         // add every event to the recycler view initially
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
-        eventsRef.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
+        eventsRef.get().addOnSuccessListener(query -> {
+            allEventsList.clear();
+            allOrganizerList.clear();
+            for (QueryDocumentSnapshot snapshot : query) {
+                Event eventToAdd = snapshot.toObject(Event.class);
+                allEventsList.add(eventToAdd);
             }
-            if (value != null && !value.isEmpty()) {
-                Log.d("firebase", "checking documents");
-                allEventsList.clear();
-                allOrganizerList.clear();
-                for (QueryDocumentSnapshot snapshot : value) {
-                    Event eventToAdd = snapshot.toObject(Event.class);
-                    allEventsList.add(eventToAdd);
-                }
-                // keep copy of original events if user searches and clears
-                originalEventsList = new ArrayList<>(allEventsList);
-                eventRecyclerAdapter.notifyDataSetChanged();
+            // keep copy of original events if user searches and clears
+            originalEventsList = new ArrayList<>(allEventsList);
+            eventRecyclerAdapter.notifyDataSetChanged();
 
-                // populate organizers list
-                for (Event e : originalEventsList) {
-                    UserDatabaseHandler organizerHelper = new UserDatabaseHandler();
-                    organizerHelper.fetchUserById(e.getOwnerId(), new UserDatabaseHandler.UserFetchedFromId() {
-                        @Override
-                        public void userFetch(User user) {
-                            // avoid dupes
-                            if (!allOrganizerList.contains(user)) {
-                                allOrganizerList.add(user);
-                                organizerRecyclerAdapter.notifyDataSetChanged();
-                            }
+            // populate  organizers list
+            for (Event e : allEventsList) {
+                UserDatabaseHandler organizerHelper = new UserDatabaseHandler();
+                organizerHelper.fetchUserById(e.getOwnerId(), new UserDatabaseHandler.UserFetchedFromId() {
+                    @Override
+                    public void userFetch(User user) {
+                        // avoid dupes
+                        if (!allOrganizerList.contains(user)) {
+                            allOrganizerList.add(user);
+                            organizerRecyclerAdapter.notifyDataSetChanged();
                         }
+                    }
 
-                        @Override
-                        public void userFetchFailed(Exception ee) {
-                            Log.e("AdminActivity", "Failed to fetch organizer: " + e.getOwnerId(), ee);
-                        }
-                    });
-                }
+                    @Override
+                    public void userFetchFailed(Exception ee) {
+                        Log.e("AdminActivity", "Failed to fetch organizer: " + e.getOwnerId(), ee);
+                    }
+                });
             }
-        });
+        }).addOnFailureListener(e -> Log.e("Firestore", "Error fetching events", e));
 
         eventEventsButton.setOnClickListener(v -> {
             eventsRecyclerView.setVisibility(View.VISIBLE);
@@ -285,46 +281,44 @@ public class AdminActivity extends AppCompatActivity {
                 String organizerId = userToDelete.getUserId();
                 EventDatabaseHandler deleteEventsHelper = new EventDatabaseHandler();
                 // delete all events that have this user as their organizer first
-                db = FirebaseFirestore.getInstance();
-                eventsRef = db.collection("events");
-                eventsRef.addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.e("Firestore", error.toString());
-                    }
-                    if (value != null && !value.isEmpty()) {
-                        Log.d("firebase", "checking documents");
-                        for (QueryDocumentSnapshot snapshot : value) {
-                            Event eventToDelete = snapshot.toObject(Event.class);
-                            if (eventToDelete.getOwnerId().equals(organizerId)) {
-                                deleteEventsHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
-                                    @Override
-                                    public void eventDelete() {
-                                    }
+                eventsRef.get().addOnSuccessListener(query -> {
+                    for (QueryDocumentSnapshot snapshot : query) {
+                        Event eventToDelete = snapshot.toObject(Event.class);
+                        if (eventToDelete.getOwnerId().equals(organizerId)) {
+                            deleteEventsHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
+                                @Override
+                                public void eventDelete() {
+                                    // manually update lists
+                                    allEventsList.remove(eventToDelete);
+                                    originalEventsList.remove(eventToDelete);
+                                    eventRecyclerAdapter.notifyDataSetChanged();
+                                }
 
-                                    @Override
-                                    public void eventDeleteFailed(Exception e) {
-                                        Toast.makeText(AdminActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
+                                @Override
+                                public void eventDeleteFailed(Exception e) {
+                                    Toast.makeText(AdminActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
-                });
+                    // now delete their document and update event lists they are in
+                    deleteHelper.deleteUserById(userToDelete.getUserId(), new UserDatabaseHandler.UserDeletedFromId() {
+                        @Override
+                        public void userDelete() {
+                            // update
+                            allProfilesList.remove(userToDelete);
+                            allOrganizerList.remove(userToDelete);
+                            originalProfilesList.remove(userToDelete);
+                            profilesRecyclerAdapter.notifyDataSetChanged();
+                            organizerRecyclerAdapter.notifyDataSetChanged();
+                            Toast.makeText(AdminActivity.this, "Profile successfully deleted!", Toast.LENGTH_SHORT).show();
+                        }
 
-                // now delete their document and update event lists they are in
-                deleteHelper.deleteUserById(userToDelete.getUserId(), new UserDatabaseHandler.UserDeletedFromId() {
-                    @Override
-                    public void userDelete() {
-                        Toast.makeText(AdminActivity.this, "Profile successfully deleted!", Toast.LENGTH_SHORT).show();
-                        allProfilesList.remove(userToDelete);
-                        profilesRecyclerAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void userDeleteFailed(Exception e) {
-                        Toast.makeText(AdminActivity.this, "Error deleting profile.", Toast.LENGTH_SHORT).show();
-                        profilesRecyclerAdapter.notifyDataSetChanged();
-                    }
+                        @Override
+                        public void userDeleteFailed(Exception e) {
+                            Toast.makeText(AdminActivity.this, "Error deleting profile.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 });
             }
         };
@@ -333,10 +327,7 @@ public class AdminActivity extends AppCompatActivity {
 
         // add every profile to the recycler view initially
         usersRef = db.collection("users");
-        usersRef.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
+        usersRef.get().addOnSuccessListener(value -> {
             if (value != null && !value.isEmpty()) {
                 Log.d("firebase", "checking documents");
                 allProfilesList.clear();
@@ -348,6 +339,8 @@ public class AdminActivity extends AppCompatActivity {
                 originalProfilesList = new ArrayList<>(allProfilesList);
                 profilesRecyclerAdapter.notifyDataSetChanged();
             }
+        }).addOnFailureListener(error -> {
+            Log.e("firebase", error.toString());
         });
 
         profilesSearchBar.addTextChangedListener(new TextWatcher() {
