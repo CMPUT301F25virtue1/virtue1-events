@@ -77,7 +77,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView noEntrants = findViewById(R.id.text_no_entrants);
 
         // system tab ui
-        ConstraintLayout systemContainer = findViewById(R.id.syste)
+        ConstraintLayout systemContainer = findViewById(R.id.system_container);
+
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
