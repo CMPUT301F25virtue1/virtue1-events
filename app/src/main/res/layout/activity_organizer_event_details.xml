@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_event"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
 
         <TextView
@@ -397,24 +397,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/button_export_csv"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="@color/darkerTeal"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="Export Entrants as CSV"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/button_entrant_location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_entrant_location"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <Button-->
+<!--            android:id="@+id/button_export_csv"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:backgroundTint="@color/darkerTeal"-->
+<!--            android:insetTop="0dp"-->
+<!--            android:insetBottom="0dp"-->
+<!--            android:text="Export Entrants as CSV"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="20sp"-->
+<!--            app:cornerRadius="10dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/button_entrant_location"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/button_entrant_location"-->
+<!--            app:layout_constraintHorizontal_bias="1.0"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
         <ImageView
             android:id="@+id/button_entrant_location"
@@ -449,6 +449,160 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/system_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_entrants"
+        tools:visibility="visible">
+
+        <FrameLayout
+            android:id="@+id/white_background_box_system"
+            android:layout_width="363dp"
+            android:layout_height="390dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent">
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/button_send_notification_system"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/darkerTeal"
+            android:text="Send Notifications"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/white_background_box_system"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/sample_button"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/darkerTeal"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Sample Until Capacity is Reached"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_invited"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/teal"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Invited"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
+            app:layout_constraintEnd_toStartOf="@+id/button_signed_up"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"
+            app:layout_constraintVertical_bias="0.883" />
+
+        <Button
+            android:id="@+id/button_signed_up"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/darkerTeal"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Signed Up"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
+            app:layout_constraintTop_toBottomOf="@+id/sample_button"
+            app:layout_constraintVertical_bias="1.0"
+            tools:layout_editor_absoluteX="104dp" />
+
+        <Button
+            android:id="@+id/button_cancelled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/darkerTeal"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Cancelled"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/button_signed_up"
+            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="32dp"
+            android:background="@color/darkRed"
+            android:backgroundTint="#F44336"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Entrants"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_signed_up"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sample_button" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_event_entrants_system"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_send_notification_system"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sample_button"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/text_no_entrants_system"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your event currently has no entrants."
+            android:textColor="@color/darkerTeal"
+            android:textSize="20sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button

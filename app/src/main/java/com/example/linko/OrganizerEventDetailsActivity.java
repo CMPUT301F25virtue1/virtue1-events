@@ -16,6 +16,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,6 +76,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
         TextView noEntrants = findViewById(R.id.text_no_entrants);
 
+        // system tab ui
+        ConstraintLayout systemContainer = findViewById(R.id.syste)
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
