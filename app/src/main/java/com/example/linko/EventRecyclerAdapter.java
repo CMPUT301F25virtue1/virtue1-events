@@ -42,11 +42,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         Event event = eventList.get(position);
         holder.eventName.setText(event.getName());
         holder.entrantCount.setText(event.getEntrantCount());
-        Glide.with(holder.itemView.getContext())
-                .load(event.getEventPosterURL())
-                .centerCrop()
-                .placeholder(R.drawable.outline_image_24)
-                .into(holder.eventPosterPreview);
+        Glide.with(holder.itemView.getContext()).load(event.getEventPosterURL()).centerCrop().placeholder(R.drawable.outline_image_24).into(holder.eventPosterPreview);
 
         if (fromAdmin) {
             holder.chevron.setVisibility(View.GONE);
