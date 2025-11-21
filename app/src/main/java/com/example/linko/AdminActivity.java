@@ -20,8 +20,10 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.helper.widget.Grid;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,8 +75,13 @@ public class AdminActivity extends AppCompatActivity {
         EditText profilesSearchBar = findViewById(R.id.input_profiles_search);
         RecyclerView profilesRecyclerView = findViewById(R.id.recycler_all_profiles);
 
-        // views under button
+        // views under images
         Button imagesButton = findViewById(R.id.button_images);
+        ConstraintLayout imagesContainer = findViewById(R.id.images_container);
+        EditText imageEventSearchBar = findViewById(R.id.input_event_image_search);
+        EditText imageProfileSearchBar = findViewById(R.id.input_profile_image_search);
+        RecyclerView eventPostersRecyclerView = findViewById(R.id.recycler_event_posters);
+        RecyclerView profilePicturesRecyclerView = findViewById(R.id.recycler_profile_pictures);
 
         // event tab recycler view setup
         allEventsList = new ArrayList<>();
@@ -174,7 +182,12 @@ public class AdminActivity extends AppCompatActivity {
         // attach swipe to delete to the all organizers recyclerview
         new ItemTouchHelper(swipeToDeleteOrganizer).attachToRecyclerView(organizersRecyclerView);
 
-        // add every event to the recycler view initially
+        // add every event to the recycler view initially (also used for event posters tab)
+        EventPosterRecyclerAdapter eventPostersRecyclerAdapter = new EventPosterRecyclerAdapter(allEventsList);
+        eventPostersRecyclerView.setAdapter(eventPostersRecyclerAdapter);
+        GridLayoutManager eventPostersLayoutManager = new GridLayoutManager(this, 3);
+        eventPostersRecyclerView.setLayoutManager(eventPostersLayoutManager);
+
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
         eventsRef.get().addOnSuccessListener(query -> {
@@ -187,7 +200,7 @@ public class AdminActivity extends AppCompatActivity {
             // keep copy of original events if user searches and clears
             originalEventsList = new ArrayList<>(allEventsList);
             eventRecyclerAdapter.notifyDataSetChanged();
-
+            eventPostersRecyclerAdapter.notifyDataSetChanged();
             // populate  organizers list
             for (Event e : allEventsList) {
                 UserDatabaseHandler organizerHelper = new UserDatabaseHandler();
@@ -325,7 +338,7 @@ public class AdminActivity extends AppCompatActivity {
         // attach swipe to delete to the all events recyclerview
         new ItemTouchHelper(swipeToDeleteProfile).attachToRecyclerView(profilesRecyclerView);
 
-        // add every profile to the recycler view initially
+        // add every profile to the recycler view initially (also used for profile pictures tab)
         usersRef = db.collection("users");
         usersRef.get().addOnSuccessListener(value -> {
             if (value != null && !value.isEmpty()) {
@@ -369,19 +382,48 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
+        // images tab recycler view setup
+        eventPostersRecyclerAdapter.setOnItemClickListener(position -> {
+            Event clickedEvent = allEventsList.get(position);
+            if (clickedEvent.getEventPosterURL() != null && !clickedEvent.getEventPosterURL().isEmpty()) {
+                FirebaseStorage.getInstance().getReferenceFromUrl(clickedEvent.getEventPosterURL())
+                        .delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d("Storage", "Event poster deleted");
+                            } else {
+                                Log.e("Storage", "Error deleting poster", task.getException());
+                            }
+                        });
+            }
+        });
+
         // top bar
         eventButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.VISIBLE);
             profilesContainer.setVisibility(View.GONE);
+            imagesContainer.setVisibility(View.GONE);
             eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
             profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
 
         profilesButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.GONE);
             profilesContainer.setVisibility(View.VISIBLE);
+            imagesContainer.setVisibility(View.GONE);
             eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
             profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+        });
+
+        imagesButton.setOnClickListener(v -> {
+            eventContainer.setVisibility(View.GONE);
+            profilesContainer.setVisibility(View.GONE);
+            imagesContainer.setVisibility(View.VISIBLE);
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
 
         backButton.setOnClickListener(v -> {

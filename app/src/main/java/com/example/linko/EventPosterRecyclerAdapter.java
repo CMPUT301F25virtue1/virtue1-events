@@ -19,15 +19,13 @@ import java.util.List;
 /**
  * Custom recycler adapter for events, boosts performance by saving events in the cache for later
  */
-public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.EventViewHolder> {
+public class EventPosterRecyclerAdapter extends RecyclerView.Adapter<EventPosterRecyclerAdapter.EventViewHolder> {
 
     private List<Event> eventList;
     private OnItemClickListener listener;
-    private boolean fromAdmin;
 
-    public EventRecyclerAdapter(List<Event> eventList, boolean fromAdmin) {
+    public EventPosterRecyclerAdapter(List<Event> eventList) {
         this.eventList = eventList;
-        this.fromAdmin = fromAdmin;
     }
 
     @NonNull
@@ -40,20 +38,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-        holder.eventName.setText(event.getName());
-        holder.entrantCount.setText(event.getEntrantCount());
-        Glide.with(holder.itemView.getContext()).load(event.getEventPosterURL()).centerCrop().placeholder(R.drawable.outline_image_24).into(holder.eventPosterPreview);
-
-        if (fromAdmin) {
-            holder.chevron.setVisibility(View.GONE);
-            holder.shadow.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerTeal)));
-            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.teal)));
-        }
-        else {
-            holder.chevron.setVisibility(View.VISIBLE);
-            holder.shadow.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed)));
-            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.red)));
-        }
+        Glide.with(holder.itemView.getContext()).load(event.getEventPosterURL()).centerCrop().placeholder(R.drawable.outline_image_24).into(holder.eventPoster);
     }
 
     @Override
@@ -73,23 +58,14 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
      * Used to hold all the ID's for an event view for later use
      */
     public class EventViewHolder extends RecyclerView.ViewHolder {
-
-        CardView card;
-        ImageView eventPosterPreview;
-        TextView eventName;
-        TextView entrantCount;
-        ImageView chevron;
-        View shadow;
+        ImageView closeButton;
+        ImageView eventPoster;
         public EventViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
-            card = itemView.findViewById(R.id.card);
-            eventPosterPreview = itemView.findViewById(R.id.image_event_poster);
-            eventName = itemView.findViewById(R.id.text_event_name);
-            entrantCount = itemView.findViewById(R.id.text_entrant_number);
-            chevron = itemView.findViewById(R.id.chevron);
-            shadow = itemView.findViewById(R.id.shadow);
+            closeButton = itemView.findViewById(R.id.button_delete);
+            eventPoster = itemView.findViewById(R.id.image_event_poster);
 
-            itemView.setOnClickListener(v -> {
+            closeButton.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && listener != null) {
                     listener.onItemClick(pos);
