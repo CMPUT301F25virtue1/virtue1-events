@@ -82,6 +82,8 @@ public class AdminActivity extends AppCompatActivity {
         // views under images
         Button imagesButton = findViewById(R.id.button_images);
         ConstraintLayout imagesContainer = findViewById(R.id.images_container);
+        TextView imagesPostersButton = findViewById(R.id.click_event_posters);
+        TextView imagesProfilePicturesButton = findViewById(R.id.click_profile_pictures);
         EditText imageEventSearchBar = findViewById(R.id.input_event_image_search);
         EditText imageProfileSearchBar = findViewById(R.id.input_profile_image_search);
         RecyclerView eventPostersRecyclerView = findViewById(R.id.recycler_event_posters);
@@ -285,12 +287,17 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
-        // profiles tab recycler view setup
+        // users (profiles/profile pictures) recycler view setup
         allProfilesList = new ArrayList<>();
         UserRecyclerAdapter profilesRecyclerAdapter = new UserRecyclerAdapter(allProfilesList, true);
         profilesRecyclerView.setAdapter(profilesRecyclerAdapter);
         LinearLayoutManager profilesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         profilesRecyclerView.setLayoutManager(profilesLayoutManager);
+
+        ProfilePictureRecyclerAdapter profilePicturesRecyclerAdapter = new ProfilePictureRecyclerAdapter(allProfilePicturesList);
+        profilePicturesRecyclerView.setAdapter(profilePicturesRecyclerAdapter);
+        GridLayoutManager profilePicturesLayoutManager = new GridLayoutManager(this, 3);
+        profilePicturesRecyclerView.setLayoutManager(profilePicturesLayoutManager);
         // swipe to delete profiles
         ItemTouchHelper.SimpleCallback swipeToDeleteProfile = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -345,6 +352,10 @@ public class AdminActivity extends AppCompatActivity {
                             allProfilesList.remove(userToDelete);
                             allOrganizerList.remove(userToDelete);
                             originalProfilesList.remove(userToDelete);
+                            allProfilePicturesList.remove(userToDelete);
+                            originalProfilePicturesList.remove(userToDelete);
+
+                            profilePicturesRecyclerAdapter.notifyDataSetChanged();
                             profilesRecyclerAdapter.notifyDataSetChanged();
                             organizerRecyclerAdapter.notifyDataSetChanged();
                             Toast.makeText(AdminActivity.this, "Profile successfully deleted!", Toast.LENGTH_SHORT).show();
@@ -378,7 +389,7 @@ public class AdminActivity extends AppCompatActivity {
                 // keep copy of original events if user searches and clears
                 originalProfilesList = new ArrayList<>(allProfilesList);
                 originalProfilePicturesList = new ArrayList<>(allProfilePicturesList);
-                // ADD PROFILE PIC RECYUCLER ADAPTER AFTER DONE IMGS
+                profilePicturesRecyclerAdapter.notifyDataSetChanged();
                 profilesRecyclerAdapter.notifyDataSetChanged();
             }
         }).addOnFailureListener(error -> {
@@ -446,6 +457,63 @@ public class AdminActivity extends AppCompatActivity {
 
             eventRecyclerAdapter.notifyDataSetChanged();
             eventPostersRecyclerAdapter.notifyDataSetChanged();
+        });
+
+        profilePicturesRecyclerAdapter.setOnItemClickListener(position -> {
+            User clickedUser = allProfilePicturesList.get(position);
+            if (clickedUser.getProfileUrl() != null && !clickedUser.getProfileUrl().isEmpty()) {
+                FirebaseStorage.getInstance().getReferenceFromUrl(clickedUser.getProfileUrl())
+                        .delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d("Storage", "User profile picture deleted");
+                            } else {
+                                Log.e("Storage", "Error deleting profile picture", task.getException());
+                            }
+                        });
+            }
+
+            clickedUser.setProfileUrl(null);
+            UserDatabaseHandler userDb = new UserDatabaseHandler();
+            // logic for adding a user is the same as updating the user for userdatabasehandler
+            userDb.addUser(clickedUser, new UserDatabaseHandler.UserAdded() {
+                @Override
+                public void userAdd() {
+
+                }
+
+                @Override
+                public void userFailedToAdd(Exception e) {
+                    Log.e("Admin", "user update failed");
+
+                }
+            });
+            allProfilesList.set(allProfilesList.indexOf(clickedUser), clickedUser);
+            originalProfilesList.set(originalProfilesList.indexOf(clickedUser), clickedUser);
+
+            allProfilePicturesList.remove(clickedUser);
+            originalProfilePicturesList.remove(clickedUser);
+
+            profilesRecyclerAdapter.notifyDataSetChanged();
+            profilePicturesRecyclerAdapter.notifyDataSetChanged();
+        });
+
+        imagesPostersButton.setOnClickListener(view -> {
+            eventPostersRecyclerView.setVisibility(View.VISIBLE);
+            profilePicturesRecyclerView.setVisibility(View.GONE);
+            imageEventSearchBar.setVisibility(View.VISIBLE);
+            imageProfileSearchBar.setVisibility(View.GONE);
+            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+        });
+
+        imagesProfilePicturesButton.setOnClickListener(view -> {
+            eventPostersRecyclerView.setVisibility(View.GONE);
+            profilePicturesRecyclerView.setVisibility(View.VISIBLE);
+            imageEventSearchBar.setVisibility(View.GONE);
+            imageProfileSearchBar.setVisibility(View.VISIBLE);
+            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
 
         imageEventSearchBar.addTextChangedListener(new TextWatcher() {

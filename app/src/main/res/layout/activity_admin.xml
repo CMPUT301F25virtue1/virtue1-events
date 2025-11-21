@@ -270,7 +270,7 @@
             android:background="@drawable/signin_input_shape"
             android:drawableEnd="@drawable/outline_search_24"
             android:elevation="5dp"
-            android:hint="Search by Event Name.."
+            android:hint="Search Events..."
             android:padding="10dp"
             android:scrollHorizontally="true"
             android:singleLine="true"
@@ -278,7 +278,8 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/click_event_posters" />
+            app:layout_constraintTop_toBottomOf="@+id/click_event_posters"
+            tools:visibility="visible" />
 
         <EditText
             android:id="@+id/input_profile_image_search"
@@ -290,7 +291,7 @@
             android:background="@drawable/signin_input_shape"
             android:drawableEnd="@drawable/outline_search_24"
             android:elevation="5dp"
-            android:hint="Search by Profile Name..."
+            android:hint="Search Profiles..."
             android:padding="10dp"
             android:scrollHorizontally="true"
             android:singleLine="true"
@@ -299,7 +300,8 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/click_event_posters" />
+            app:layout_constraintTop_toBottomOf="@+id/click_event_posters"
+            tools:visibility="visible" />
 
         <View
             android:id="@+id/view4"
@@ -350,7 +352,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/input_event_image_search" />
+            app:layout_constraintTop_toBottomOf="@id/input_event_image_search"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_profile_pictures"
@@ -360,7 +363,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/click_event_posters"
+            app:layout_constraintTop_toBottomOf="@+id/input_profile_image_search"
             tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
