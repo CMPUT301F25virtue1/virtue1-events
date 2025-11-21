@@ -449,6 +449,8 @@ public class AdminActivity extends AppCompatActivity {
                     Log.e("Admin", "event update failed");
                 }
             });
+            Toast.makeText(AdminActivity.this, "Event poster deleted!", Toast.LENGTH_SHORT).show();
+
             allEventsList.set(allEventsList.indexOf(clickedEvent), clickedEvent);
             originalEventsList.set(originalEventsList.indexOf(clickedEvent), clickedEvent);
 
@@ -488,6 +490,8 @@ public class AdminActivity extends AppCompatActivity {
 
                 }
             });
+            Toast.makeText(AdminActivity.this, "User profile picture deleted!", Toast.LENGTH_SHORT).show();
+
             allProfilesList.set(allProfilesList.indexOf(clickedUser), clickedUser);
             originalProfilesList.set(originalProfilesList.indexOf(clickedUser), clickedUser);
 
@@ -543,6 +547,32 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
+        imageProfileSearchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<User> filteredList = new ArrayList<>(originalProfilePicturesList);
+
+                // search filter
+                String userInput = imageProfileSearchBar.getText().toString().trim();
+                if (!userInput.isEmpty()) {
+                    filteredList = userSearchHandler(filteredList, userInput);
+                }
+
+                allProfilePicturesList.clear();
+                allProfilePicturesList.addAll(filteredList);
+                profilePicturesRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
         // top bar
         eventButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.VISIBLE);
