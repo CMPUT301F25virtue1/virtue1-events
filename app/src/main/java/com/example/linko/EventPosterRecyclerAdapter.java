@@ -31,7 +31,7 @@ public class EventPosterRecyclerAdapter extends RecyclerView.Adapter<EventPoster
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_event, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_event_poster, parent, false);
         return new EventViewHolder(view,listener);
     }
 

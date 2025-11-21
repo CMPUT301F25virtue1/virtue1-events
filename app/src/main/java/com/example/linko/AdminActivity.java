@@ -52,6 +52,10 @@ public class AdminActivity extends AppCompatActivity {
     private List<User> allOrganizerList;
     private List<User> allProfilesList;
     private List<User> originalProfilesList;
+    private List<Event> allEventPostersList;
+    private List<Event> originalEventPostersList;
+    private List<User> allProfilePicturesList;
+    private List<User> originalProfilePicturesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +87,24 @@ public class AdminActivity extends AppCompatActivity {
         RecyclerView eventPostersRecyclerView = findViewById(R.id.recycler_event_posters);
         RecyclerView profilePicturesRecyclerView = findViewById(R.id.recycler_profile_pictures);
 
-        // event tab recycler view setup
+        // lists to populate
         allEventsList = new ArrayList<>();
         allOrganizerList = new ArrayList<>();
+        allEventPostersList = new ArrayList<>();
+        allProfilePicturesList = new ArrayList<>();
+
+        // events recycler view setup
         EventRecyclerAdapter eventRecyclerAdapter = new EventRecyclerAdapter(allEventsList, true);
         eventsRecyclerView.setAdapter(eventRecyclerAdapter);
         LinearLayoutManager eventsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         eventsRecyclerView.setLayoutManager(eventsLayoutManager);
 
+        EventPosterRecyclerAdapter eventPostersRecyclerAdapter = new EventPosterRecyclerAdapter(allEventPostersList);
+        eventPostersRecyclerView.setAdapter(eventPostersRecyclerAdapter);
+        GridLayoutManager eventPostersLayoutManager = new GridLayoutManager(this, 3);
+        eventPostersRecyclerView.setLayoutManager(eventPostersLayoutManager);
+
+        // organizer recycler view setup
         UserRecyclerAdapter organizerRecyclerAdapter = new UserRecyclerAdapter(allOrganizerList, true);
         organizersRecyclerView.setAdapter(organizerRecyclerAdapter);
         LinearLayoutManager organizerLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -116,6 +130,9 @@ public class AdminActivity extends AppCompatActivity {
                         Toast.makeText(AdminActivity.this, "Events successfully deleted!", Toast.LENGTH_SHORT).show();
                         allEventsList.remove(eventToDelete);
                         originalEventsList.remove(eventToDelete);
+                        allEventPostersList.remove(eventToDelete);
+                        originalEventPostersList.remove(eventToDelete);
+                        eventPostersRecyclerAdapter.notifyDataSetChanged();
                         eventRecyclerAdapter.notifyDataSetChanged();
                     }
 
@@ -159,6 +176,9 @@ public class AdminActivity extends AppCompatActivity {
                                     // delete from lists since not using snapshot listener (update manually)
                                     allEventsList.remove(eventToDelete);
                                     originalEventsList.remove(eventToDelete);
+                                    allEventPostersList.remove(eventToDelete);
+                                    originalEventPostersList.remove(eventToDelete);
+                                    eventPostersRecyclerAdapter.notifyDataSetChanged();
                                     eventRecyclerAdapter.notifyDataSetChanged();
                                 }
                                 @Override
@@ -183,22 +203,22 @@ public class AdminActivity extends AppCompatActivity {
         new ItemTouchHelper(swipeToDeleteOrganizer).attachToRecyclerView(organizersRecyclerView);
 
         // add every event to the recycler view initially (also used for event posters tab)
-        EventPosterRecyclerAdapter eventPostersRecyclerAdapter = new EventPosterRecyclerAdapter(allEventsList);
-        eventPostersRecyclerView.setAdapter(eventPostersRecyclerAdapter);
-        GridLayoutManager eventPostersLayoutManager = new GridLayoutManager(this, 3);
-        eventPostersRecyclerView.setLayoutManager(eventPostersLayoutManager);
-
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
         eventsRef.get().addOnSuccessListener(query -> {
             allEventsList.clear();
             allOrganizerList.clear();
+            allEventPostersList.clear();
             for (QueryDocumentSnapshot snapshot : query) {
                 Event eventToAdd = snapshot.toObject(Event.class);
                 allEventsList.add(eventToAdd);
+                if (eventToAdd.getEventPosterURL() != null) {
+                    allEventPostersList.add(eventToAdd);
+                }
             }
             // keep copy of original events if user searches and clears
             originalEventsList = new ArrayList<>(allEventsList);
+            originalEventPostersList = new ArrayList<>(allEventPostersList);
             eventRecyclerAdapter.notifyDataSetChanged();
             eventPostersRecyclerAdapter.notifyDataSetChanged();
             // populate  organizers list
@@ -304,6 +324,9 @@ public class AdminActivity extends AppCompatActivity {
                                     // manually update lists
                                     allEventsList.remove(eventToDelete);
                                     originalEventsList.remove(eventToDelete);
+                                    allEventPostersList.remove(eventToDelete);
+                                    originalEventPostersList.remove(eventToDelete);
+                                    eventPostersRecyclerAdapter.notifyDataSetChanged();
                                     eventRecyclerAdapter.notifyDataSetChanged();
                                 }
 
@@ -344,12 +367,18 @@ public class AdminActivity extends AppCompatActivity {
             if (value != null && !value.isEmpty()) {
                 Log.d("firebase", "checking documents");
                 allProfilesList.clear();
+                allProfilePicturesList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     User userToAdd = snapshot.toObject(User.class);
                     allProfilesList.add(userToAdd);
+                    if (userToAdd.getProfileUrl() != null) {
+                        allProfilePicturesList.add(userToAdd);
+                    }
                 }
                 // keep copy of original events if user searches and clears
                 originalProfilesList = new ArrayList<>(allProfilesList);
+                originalProfilePicturesList = new ArrayList<>(allProfilePicturesList);
+                // ADD PROFILE PIC RECYUCLER ADAPTER AFTER DONE IMGS
                 profilesRecyclerAdapter.notifyDataSetChanged();
             }
         }).addOnFailureListener(error -> {
@@ -384,7 +413,7 @@ public class AdminActivity extends AppCompatActivity {
 
         // images tab recycler view setup
         eventPostersRecyclerAdapter.setOnItemClickListener(position -> {
-            Event clickedEvent = allEventsList.get(position);
+            Event clickedEvent = allEventPostersList.get(position);
             if (clickedEvent.getEventPosterURL() != null && !clickedEvent.getEventPosterURL().isEmpty()) {
                 FirebaseStorage.getInstance().getReferenceFromUrl(clickedEvent.getEventPosterURL())
                         .delete()
@@ -395,6 +424,54 @@ public class AdminActivity extends AppCompatActivity {
                                 Log.e("Storage", "Error deleting poster", task.getException());
                             }
                         });
+            }
+            clickedEvent.setEventPosterURL(null);
+            EventDatabaseHandler eventDb = new EventDatabaseHandler();
+            eventDb.update(clickedEvent, new EventDatabaseHandler.EventUpdated() {
+                @Override
+                public void eventUpdate() {
+
+                }
+
+                @Override
+                public void eventUpdateFailed(Exception e) {
+                    Log.e("Admin", "event update failed");
+                }
+            });
+            allEventsList.set(allEventsList.indexOf(clickedEvent), clickedEvent);
+            originalEventsList.set(originalEventsList.indexOf(clickedEvent), clickedEvent);
+
+            allEventPostersList.remove(clickedEvent);
+            originalEventPostersList.remove(clickedEvent);
+
+            eventRecyclerAdapter.notifyDataSetChanged();
+            eventPostersRecyclerAdapter.notifyDataSetChanged();
+        });
+
+        imageEventSearchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<Event> filteredList = new ArrayList<>(originalEventPostersList);
+
+                // search filter
+                String userInput = imageEventSearchBar.getText().toString().trim();
+                if (!userInput.isEmpty()) {
+                    filteredList = eventSearchHandler(filteredList, userInput);
+                }
+
+                allEventPostersList.clear();
+                allEventPostersList.addAll(filteredList);
+                eventPostersRecyclerAdapter.notifyDataSetChanged();
             }
         });
 
