@@ -14,7 +14,7 @@
         android:id="@+id/top_status_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/red"
+        android:background="@color/darkestBlue"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

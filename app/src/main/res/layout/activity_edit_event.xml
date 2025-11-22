@@ -5,8 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddEventActivity"
-    android:background="@color/lightBlue">
+    android:background="@color/lightestBlue"
+    tools:context=".AddEventActivity">
 
     <TextView
         android:id="@+id/textView11"
@@ -57,7 +57,7 @@
         android:id="@+id/text_event_start_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_bottom_white"
+        android:background="@drawable/rounded_bottom_light_blue_input_shape"
         android:minWidth="35dp"
         android:padding="5dp"
         android:text="Event Start Time"
@@ -73,7 +73,7 @@
         android:id="@+id/text_event_registration_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_bottom_white"
+        android:background="@drawable/rounded_bottom_light_blue_input_shape"
         android:padding="5dp"
         android:text="Registration Start"
         android:textAlignment="center"
@@ -88,7 +88,7 @@
         android:id="@+id/text_event_registration_end"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_bottom_white"
+        android:background="@drawable/rounded_bottom_light_blue_input_shape"
         android:padding="5dp"
         android:text="Registration End"
         android:textAlignment="center"
@@ -117,10 +117,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/back_button_holder"
         app:layout_constraintEnd_toEndOf="@+id/back_button_holder"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginBottom="5dp"
         app:layout_constraintStart_toStartOf="@+id/back_button_holder"
         app:layout_constraintTop_toTopOf="@+id/back_button_holder"
         app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
@@ -132,7 +132,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
-        android:background="@drawable/rounded_white"
+        android:background="@drawable/rounded_light_blue_input_shape"
         android:elevation="5dp"
         android:hint="Event Name"
         android:paddingTop="5dp"
@@ -186,7 +186,7 @@
         android:id="@+id/text_event_capacity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_white"
+        android:background="@drawable/rounded_light_blue_input_shape"
         android:hint="-"
         android:inputType="number"
         android:minWidth="35dp"
@@ -205,7 +205,7 @@
         android:id="@+id/text_entrant_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_white"
+        android:background="@drawable/rounded_light_blue_input_shape"
         android:hint="-"
         android:inputType="number"
         android:minWidth="35dp"
@@ -222,10 +222,10 @@
 
     <CheckBox
         android:id="@+id/checkBox"
-        android:button="@drawable/empty_check"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/rounded_dark_teal"
+        android:button="@drawable/empty_check"
         android:foreground="@drawable/checkbox_icon"
         app:layout_constraintBottom_toBottomOf="@+id/textView10"
         app:layout_constraintEnd_toEndOf="@+id/text_event_name"
@@ -236,7 +236,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_white"
+        android:background="@drawable/rounded_light_blue_input_shape"
         android:gravity="top|start"
         android:hint="You have no event description."
         android:maxHeight="500dp"
@@ -254,7 +254,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_white"
+        android:background="@drawable/rounded_light_blue_input_shape"
         android:gravity="top|start"
         android:hint="You have no event guidelines."
         android:maxHeight="500dp"
@@ -276,13 +276,13 @@
         android:backgroundTint="@color/darkerBlue"
         android:padding="10dp"
         android:text="Save Changes"
+        android:textColor="@color/white"
         android:textSize="24sp"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/text_event_description"
         app:layout_constraintStart_toStartOf="@+id/text_event_description"
-        app:layout_constraintTop_toBottomOf="@id/image_event_poster"
-        android:textColor="@color/white" />
+        app:layout_constraintTop_toBottomOf="@id/image_event_poster" />
 
     <ImageView
         android:id="@+id/image_event_poster"
@@ -290,13 +290,13 @@
         android:layout_height="70dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/rounded_white"
-        app:layout_constraintTop_toBottomOf="@id/text_event_guidelines"
+        android:background="@drawable/rounded_light_blue_input_shape"
+        android:clipToOutline="true"
         app:layout_constraintBottom_toTopOf="@+id/button_save_event_changes"
         app:layout_constraintEnd_toEndOf="@+id/text_event_description"
         app:layout_constraintStart_toStartOf="@+id/text_event_description"
-        app:srcCompat="@drawable/outline_photo_camera_24"
-        android:clipToOutline="true"/>
+        app:layout_constraintTop_toBottomOf="@id/text_event_guidelines"
+        app:srcCompat="@drawable/outline_photo_camera_24" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

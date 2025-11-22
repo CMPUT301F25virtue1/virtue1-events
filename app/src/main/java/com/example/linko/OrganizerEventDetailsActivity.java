@@ -188,8 +188,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventDetailsContainer.setVisibility(View.VISIBLE);
             entrantsContainer.setVisibility(View.GONE);
 
-            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
-            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
 
         });
 
@@ -197,8 +199,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventDetailsContainer.setVisibility(View.GONE);
             entrantsContainer.setVisibility(View.VISIBLE);
 
-            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
 
         });
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {

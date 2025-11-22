@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,15 +53,15 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
             holder.userName.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
             holder.userPhoneNumber.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
             holder.userEmail.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
-            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.blue)));
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue));
+            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue)));
         }
         else {
             Glide.with(holder.itemView.getContext()).load(user.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_24).into(holder.userProfilePicture);
             holder.userProfilePicture.setBackgroundResource(R.drawable.circular_profile);
-            holder.userName.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue)));
-            holder.userPhoneNumber.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue)));
-            holder.userEmail.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue)));
-            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
+            holder.userName.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestBlue)));
+            holder.userPhoneNumber.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestBlue)));
+            holder.userEmail.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestBlue)));
         }
     }
 
@@ -79,6 +80,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
         TextView userEmail;
         TextView userPhoneNumber;
 
+        ConstraintLayout background;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             card = itemView.findViewById(R.id.card);
@@ -86,6 +88,7 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
             userName = itemView.findViewById(R.id.text_user_name);
             userEmail = itemView.findViewById(R.id.text_user_email);
             userPhoneNumber = itemView.findViewById(R.id.text_user_phone);
+            background = itemView.findViewById(R.id.backgroundChange);
         }
     }
 }
