@@ -65,7 +65,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/darkerTeal"
+        android:backgroundTint="@color/darkerBlue"
         android:text="Download"
         android:textColor="@color/white"
         android:textSize="20sp"

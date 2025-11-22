@@ -39,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/darkestTeal"
+        android:backgroundTint="@color/darkestBlue"
         android:elevation="5dp"
         android:stateListAnimator="@null"
         android:text="Enter Admin Mode"

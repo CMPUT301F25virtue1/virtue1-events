@@ -150,8 +150,8 @@ public class MyEventsActivity extends AppCompatActivity {
             }
             organizeAnEvent.setVisibility(View.GONE);
             organizedRecyclerView.setVisibility(View.GONE);
-            registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         organizedEvents.setOnClickListener( v -> {
@@ -167,8 +167,8 @@ public class MyEventsActivity extends AppCompatActivity {
             }
             organizeAnEvent.setVisibility(View.VISIBLE);
             registeredRecyclerView.setVisibility(View.GONE);
-            organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         organizeAnEvent.setOnClickListener(v -> {

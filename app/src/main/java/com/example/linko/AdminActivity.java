@@ -20,7 +20,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.helper.widget.Grid;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -34,7 +33,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -248,16 +246,16 @@ public class AdminActivity extends AppCompatActivity {
             eventsRecyclerView.setVisibility(View.VISIBLE);
             organizersRecyclerView.setVisibility(View.GONE);
             eventSearchBar.setVisibility(View.VISIBLE);
-            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         eventOrganizersButton.setOnClickListener(v -> {
             eventsRecyclerView.setVisibility(View.GONE);
             organizersRecyclerView.setVisibility(View.VISIBLE);
             eventSearchBar.setVisibility(View.GONE);
-            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         eventSearchBar.addTextChangedListener(new TextWatcher() {
@@ -507,8 +505,8 @@ public class AdminActivity extends AppCompatActivity {
             profilePicturesRecyclerView.setVisibility(View.GONE);
             imageEventSearchBar.setVisibility(View.VISIBLE);
             imageProfileSearchBar.setVisibility(View.GONE);
-            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         imagesProfilePicturesButton.setOnClickListener(view -> {
@@ -516,8 +514,8 @@ public class AdminActivity extends AppCompatActivity {
             profilePicturesRecyclerView.setVisibility(View.VISIBLE);
             imageEventSearchBar.setVisibility(View.GONE);
             imageProfileSearchBar.setVisibility(View.VISIBLE);
-            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         imageEventSearchBar.addTextChangedListener(new TextWatcher() {
@@ -578,27 +576,27 @@ public class AdminActivity extends AppCompatActivity {
             eventContainer.setVisibility(View.VISIBLE);
             profilesContainer.setVisibility(View.GONE);
             imagesContainer.setVisibility(View.GONE);
-            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         profilesButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.GONE);
             profilesContainer.setVisibility(View.VISIBLE);
             imagesContainer.setVisibility(View.GONE);
-            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         imagesButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.GONE);
             profilesContainer.setVisibility(View.GONE);
             imagesContainer.setVisibility(View.VISIBLE);
-            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         backButton.setOnClickListener(v -> {
