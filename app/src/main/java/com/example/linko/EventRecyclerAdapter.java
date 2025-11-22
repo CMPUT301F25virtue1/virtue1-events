@@ -46,13 +46,9 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
 
         if (fromAdmin) {
             holder.chevron.setVisibility(View.GONE);
-            holder.shadow.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerTeal)));
-            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.teal)));
         }
         else {
             holder.chevron.setVisibility(View.VISIBLE);
-            holder.shadow.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed)));
-            holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.red)));
         }
     }
 

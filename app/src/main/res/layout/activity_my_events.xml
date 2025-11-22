@@ -13,22 +13,21 @@
         android:id="@+id/top_status_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/red"
+        android:background="@color/darkestBlue"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_registered"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/teal"
+        android:backgroundTint="@color/white"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:text="Registered"
+        android:textColor="@color/darkestBlue"
         android:textSize="20sp"
-        android:textColor="@color/white"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toStartOf="@+id/button_organized"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
 
@@ -36,15 +35,15 @@
         android:id="@+id/button_organized"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/darkerTeal"
+        android:alpha="1"
+        android:backgroundTint="@color/lightBlue"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        android:textColor="@color/white"
         android:text="Organized"
+        android:textColor="@color/darkestBlueNotSelected"
         android:textSize="20sp"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/button_registered"
         app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
 
@@ -52,11 +51,13 @@
         android:id="@+id/recycler_registered_events"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_registered" />
+        app:layout_constraintTop_toBottomOf="@+id/button_registered"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_organized_events"
@@ -73,42 +74,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/you_have_not_registered_in_any_events"
-        android:textColor="@color/teal"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_registered"
-        app:layout_constraintVertical_bias="0.37" />
-
-    <TextView
-        android:id="@+id/text_no_event_organized"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/you_have_not_organized_any_events"
-        android:textColor="@color/teal"
+        android:textColor="@color/darkestBlue"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_registered"
         app:layout_constraintVertical_bias="0.37"
-        android:visibility="gone"/>
+        tools:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_no_event_organized"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_have_not_organized_any_events"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_registered"
+        app:layout_constraintVertical_bias="0.37"
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/button_organize_event"
         android:layout_width="266dp"
         android:layout_height="47dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/darkerTeal"
-        android:textColor="@color/white"
+        android:backgroundTint="@color/darkerBlue"
         android:text="@string/organize_an_event"
+        android:textColor="@color/white"
         android:textSize="20sp"
         android:visibility="gone"
         app:cornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_organized" />
+        app:layout_constraintTop_toBottomOf="@+id/button_organized"
+        tools:visibility="gone" />
 
     <include
         android:id="@+id/nav_bar"
@@ -116,5 +120,24 @@
         android:layout_width="match_parent"
         android:layout_height="85dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="7dp"
+        android:background="@color/lightBlue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_registered" />
+
+    <View
+        android:id="@+id/view5"
+        android:layout_width="7dp"
+        android:layout_height="0dp"
+        android:background="@color/lightBlue"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/button_registered"
+        app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
