@@ -1,27 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NotificationsActivity"
-    android:background="@color/red">
+    android:orientation="vertical"
+    android:background="#E3F2FD">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <!-- Header with dark blue background -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#1976D2"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/button_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_revert"
+            android:background="@android:color/transparent"
+            app:tint="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/text_notification_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Send Notification"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <!-- Message Input Section with white card -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/lightBlue"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:layout_margin="16dp"
+        android:padding="16dp"
+        android:elevation="4dp">
 
-    <include layout="@layout/navigation_bar"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="Set Notification Message Here"
+            android:textColor="#1976D2"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    <View
-        android:id="@+id/top_status_bar"
+        <EditText
+            android:id="@+id/edit_message_input"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@android:drawable/editbox_background"
+            android:hint="Type your custom notification message here..."
+            android:gravity="top|start"
+            android:padding="12dp"
+            android:textSize="14sp"
+            android:maxLines="10"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+
+    <!-- Send Button with blue theme -->
+    <Button
+        android:id="@+id/button_send_notification"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/red"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="#1976D2"
+        android:padding="16dp"
+        android:text="Send to Selected Entrants"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
