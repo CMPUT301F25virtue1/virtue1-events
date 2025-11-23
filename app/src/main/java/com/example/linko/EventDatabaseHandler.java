@@ -34,7 +34,7 @@ public class EventDatabaseHandler {
      * Adds event to the Firebase database
      * @param eventToAdd The event were adding to the database
      * @param added Checks exceptions
-     * @param docRef Reference to where the event is in the database. Nessicery to allow us to read, write, and edit out events
+     * @param docRef Reference to where the event is in the database. Necessary to allow us to read, write, and edit out events
      * @param eventId The Firebase Id for the event
      */
     public void addEvent(Event eventToAdd, EventDatabaseHandler.EventAdded added, DocumentReference docRef, String eventId) {

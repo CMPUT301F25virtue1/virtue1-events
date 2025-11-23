@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,9 +30,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +50,10 @@ public class AdminActivity extends AppCompatActivity {
     private List<User> allOrganizerList;
     private List<User> allProfilesList;
     private List<User> originalProfilesList;
+    private List<Event> allEventPostersList;
+    private List<Event> originalEventPostersList;
+    private List<User> allProfilePicturesList;
+    private List<User> originalProfilePicturesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +77,34 @@ public class AdminActivity extends AppCompatActivity {
         EditText profilesSearchBar = findViewById(R.id.input_profiles_search);
         RecyclerView profilesRecyclerView = findViewById(R.id.recycler_all_profiles);
 
-        // views under button
+        // views under images
         Button imagesButton = findViewById(R.id.button_images);
+        ConstraintLayout imagesContainer = findViewById(R.id.images_container);
+        TextView imagesPostersButton = findViewById(R.id.click_event_posters);
+        TextView imagesProfilePicturesButton = findViewById(R.id.click_profile_pictures);
+        EditText imageEventSearchBar = findViewById(R.id.input_event_image_search);
+        EditText imageProfileSearchBar = findViewById(R.id.input_profile_image_search);
+        RecyclerView eventPostersRecyclerView = findViewById(R.id.recycler_event_posters);
+        RecyclerView profilePicturesRecyclerView = findViewById(R.id.recycler_profile_pictures);
 
-        // event tab recycler view setup
+        // lists to populate
         allEventsList = new ArrayList<>();
         allOrganizerList = new ArrayList<>();
+        allEventPostersList = new ArrayList<>();
+        allProfilePicturesList = new ArrayList<>();
+
+        // events recycler view setup
         EventRecyclerAdapter eventRecyclerAdapter = new EventRecyclerAdapter(allEventsList, true);
         eventsRecyclerView.setAdapter(eventRecyclerAdapter);
         LinearLayoutManager eventsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         eventsRecyclerView.setLayoutManager(eventsLayoutManager);
 
+        EventPosterRecyclerAdapter eventPostersRecyclerAdapter = new EventPosterRecyclerAdapter(allEventPostersList);
+        eventPostersRecyclerView.setAdapter(eventPostersRecyclerAdapter);
+        GridLayoutManager eventPostersLayoutManager = new GridLayoutManager(this, 3);
+        eventPostersRecyclerView.setLayoutManager(eventPostersLayoutManager);
+
+        // organizer recycler view setup
         UserRecyclerAdapter organizerRecyclerAdapter = new UserRecyclerAdapter(allOrganizerList, true);
         organizersRecyclerView.setAdapter(organizerRecyclerAdapter);
         LinearLayoutManager organizerLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -108,6 +130,9 @@ public class AdminActivity extends AppCompatActivity {
                         Toast.makeText(AdminActivity.this, "Events successfully deleted!", Toast.LENGTH_SHORT).show();
                         allEventsList.remove(eventToDelete);
                         originalEventsList.remove(eventToDelete);
+                        allEventPostersList.remove(eventToDelete);
+                        originalEventPostersList.remove(eventToDelete);
+                        eventPostersRecyclerAdapter.notifyDataSetChanged();
                         eventRecyclerAdapter.notifyDataSetChanged();
                     }
 
@@ -151,6 +176,9 @@ public class AdminActivity extends AppCompatActivity {
                                     // delete from lists since not using snapshot listener (update manually)
                                     allEventsList.remove(eventToDelete);
                                     originalEventsList.remove(eventToDelete);
+                                    allEventPostersList.remove(eventToDelete);
+                                    originalEventPostersList.remove(eventToDelete);
+                                    eventPostersRecyclerAdapter.notifyDataSetChanged();
                                     eventRecyclerAdapter.notifyDataSetChanged();
                                 }
                                 @Override
@@ -174,20 +202,25 @@ public class AdminActivity extends AppCompatActivity {
         // attach swipe to delete to the all organizers recyclerview
         new ItemTouchHelper(swipeToDeleteOrganizer).attachToRecyclerView(organizersRecyclerView);
 
-        // add every event to the recycler view initially
+        // add every event to the recycler view initially (also used for event posters tab)
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
         eventsRef.get().addOnSuccessListener(query -> {
             allEventsList.clear();
             allOrganizerList.clear();
+            allEventPostersList.clear();
             for (QueryDocumentSnapshot snapshot : query) {
                 Event eventToAdd = snapshot.toObject(Event.class);
                 allEventsList.add(eventToAdd);
+                if (eventToAdd.getEventPosterURL() != null) {
+                    allEventPostersList.add(eventToAdd);
+                }
             }
             // keep copy of original events if user searches and clears
             originalEventsList = new ArrayList<>(allEventsList);
+            originalEventPostersList = new ArrayList<>(allEventPostersList);
             eventRecyclerAdapter.notifyDataSetChanged();
-
+            eventPostersRecyclerAdapter.notifyDataSetChanged();
             // populate  organizers list
             for (Event e : allEventsList) {
                 UserDatabaseHandler organizerHelper = new UserDatabaseHandler();
@@ -213,16 +246,16 @@ public class AdminActivity extends AppCompatActivity {
             eventsRecyclerView.setVisibility(View.VISIBLE);
             organizersRecyclerView.setVisibility(View.GONE);
             eventSearchBar.setVisibility(View.VISIBLE);
-            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         eventOrganizersButton.setOnClickListener(v -> {
             eventsRecyclerView.setVisibility(View.GONE);
             organizersRecyclerView.setVisibility(View.VISIBLE);
             eventSearchBar.setVisibility(View.GONE);
-            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         eventSearchBar.addTextChangedListener(new TextWatcher() {
@@ -252,12 +285,17 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
-        // profiles tab recycler view setup
+        // users (profiles/profile pictures) recycler view setup
         allProfilesList = new ArrayList<>();
         UserRecyclerAdapter profilesRecyclerAdapter = new UserRecyclerAdapter(allProfilesList, true);
         profilesRecyclerView.setAdapter(profilesRecyclerAdapter);
         LinearLayoutManager profilesLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         profilesRecyclerView.setLayoutManager(profilesLayoutManager);
+
+        ProfilePictureRecyclerAdapter profilePicturesRecyclerAdapter = new ProfilePictureRecyclerAdapter(allProfilePicturesList);
+        profilePicturesRecyclerView.setAdapter(profilePicturesRecyclerAdapter);
+        GridLayoutManager profilePicturesLayoutManager = new GridLayoutManager(this, 3);
+        profilePicturesRecyclerView.setLayoutManager(profilePicturesLayoutManager);
         // swipe to delete profiles
         ItemTouchHelper.SimpleCallback swipeToDeleteProfile = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -291,6 +329,9 @@ public class AdminActivity extends AppCompatActivity {
                                     // manually update lists
                                     allEventsList.remove(eventToDelete);
                                     originalEventsList.remove(eventToDelete);
+                                    allEventPostersList.remove(eventToDelete);
+                                    originalEventPostersList.remove(eventToDelete);
+                                    eventPostersRecyclerAdapter.notifyDataSetChanged();
                                     eventRecyclerAdapter.notifyDataSetChanged();
                                 }
 
@@ -309,6 +350,10 @@ public class AdminActivity extends AppCompatActivity {
                             allProfilesList.remove(userToDelete);
                             allOrganizerList.remove(userToDelete);
                             originalProfilesList.remove(userToDelete);
+                            allProfilePicturesList.remove(userToDelete);
+                            originalProfilePicturesList.remove(userToDelete);
+
+                            profilePicturesRecyclerAdapter.notifyDataSetChanged();
                             profilesRecyclerAdapter.notifyDataSetChanged();
                             organizerRecyclerAdapter.notifyDataSetChanged();
                             Toast.makeText(AdminActivity.this, "Profile successfully deleted!", Toast.LENGTH_SHORT).show();
@@ -325,18 +370,24 @@ public class AdminActivity extends AppCompatActivity {
         // attach swipe to delete to the all events recyclerview
         new ItemTouchHelper(swipeToDeleteProfile).attachToRecyclerView(profilesRecyclerView);
 
-        // add every profile to the recycler view initially
+        // add every profile to the recycler view initially (also used for profile pictures tab)
         usersRef = db.collection("users");
         usersRef.get().addOnSuccessListener(value -> {
             if (value != null && !value.isEmpty()) {
                 Log.d("firebase", "checking documents");
                 allProfilesList.clear();
+                allProfilePicturesList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     User userToAdd = snapshot.toObject(User.class);
                     allProfilesList.add(userToAdd);
+                    if (userToAdd.getProfileUrl() != null) {
+                        allProfilePicturesList.add(userToAdd);
+                    }
                 }
                 // keep copy of original events if user searches and clears
                 originalProfilesList = new ArrayList<>(allProfilesList);
+                originalProfilePicturesList = new ArrayList<>(allProfilePicturesList);
+                profilePicturesRecyclerAdapter.notifyDataSetChanged();
                 profilesRecyclerAdapter.notifyDataSetChanged();
             }
         }).addOnFailureListener(error -> {
@@ -369,19 +420,183 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
+        // images tab recycler view setup
+        eventPostersRecyclerAdapter.setOnItemClickListener(position -> {
+            Event clickedEvent = allEventPostersList.get(position);
+            if (clickedEvent.getEventPosterURL() != null && !clickedEvent.getEventPosterURL().isEmpty()) {
+                FirebaseStorage.getInstance().getReferenceFromUrl(clickedEvent.getEventPosterURL())
+                        .delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d("Storage", "Event poster deleted");
+                            } else {
+                                Log.e("Storage", "Error deleting poster", task.getException());
+                            }
+                        });
+            }
+            clickedEvent.setEventPosterURL(null);
+            EventDatabaseHandler eventDb = new EventDatabaseHandler();
+            eventDb.update(clickedEvent, new EventDatabaseHandler.EventUpdated() {
+                @Override
+                public void eventUpdate() {
+
+                }
+
+                @Override
+                public void eventUpdateFailed(Exception e) {
+                    Log.e("Admin", "event update failed");
+                }
+            });
+            Toast.makeText(AdminActivity.this, "Event poster deleted!", Toast.LENGTH_SHORT).show();
+
+            allEventsList.set(allEventsList.indexOf(clickedEvent), clickedEvent);
+            originalEventsList.set(originalEventsList.indexOf(clickedEvent), clickedEvent);
+
+            allEventPostersList.remove(clickedEvent);
+            originalEventPostersList.remove(clickedEvent);
+
+            eventRecyclerAdapter.notifyDataSetChanged();
+            eventPostersRecyclerAdapter.notifyDataSetChanged();
+        });
+
+        profilePicturesRecyclerAdapter.setOnItemClickListener(position -> {
+            User clickedUser = allProfilePicturesList.get(position);
+            if (clickedUser.getProfileUrl() != null && !clickedUser.getProfileUrl().isEmpty()) {
+                FirebaseStorage.getInstance().getReferenceFromUrl(clickedUser.getProfileUrl())
+                        .delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d("Storage", "User profile picture deleted");
+                            } else {
+                                Log.e("Storage", "Error deleting profile picture", task.getException());
+                            }
+                        });
+            }
+
+            clickedUser.setProfileUrl(null);
+            UserDatabaseHandler userDb = new UserDatabaseHandler();
+            // logic for adding a user is the same as updating the user for userdatabasehandler
+            userDb.addUser(clickedUser, new UserDatabaseHandler.UserAdded() {
+                @Override
+                public void userAdd() {
+
+                }
+
+                @Override
+                public void userFailedToAdd(Exception e) {
+                    Log.e("Admin", "user update failed");
+
+                }
+            });
+            Toast.makeText(AdminActivity.this, "User profile picture deleted!", Toast.LENGTH_SHORT).show();
+
+            allProfilesList.set(allProfilesList.indexOf(clickedUser), clickedUser);
+            originalProfilesList.set(originalProfilesList.indexOf(clickedUser), clickedUser);
+
+            allProfilePicturesList.remove(clickedUser);
+            originalProfilePicturesList.remove(clickedUser);
+
+            profilesRecyclerAdapter.notifyDataSetChanged();
+            profilePicturesRecyclerAdapter.notifyDataSetChanged();
+        });
+
+        imagesPostersButton.setOnClickListener(view -> {
+            eventPostersRecyclerView.setVisibility(View.VISIBLE);
+            profilePicturesRecyclerView.setVisibility(View.GONE);
+            imageEventSearchBar.setVisibility(View.VISIBLE);
+            imageProfileSearchBar.setVisibility(View.GONE);
+            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+        });
+
+        imagesProfilePicturesButton.setOnClickListener(view -> {
+            eventPostersRecyclerView.setVisibility(View.GONE);
+            profilePicturesRecyclerView.setVisibility(View.VISIBLE);
+            imageEventSearchBar.setVisibility(View.GONE);
+            imageProfileSearchBar.setVisibility(View.VISIBLE);
+            imagesPostersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesProfilePicturesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+        });
+
+        imageEventSearchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<Event> filteredList = new ArrayList<>(originalEventPostersList);
+
+                // search filter
+                String userInput = imageEventSearchBar.getText().toString().trim();
+                if (!userInput.isEmpty()) {
+                    filteredList = eventSearchHandler(filteredList, userInput);
+                }
+
+                allEventPostersList.clear();
+                allEventPostersList.addAll(filteredList);
+                eventPostersRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
+
+        imageProfileSearchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<User> filteredList = new ArrayList<>(originalProfilePicturesList);
+
+                // search filter
+                String userInput = imageProfileSearchBar.getText().toString().trim();
+                if (!userInput.isEmpty()) {
+                    filteredList = userSearchHandler(filteredList, userInput);
+                }
+
+                allProfilePicturesList.clear();
+                allProfilePicturesList.addAll(filteredList);
+                profilePicturesRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
         // top bar
         eventButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.VISIBLE);
             profilesContainer.setVisibility(View.GONE);
-            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            imagesContainer.setVisibility(View.GONE);
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         profilesButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.GONE);
             profilesContainer.setVisibility(View.VISIBLE);
-            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            imagesContainer.setVisibility(View.GONE);
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+        });
+
+        imagesButton.setOnClickListener(v -> {
+            eventContainer.setVisibility(View.GONE);
+            profilesContainer.setVisibility(View.GONE);
+            imagesContainer.setVisibility(View.VISIBLE);
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         backButton.setOnClickListener(v -> {

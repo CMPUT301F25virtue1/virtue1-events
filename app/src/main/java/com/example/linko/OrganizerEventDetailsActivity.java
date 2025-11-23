@@ -1,19 +1,19 @@
 package com.example.linko;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -29,8 +29,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * This is the class for handling the event details for the organizer logic that interacts with the UI.
@@ -42,6 +44,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private UserRecyclerAdapter entrantsUserRecyclerAdapter;
+    private Event eventReceived;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +80,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView noEntrants = findViewById(R.id.text_no_entrants);
 
         // system tab ui
-        ConstraintLayout systemContainer = findViewById(R.id.system_container);
+        ConstraintLayout systemContainer = findViewById(R.id.event_system_container);
+        Button notifyCancelledButton = findViewById(R.id.button_notify_cancelled);
 
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
@@ -88,7 +92,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         LinearLayoutManager entrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         entrantsRecyclerView.setLayoutManager(entrantsLayoutManager);
 
-        Event eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
+        eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
             Log.e("Event", "The event clicked was null.");
             finish();
@@ -109,7 +113,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 for (QueryDocumentSnapshot snapshot : value) {
                     List<String> userRegisteredEvents = (List<String>) snapshot.get("eventsRegistered");
                     // if user is not registered in this event ->>>> skip
-                    if (!userRegisteredEvents.contains(eventReceived.getEventId())) {
+                    if (userRegisteredEvents == null || !userRegisteredEvents.contains(eventReceived.getEventId())) {
                         continue;
                     }
 
@@ -127,6 +131,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 entrantsUserRecyclerAdapter.notifyDataSetChanged();
             }
         });
+
         eventName.setText(eventReceived.getName());
         Integer eventCapacityNumber = eventReceived.getEventCapacity();
         String eventCapacityString = eventCapacityNumber.toString();
@@ -135,8 +140,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         if (eventReceived.getEntrantLimit() != null) {
             entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
-        }
-        else {
+        } else {
             entrantCount.setText(eventReceived.getEntrantCount());
         }
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
@@ -155,27 +159,27 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventDescription.setVisibility(View.VISIBLE);
             eventPoster.setVisibility(View.GONE);
             eventGuidelines.setVisibility(View.GONE);
-            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
             eventGuidelines.setVisibility(View.GONE);
-            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         guidelinesButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.GONE);
             eventGuidelines.setVisibility(View.VISIBLE);
-            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         backButton.setOnClickListener(v -> {
@@ -189,28 +193,141 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             editDialog.show(getSupportFragmentManager(), "EditPosterDialog");
         });
 
+        // Notify Cancelled Entrants button
+        notifyCancelledButton.setOnClickListener(v -> {
+            showNotifyCancelledDialog();
+        });
+
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.VISIBLE);
             entrantsContainer.setVisibility(View.GONE);
+            systemContainer.setVisibility(View.GONE);
 
-            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
 
         });
 
         totalEntrants.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.GONE);
             entrantsContainer.setVisibility(View.VISIBLE);
+            systemContainer.setVisibility(View.GONE);
+
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+
+        system.setOnClickListener(v -> {
+            eventDetailsContainer.setVisibility(View.GONE);
+            entrantsContainer.setVisibility(View.GONE);
+            systemContainer.setVisibility(View.VISIBLE);
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
-            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
-
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            system.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
+
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {
             String eventId = eventReceived.getEventId();
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
+    }
+
+    /**
+     * Shows a confirmation dialog before sending notifications to cancelled entrants
+     */
+    private void showNotifyCancelledDialog() {
+        List<String> cancelledEntrantIds = eventReceived.getCancelledEntrants();
+
+        if (cancelledEntrantIds == null || cancelledEntrantIds.isEmpty()) {
+            Toast.makeText(this, "No cancelled entrants to notify", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Inflates the custom dialog layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_notify_cancelled_entrants, null);
+
+        TextView entrantCountText = dialogView.findViewById(R.id.text_entrant_count);
+        TextView messagePreview = dialogView.findViewById(R.id.text_message_preview);
+        Button sendButton = dialogView.findViewById(R.id.button_send);
+        Button cancelButton = dialogView.findViewById(R.id.button_cancel);
+
+        entrantCountText.setText("This will notify " + cancelledEntrantIds.size() + " cancelled entrants");
+        String message = "You have been removed from the waiting list for " + eventReceived.getName();
+        messagePreview.setText(message);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        sendButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            sendNotificationsToCancelledEntrants(cancelledEntrantIds, message);
+        });
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    /**
+     * Sends notifications to all cancelled entrants and logs the action
+     */
+    private void sendNotificationsToCancelledEntrants(List<String> cancelledEntrantIds, String message) {
+        // Creates a notification document for each cancelled entrant
+        for (String userId : cancelledEntrantIds) {
+            Map<String, Object> notificationData = new HashMap<>();
+            notificationData.put("userId", userId);
+            notificationData.put("eventId", eventReceived.getEventId());
+            notificationData.put("eventName", eventReceived.getName());
+            notificationData.put("message", message);
+            notificationData.put("type", "cancelled");
+            notificationData.put("timestamp", System.currentTimeMillis());
+            notificationData.put("read", false);
+
+            db.collection("notifications")
+                    .add(notificationData)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d("Notification", "Notification sent to user: " + userId);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Notification", "Error sending notification", e);
+                    });
+        }
+
+        // Logs this action
+        logNotificationAction(message, cancelledEntrantIds.size(), "cancelled", "success");
+
+        // Show success message
+        Toast.makeText(this, "Notifications sent to " + cancelledEntrantIds.size() + " cancelled entrants",
+                Toast.LENGTH_LONG).show();
+    }
+    /**
+     * Logs the notification action to Firebase
+     */
+    private void logNotificationAction(String message, int recipientCount, String type, String status) {
+        Notification notificationLog = new Notification(
+                eventReceived.getEventId(),
+                eventReceived.getName(),
+                message,
+                type,
+                recipientCount,
+                status
+        );
+
+        db.collection("notificationLogs")
+                .add(notificationLog)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("NotificationLog", "Notification action logged successfully");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("NotificationLog", "Error logging notification action", e);
+                });
     }
 }

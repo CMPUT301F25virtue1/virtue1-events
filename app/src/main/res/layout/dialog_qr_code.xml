@@ -12,10 +12,10 @@
         android:id="@+id/dialog_top_bar"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:background="@color/red"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/darkestBlue"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/dialog_title"
@@ -65,7 +65,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/darkerTeal"
+        android:backgroundTint="@color/darkerBlue"
         android:text="Download"
         android:textColor="@color/white"
         android:textSize="20sp"
