@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,11 +21,14 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ListUpdateCallback;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +49,12 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private CollectionReference usersRef;
     private UserRecyclerAdapter entrantsUserRecyclerAdapter;
     private Event eventReceived;
+
+    //For the system tab
+    private UserRecyclerAdapter systemRecyclerAdapter;
+    private List<User> invitedEntrants;
+    private List<User> signedUpEntrants;
+    private List<User> cancelledEntrants;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +92,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.event_system_container);
         Button notifyCancelledButton = findViewById(R.id.button_notify_cancelled);
+
+        //System tab recycler view
+        //FINISH BY ADDING ID's
+        RecyclerView systemRecyclerView = findViewById(R.id.);
+        TextView noEntrantsMessage = findViewById(R.id.);
+        systemRecyclerAdapter = new UserRecyclerAdapter(invitedEntrants, false);
+        systemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        systemRecyclerView.setAdapter(systemRecyclerAdapter);
 
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
@@ -212,14 +230,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
 
         totalEntrants.setOnClickListener(v -> {
-            eventDetailsContainer.setVisibility(View.GONE);
-            entrantsContainer.setVisibility(View.VISIBLE);
-            systemContainer.setVisibility(View.GONE);
+                    eventDetailsContainer.setVisibility(View.GONE);
+                    entrantsContainer.setVisibility(View.VISIBLE);
+                    systemContainer.setVisibility(View.GONE);
 
-            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
-            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
-            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
-            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+                    eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+                    totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+                    eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+                    totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+        });
 
         system.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.GONE);
@@ -236,6 +255,72 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
+
+        //ADDING MY SYSTEM CODE DOWN HERE HOPE THATS OK
+        Button invitedButton = findViewById(R.id.button_invited);
+        Button signedUpButton = findViewById(R.id.button_signed_up);
+        Button cancelledButton = findViewById(R.id.button_cancelled);
+
+        invitedButton.setOnClickListener(v -> {
+            //systemRecyclerAdapter.        NEED SOMETHING TO UPDATE THE LISTS
+            noEntrantsMessage.setVisibility(invitedEntrants.isEmpty() ? View.VISIBLE : View.GONE);
+        });
+
+        signedUpButton.setOnClickListener(v -> {
+            //systemRecyclerAdapter.        NEED SOMETHING TO UPDATE THE LISTS
+            noEntrantsMessage.setVisibility(signedUpEntrants.isEmpty() ? View.VISIBLE : View.GONE);
+        });
+
+        cancelledButton.setOnClickListener(v -> {
+            //systemRecyclerAdapter.        NEED SOMETHING TO UPDATE THE LISTS
+            noEntrantsMessage.setVisibility(cancelledEntrants.isEmpty() ? View.VISIBLE : View.GONE);
+        });
+
+
+        //Alright so idk if I can just combine this with the otherone, but until I know ima keep this here
+        usersRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null && !value.isEmpty()) {
+                Log.d("firebase", "checking documents");
+                invitedEntrants.clear();
+                signedUpEntrants.clear();
+                cancelledEntrants.clear();
+
+                for (QueryDocumentSnapshot snapshot : value) {
+                    List<String> userRegisteredEvents = (List<String>) snapshot.get("eventsRegistered");
+                    // if user is not registered in this event ->>>> skip
+                    if (userRegisteredEvents == null || !userRegisteredEvents.contains(eventReceived.getEventId())) {
+                        continue;
+                    }
+
+                    User userToAdd = snapshot.toObject(User.class);
+                    totalEntrantsList.add(userToAdd);       //My understanding is that users added here will also update entrants(?)
+                }
+
+                if (eventReceived.getInvitedEntrants() != null) {
+                    for (String invitedId : eventReceived.getInvitedEntrants()) {
+                        totalEntrantsList.stream().filter(u -> u.getUserId().equals(invitedId)).findFirst().ifPresent(user -> invitedEntrants.add(user));
+                    }
+                }
+
+                if (eventReceived.getCancelledEntrants() != null) {
+                    for (String cancelledId : eventReceived.getCancelledEntrants()) {
+                        totalEntrantsList.stream().filter(u -> u.getUserId().equals(cancelledId)).findFirst().ifPresent(user -> invitedEntrants.add(user));
+                    }
+                }
+
+                for (User user : totalEntrantsList) {
+                    if ((eventReceived.getCancelledEntrants() == null || !eventReceived.getCancelledEntrants().contains(user.getUserId()))
+                        && (eventReceived.getInvitedEntrants() == null || eventReceived.getInvitedEntrants().contains(user.getUserId()))) {
+                        signedUpEntrants.add(user);
+                    }
+                }
+
+            }
+        });
+
     }
 
     /**
