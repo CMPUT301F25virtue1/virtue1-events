@@ -397,24 +397,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-<!--        <Button-->
-<!--            android:id="@+id/button_export_csv"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_marginEnd="16dp"-->
-<!--            android:backgroundTint="@color/darkerTeal"-->
-<!--            android:insetTop="0dp"-->
-<!--            android:insetBottom="0dp"-->
-<!--            android:text="Export Entrants as CSV"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="20sp"-->
-<!--            app:cornerRadius="10dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="@+id/button_entrant_location"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/button_entrant_location"-->
-<!--            app:layout_constraintHorizontal_bias="1.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <Button
+            android:id="@+id/button_export_csv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/darkerTeal"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Export Entrants as CSV"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_entrant_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_entrant_location"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/button_entrant_location"
@@ -520,9 +520,9 @@
             app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
             app:layout_constraintEnd_toStartOf="@+id/button_signed_up"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"
-            app:layout_constraintVertical_bias="0.883" />
+            app:layout_constraintStart_toStartOf="parent"/>
+<!--            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"-->
+<!--            app:layout_constraintVertical_bias="0.883" />-->
 
         <Button
             android:id="@+id/button_signed_up"
