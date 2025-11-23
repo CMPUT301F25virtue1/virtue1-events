@@ -533,10 +533,10 @@
             android:layout_width="363dp"
             android:layout_height="390dp"
             android:background="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited">
 
         </FrameLayout>
 
@@ -579,12 +579,10 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
-            app:layout_constraintEnd_toStartOf="@+id/button_signed_up"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"/>
-<!--            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"-->
-<!--            app:layout_constraintVertical_bias="0.883" />-->
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView15" />
+        <!--            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"-->
+        <!--            app:layout_constraintVertical_bias="0.883" />-->
 
         <Button
             android:id="@+id/button_signed_up"
@@ -597,10 +595,9 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
-            app:layout_constraintTop_toBottomOf="@+id/sample_button"
-            app:layout_constraintVertical_bias="1.0"
-            tools:layout_editor_absoluteX="104dp" />
+            app:layout_constraintEnd_toStartOf="@+id/button_cancelled"
+            app:layout_constraintStart_toEndOf="@+id/button_invited"
+            app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
         <Button
             android:id="@+id/button_cancelled"
@@ -613,17 +610,13 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/white_background_box_system"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/button_signed_up"
-            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
         <TextView
             android:id="@+id/textView15"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:background="@color/red"
             android:insetTop="0dp"
@@ -633,7 +626,6 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_signed_up"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
