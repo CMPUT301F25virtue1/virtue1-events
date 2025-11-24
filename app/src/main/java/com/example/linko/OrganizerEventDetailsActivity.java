@@ -229,7 +229,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventDetails.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.VISIBLE);
             entrantsContainer.setVisibility(View.GONE);
-            systemContainer.setVisibility(View.GONE);
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
@@ -242,7 +241,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         totalEntrants.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.GONE);
             entrantsContainer.setVisibility(View.VISIBLE);
-            systemContainer.setVisibility(View.GONE);
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
