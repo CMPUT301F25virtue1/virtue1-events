@@ -12,18 +12,23 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ListUpdateCallback;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +82,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // entrants tab ui
         ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
         TextView noEntrants = findViewById(R.id.text_no_entrants);
+
+        // system tab ui
+        ConstraintLayout systemContainer = findViewById(R.id.system_container);
+        ConstraintLayout notYetSampled = findViewById(R.id.container_not_sampled);
+        Button invited = findViewById(R.id.button_invited);
+        Button signedUp = findViewById(R.id.button_signed_up);
+        Button cancelled = findViewById(R.id.button_cancelled);
 
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
@@ -188,6 +200,30 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             editDialog.show(getSupportFragmentManager(), "EditPosterDialog");
         });
 
+        // system tab ui logic
+        invited.setOnClickListener(v -> {
+            invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+
+            // needs if invitedEntrants are full, show the event has not been sampled yet, if not, show the invited entrants recycler view (visibility = VISIBLE) and make the other recycler views (signed up and cancelled) visibility = GONE)
+        });
+
+        signedUp.setOnClickListener(v -> {
+            invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+
+            // same thing here
+        });
+
+        cancelled.setOnClickListener(v -> {
+            invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+
+            // same thing here
+        });
 
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
@@ -196,9 +232,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            system.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
             totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
-
+            system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
         });
 
         totalEntrants.setOnClickListener(v -> {
@@ -207,8 +244,23 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            system.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
             totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+            system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+        });
+
+        system.setOnClickListener(v -> {
+            eventDetailsContainer.setVisibility(View.GONE);
+            entrantsContainer.setVisibility(View.GONE);
+            systemContainer.setVisibility(View.VISIBLE);
+
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            system.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+            system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
         });
 
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {
