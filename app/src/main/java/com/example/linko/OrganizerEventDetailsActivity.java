@@ -215,8 +215,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         cancelled.setOnClickListener(v -> {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-            signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
-            cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
 
             // same thing here
         });
