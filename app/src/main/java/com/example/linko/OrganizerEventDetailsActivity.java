@@ -45,9 +45,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     private Uri imageUri;
     private List<User> totalEntrantsList;
+    private List<User> invitedEntrantsList;
+    private List<User> signedUpEntrantsList;
+    private List<User> cancelledEntrantsList;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private UserRecyclerAdapter entrantsUserRecyclerAdapter;
+    private UserRecyclerAdapter invitedEntrantsUserRecyclerAdapter;
+    private UserRecyclerAdapter signedUpEntrantsUserRecyclerAdapter;
+    private UserRecyclerAdapter cancelledEntrantsUserRecyclerAdapter;
     private Event eventReceived;
 
     @Override
@@ -99,6 +105,27 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         LinearLayoutManager entrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         entrantsRecyclerView.setLayoutManager(entrantsLayoutManager);
 
+        // system recycler views
+        RecyclerView invitedEntrantsRecyclerView = findViewById(R.id.recycler_invited_entrants);
+        RecyclerView signedUpEntrantsRecyclerView = findViewById(R.id.recycler_signed_up_entrants);
+        RecyclerView cancelledEntrantsRecyclerView = findViewById(R.id.recycler_cancelled_entrants);
+        invitedEntrantsList = new ArrayList<>();
+        signedUpEntrantsList = new ArrayList<>();
+        cancelledEntrantsList = new ArrayList<>();
+        invitedEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(invitedEntrantsList, true);
+        signedUpEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(signedUpEntrantsList, true);
+        cancelledEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(cancelledEntrantsList, true);
+        invitedEntrantsRecyclerView.setAdapter(invitedEntrantsUserRecyclerAdapter);
+        signedUpEntrantsRecyclerView.setAdapter(signedUpEntrantsUserRecyclerAdapter);
+        cancelledEntrantsRecyclerView.setAdapter(cancelledEntrantsUserRecyclerAdapter);
+
+        LinearLayoutManager invitedEntrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager signedUpEntrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager cancelledEntrantsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        invitedEntrantsRecyclerView.setLayoutManager(invitedEntrantsLayoutManager);
+        signedUpEntrantsRecyclerView.setLayoutManager(signedUpEntrantsLayoutManager);
+        cancelledEntrantsRecyclerView.setLayoutManager(cancelledEntrantsLayoutManager);
+
         eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
             Log.e("Event", "The event clicked was null.");
@@ -123,8 +150,17 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     if (userRegisteredEvents == null || !userRegisteredEvents.contains(eventReceived.getEventId())) {
                         continue;
                     }
-
                     User userToAdd = snapshot.toObject(User.class);
+
+                    if (eventReceived.getInvitedEntrants().contains(userToAdd.getUserId())) {
+                        invitedEntrantsList.add(userToAdd);
+                    }
+                    if (eventReceived.getCancelledEntrants().contains(userToAdd.getUserId())) {
+                        cancelledEntrantsList.add(userToAdd);
+                    }
+                    if (eventReceived.getSignedUpEntrants().contains(userToAdd.getUserId())) {
+                        signedUpEntrantsList.add(userToAdd);
+                    }
                     totalEntrantsList.add(userToAdd);
                 }
                 // update the entrants tab
@@ -134,6 +170,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 } else {
                     noEntrants.setVisibility(View.GONE);
                     entrantsRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+                // update systems tab
+                if (invitedEntrantsList.isEmpty()) {
+                    notYetSampled.setVisibility(View.VISIBLE);
+                }
+                else {
+                    notYetSampled.setVisibility(View.GONE);
                 }
                 entrantsUserRecyclerAdapter.notifyDataSetChanged();
             }
@@ -206,7 +250,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
 
-            // needs if invitedEntrants are full, show the event has not been sampled yet, if not, show the invited entrants recycler view (visibility = VISIBLE) and make the other recycler views (signed up and cancelled) visibility = GONE)
+            // show the invited entrants recycler view (visibility = VISIBLE) and make the other recycler views (signed up and cancelled) visibility = GONE)
         });
 
         signedUp.setOnClickListener(v -> {
@@ -224,6 +268,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             // same thing here
         });
+
+        // system recycler view
+
 
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
