@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Linko">
         <activity
+            android:name=".OrganizerNotificationsActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdminActivity"
             android:exported="false" />
         <activity
