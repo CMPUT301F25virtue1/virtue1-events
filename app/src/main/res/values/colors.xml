@@ -11,6 +11,7 @@
     <color name="darkestBlueNotSelected">#55657F</color>
     <color name="red">#F85F5F</color>
     <color name="green">#14A33A</color>
+    <color name="darkGreen">#10802E</color>
     <color name="darkRed">#E63946</color>
     <color name ="darkestRed">#661414</color>
 </resources>

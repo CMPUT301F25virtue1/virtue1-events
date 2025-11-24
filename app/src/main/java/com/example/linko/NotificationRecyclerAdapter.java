@@ -1,0 +1,113 @@
+package com.example.linko;
+
+import android.content.res.ColorStateList;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.List;
+
+/**
+ * Custom notification recycler adapter to improve performance and cache any user info for later use
+ */
+public class NotificationRecyclerAdapter extends RecyclerView.Adapter<NotificationRecyclerAdapter.NotificationViewHolder> {
+
+    private List<Notification> notificationsList;
+    private OnItemClickListener listener;
+
+    private boolean fromAdmin;
+    public NotificationRecyclerAdapter(List<Notification> notificationsList) {
+        this.notificationsList = notificationsList;
+    }
+
+    @NonNull
+    @Override
+    public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_notifications, parent, false);
+        return new NotificationViewHolder(view, listener);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
+        Notification notification = notificationsList.get(position);
+        new EventDatabaseHandler().fetchEventById(notification.getEventId(), new EventDatabaseHandler.EventFetched() {
+            @Override
+            public void eventFetch(Event event) {
+                holder.eventName.setText(event.getName());
+
+            }
+
+            @Override
+            public void eventFetchFailed(Exception e) {
+                holder.eventName.setText("Event Name");
+
+            }
+        });
+        holder.customMessage.setText(notification.getMessage());
+
+        if (notification.getType().equals("custom")) {
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.blue));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue));
+            holder.chevron.setVisibility(View.VISIBLE);
+        }
+        else if (notification.getType().equals("invited")){
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkGreen));
+            holder.chevron.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestRed));
+            holder.chevron.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return notificationsList.size();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    /**
+     * Stores all the ID's for the user view for later use
+     */
+    public class NotificationViewHolder extends RecyclerView.ViewHolder {
+        TextView eventName;
+        TextView customMessage;
+        ConstraintLayout background;
+        View shadow;
+        ImageView chevron;
+        public NotificationViewHolder(@NonNull View itemView, OnItemClickListener listener) {
+            super(itemView);
+            eventName = itemView.findViewById(R.id.text_event_name);
+            customMessage = itemView.findViewById(R.id.text_notification_message);
+            background = itemView.findViewById(R.id.main_background);
+            shadow = itemView.findViewById(R.id.shadow);
+            chevron = itemView.findViewById(R.id.chevron);
+
+            itemView.setOnClickListener(v -> {
+                int pos = getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onItemClick(pos);
+                }
+            });
+        }
+    }
+}

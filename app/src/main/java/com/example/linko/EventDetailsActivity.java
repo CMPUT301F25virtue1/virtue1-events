@@ -167,9 +167,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (activityFrom.equals("exploreEvents")) {
                 startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
             }
-            else {
+            else if (activityFrom.equals("myEvents")) {
                 startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
-
+            }
+            else if (activityFrom.equals("notifications")) {
+                startActivity(new Intent(EventDetailsActivity.this, NotificationsActivity.class));
             }
             finish();
         });
