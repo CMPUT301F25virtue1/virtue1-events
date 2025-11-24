@@ -371,66 +371,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/event_system_container"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="32dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_system"
-        tools:visibility="gone">
-
-        <TextView
-            android:id="@+id/text_system_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Notification System"
-            android:textAlignment="center"
-            android:textColor="@color/darkerTeal"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/button_notify_cancelled"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="@color/red"
-            android:padding="16dp"
-            android:text="Notify Cancelled Entrants"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_system_title" />
-
-        <TextView
-            android:id="@+id/text_notify_description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Send notifications to all entrants who have been cancelled from this event"
-            android:textAlignment="center"
-            android:textColor="@color/darkGray"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_notify_cancelled" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/event_entrants_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -518,7 +458,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="32dp"
         android:visibility="gone"
@@ -528,28 +468,87 @@
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
         tools:visibility="visible">
 
-        <FrameLayout
-            android:id="@+id/white_background_box_system"
-            android:layout_width="363dp"
-            android:layout_height="390dp"
-            android:background="@color/white"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_not_sampled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_light_blue_input_shape"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited">
+            app:layout_constraintTop_toBottomOf="@+id/button_signed_up">
 
-        </FrameLayout>
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="144dp"
+                android:layout_height="144dp"
+                android:scaleType="centerCrop"
+                android:layout_marginTop="80dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_error_24" />
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Event has not been sampled"
+                android:textColor="@color/darkestBlue"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_invited_entrants"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"
+            tools:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_signed_up_entrants"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_cancelled_entrants"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"/>
 
         <Button
             android:id="@+id/button_send_notification_system"
-            android:layout_width="350dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/darkerTeal"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/darkestBlue"
             android:text="Send Notifications"
             android:textColor="@color/white"
             android:textSize="20sp"
             app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/white_background_box_system"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -557,7 +556,7 @@
             android:id="@+id/sample_button"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:backgroundTint="@color/darkerTeal"
+            android:backgroundTint="@color/darkerBlue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Sample Until Capacity is Reached"
@@ -572,7 +571,7 @@
             android:id="@+id/button_invited"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal"
+            android:backgroundTint="@color/blue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Invited"
@@ -581,14 +580,12 @@
             app:cornerRadius="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
-        <!--            app:layout_constraintTop_toBottomOf="@+id/back_button_holder"-->
-        <!--            app:layout_constraintVertical_bias="0.883" />-->
 
         <Button
             android:id="@+id/button_signed_up"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/darkerTeal"
+            android:backgroundTint="@color/darkerBlue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Signed Up"
@@ -603,7 +600,7 @@
             android:id="@+id/button_cancelled"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/darkerTeal"
+            android:backgroundTint="@color/darkerBlue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Cancelled"
@@ -618,10 +615,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:background="@color/red"
+            android:background="@drawable/rounded_tops_darkest_blue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Entrants"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"
@@ -630,30 +629,6 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sample_button" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_event_entrants_system"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_send_notification_system"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sample_button"
-            tools:visibility="gone" />
-
-        <TextView
-            android:id="@+id/text_no_entrants_system"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Your event currently has no entrants."
-            android:textColor="@color/darkerTeal"
-            android:textSize="20sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
