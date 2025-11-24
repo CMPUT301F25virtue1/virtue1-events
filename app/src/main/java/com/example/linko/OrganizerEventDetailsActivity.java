@@ -143,14 +143,21 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             if (value != null && !value.isEmpty()) {
                 Log.d("firebase", "checking documents");
                 totalEntrantsList.clear();
-
+                invitedEntrantsList.clear();
+                signedUpEntrantsList.clear();
+                cancelledEntrantsList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     List<String> userRegisteredEvents = (List<String>) snapshot.get("eventsRegistered");
+                    User userToAdd = snapshot.toObject(User.class);
+
                     // if user is not registered in this event ->>>> skip
                     if (userRegisteredEvents == null || !userRegisteredEvents.contains(eventReceived.getEventId())) {
+                        Log.d("system", "SKIPPED" + userToAdd.getUserId() + eventReceived.getInvitedEntrants().toString());
+
                         continue;
                     }
-                    User userToAdd = snapshot.toObject(User.class);
+                    Log.d("system", eventReceived.getInvitedEntrants().toString());
+                    Log.d("system", userToAdd.getUserId());
 
                     if (eventReceived.getInvitedEntrants().contains(userToAdd.getUserId())) {
                         invitedEntrantsList.add(userToAdd);
@@ -173,13 +180,18 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 }
 
                 // update systems tab
-                if (invitedEntrantsList.isEmpty()) {
-                    notYetSampled.setVisibility(View.VISIBLE);
-                }
-                else {
+                if (!invitedEntrantsList.isEmpty() || !signedUpEntrantsList.isEmpty() || !cancelledEntrantsList.isEmpty()) {
                     notYetSampled.setVisibility(View.GONE);
                 }
+                else {
+                    notYetSampled.setVisibility(View.VISIBLE);
+                }
+                Log.d("system", invitedEntrantsList.toString());
                 entrantsUserRecyclerAdapter.notifyDataSetChanged();
+                invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+                signedUpEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+                cancelledEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+
             }
         });
 
@@ -250,7 +262,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
 
-            // show the invited entrants recycler view (visibility = VISIBLE) and make the other recycler views (signed up and cancelled) visibility = GONE)
+            invitedEntrantsRecyclerView.setVisibility(View.VISIBLE);
+            signedUpEntrantsRecyclerView.setVisibility(View.GONE);
+            cancelledEntrantsRecyclerView.setVisibility(View.GONE);
         });
 
         signedUp.setOnClickListener(v -> {
@@ -258,7 +272,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
 
-            // same thing here
+            invitedEntrantsRecyclerView.setVisibility(View.GONE);
+            signedUpEntrantsRecyclerView.setVisibility(View.VISIBLE);
+            cancelledEntrantsRecyclerView.setVisibility(View.GONE);
         });
 
         cancelled.setOnClickListener(v -> {
@@ -266,11 +282,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
 
-            // same thing here
+            invitedEntrantsRecyclerView.setVisibility(View.GONE);
+            signedUpEntrantsRecyclerView.setVisibility(View.GONE);
+            cancelledEntrantsRecyclerView.setVisibility(View.VISIBLE);
         });
-
-        // system recycler view
-
 
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
