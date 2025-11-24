@@ -67,7 +67,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
         }
         else {
             holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
-            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestRed));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
             holder.chevron.setVisibility(View.GONE);
         }
     }
