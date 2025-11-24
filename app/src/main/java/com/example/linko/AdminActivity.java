@@ -54,6 +54,7 @@ public class AdminActivity extends AppCompatActivity {
     private List<Event> originalEventPostersList;
     private List<User> allProfilePicturesList;
     private List<User> originalProfilePicturesList;
+    private List<Notification> notificationsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +88,17 @@ public class AdminActivity extends AppCompatActivity {
         RecyclerView eventPostersRecyclerView = findViewById(R.id.recycler_event_posters);
         RecyclerView profilePicturesRecyclerView = findViewById(R.id.recycler_profile_pictures);
 
+        // views under logs
+        Button logsButton = findViewById(R.id.button_logs);
+        ConstraintLayout logsContainer = findViewById(R.id.logs_container);
+        RecyclerView notificationLogsRecyclerView = findViewById(R.id.recycler_notification_logs);
+
         // lists to populate
         allEventsList = new ArrayList<>();
         allOrganizerList = new ArrayList<>();
         allEventPostersList = new ArrayList<>();
         allProfilePicturesList = new ArrayList<>();
+        notificationsList = new ArrayList<>();
 
         // events recycler view setup
         EventRecyclerAdapter eventRecyclerAdapter = new EventRecyclerAdapter(allEventsList, true);
@@ -569,6 +576,42 @@ public class AdminActivity extends AppCompatActivity {
                 allProfilePicturesList.clear();
                 allProfilePicturesList.addAll(filteredList);
                 profilePicturesRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // notification logs setup
+        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
+        notificationsRecyclerView.setAdapter(notificationsRecyclerAdapter);
+
+        LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        notificationsRecyclerView.setLayoutManager(notificationsLayoutManager);
+
+        db = FirebaseFirestore.getInstance();
+        notifsRef = db.collection("notifications");
+
+        notifsRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null && !value.isEmpty()) {
+                Log.d("firebase", "checking documents");
+
+                new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
+                    @Override
+                    public void userLoaded(User user) {
+                        notificationsList.clear();
+
+                        for (QueryDocumentSnapshot snapshot : value) {
+                            Notification notificationToAdd = snapshot.toObject(Notification.class);
+
+                            if (user.getNotificationList().contains(notificationToAdd.getNotificationId())) {
+                                notificationsList.add(notificationToAdd);
+                            }
+                        }
+
+                        notificationsRecyclerAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
         // top bar

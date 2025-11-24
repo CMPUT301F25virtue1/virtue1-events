@@ -79,10 +79,6 @@ public class NotificationsActivity extends AppCompatActivity {
         // go to the event details on click of each recycler view  item
         notificationsRecyclerAdapter.setOnItemClickListener(position -> {
             Notification notificationFromEvent = notificationsList.get(position);
-            // cant click cancelled, only the other types are clickable
-            if (notificationFromEvent.getType().equals("cancelled")) {
-                return;
-            }
             new EventDatabaseHandler().fetchEventById(notificationFromEvent.getEventId(), new EventDatabaseHandler.EventFetched() {
                 @Override
                 public void eventFetch(Event event) {
