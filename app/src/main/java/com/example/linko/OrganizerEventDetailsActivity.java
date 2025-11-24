@@ -92,6 +92,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
         ConstraintLayout notYetSampled = findViewById(R.id.container_not_sampled);
+        Button sampleButton = findViewById(R.id.sample_button);
         Button invited = findViewById(R.id.button_invited);
         Button signedUp = findViewById(R.id.button_signed_up);
         Button cancelled = findViewById(R.id.button_cancelled);
@@ -285,6 +286,30 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.VISIBLE);
+        });
+
+        sampleButton.setOnClickListener(v -> {
+            SampleButtonHandler handler = new SampleButtonHandler();
+
+            handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
+                @Override
+                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                    eventReceived.setInvitedEntrants(invited);
+                    eventReceived.setSignedUpEntrants(signedUp);
+
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling complete! " + freeSpace + "users invited!", Toast.LENGTH_SHORT).show();
+
+                    invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+                    signedUpEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+
+
+                }
+
+                @Override
+                public void onFail(String error) {
+
+                }
+            });
         });
 
         // top bar listeners
