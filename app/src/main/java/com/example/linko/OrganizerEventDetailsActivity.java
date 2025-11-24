@@ -307,7 +307,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFail(String error) {
-
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling failed: " + error, Toast.LENGTH_SHORT).show();
                 }
             });
         });
