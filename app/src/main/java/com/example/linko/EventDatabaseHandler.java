@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -102,7 +103,7 @@ public class EventDatabaseHandler {
 
         // delete any notifications from that event
         CollectionReference notifsRef = db.collection("notifications");
-
+        List<String> notifIdsToRemove = new ArrayList<>();
         notifsRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.e("NOTIFTEST", "Error fetching notifications", task.getException());
@@ -118,6 +119,7 @@ public class EventDatabaseHandler {
                     }).addOnFailureListener(e -> {
                         Log.e("NOTIFTEST", "Failed to delete notif", e);
                     });
+                    notifIdsToRemove.add(notif.getNotificationId());
                 }
             }
         });
@@ -145,6 +147,7 @@ public class EventDatabaseHandler {
                             userEventHistory.remove(eventIdToDelete);
                         }
                         User userToUpdate = snapshot.toObject(User.class);
+                        userToUpdate.getNotificationList().removeAll(notifIdsToRemove);
                         userToUpdate.setEventsRegistered(userRegisteredEvents);
                         userToUpdate.setEventHistory(userEventHistory);
 

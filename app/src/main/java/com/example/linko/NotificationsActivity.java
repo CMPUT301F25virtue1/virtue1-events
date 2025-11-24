@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -40,6 +41,8 @@ public class NotificationsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
 
         RecyclerView notificationsRecyclerView = findViewById(R.id.recycler_notifications);
+        TextView noNotifications = findViewById(R.id.text_no_notifications);
+
         notificationsList = new ArrayList<>();
         notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
         notificationsRecyclerView.setAdapter(notificationsRecyclerAdapter);
@@ -71,6 +74,14 @@ public class NotificationsActivity extends AppCompatActivity {
                         }
 
                         notificationsRecyclerAdapter.notifyDataSetChanged();
+                        if (notificationsList.isEmpty()) {
+                            noNotifications.setVisibility(View.VISIBLE);
+                            notificationsRecyclerView.setVisibility(View.GONE);
+                        }
+                        else {
+                            noNotifications.setVisibility(View.GONE);
+                            notificationsRecyclerView.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
             }
@@ -79,10 +90,6 @@ public class NotificationsActivity extends AppCompatActivity {
         // go to the event details on click of each recycler view  item
         notificationsRecyclerAdapter.setOnItemClickListener(position -> {
             Notification notificationFromEvent = notificationsList.get(position);
-            // cant click cancelled, only the other types are clickable
-            if (notificationFromEvent.getType().equals("cancelled")) {
-                return;
-            }
             new EventDatabaseHandler().fetchEventById(notificationFromEvent.getEventId(), new EventDatabaseHandler.EventFetched() {
                 @Override
                 public void eventFetch(Event event) {

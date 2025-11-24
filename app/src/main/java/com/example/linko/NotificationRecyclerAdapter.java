@@ -67,7 +67,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
         }
         else {
             holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
-            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestRed));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
             holder.chevron.setVisibility(View.GONE);
         }
     }
@@ -105,6 +105,13 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
             itemView.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    Notification notif = notificationsList.get(pos);
+
+                    // cant click cancelled type events
+                    if (notif.getType().equals("cancelled")) {
+                        return;
+                    }
+
                     listener.onItemClick(pos);
                 }
             });
