@@ -102,7 +102,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         Button invited = findViewById(R.id.button_invited);
         Button signedUp = findViewById(R.id.button_signed_up);
         Button cancelled = findViewById(R.id.button_cancelled);
-
+        Button sendNotificationSystem = findViewById(R.id.button_send_notification_system);
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
@@ -306,8 +306,33 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
 
         sendNotificationSystem.setOnClickListener(v -> {
+            if (currentClicked == 0 && invitedEntrantsList.isEmpty()) {
+                return;
+            }
+            else if (currentClicked == 1 && signedUpEntrantsList.isEmpty()) {
+                return;
+            }
+            else if (currentClicked == 2 && cancelledEntrantsList.isEmpty()){
+                return;
+            }
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerNotificationsActivity.class);
+            intent.putExtra("event", eventReceived);
 
-        })
+            if (currentClicked == 0) {
+                intent.putExtra("listToNotify", (Serializable) invitedEntrantsList);
+            }
+            else if (currentClicked == 1) {
+                intent.putExtra("listToNotify", (Serializable) signedUpEntrantsList);
+            }
+            else if (currentClicked == 2) {
+                intent.putExtra("listToNotify", (Serializable) cancelledEntrantsList);
+            }
+            else {
+                return;
+            }
+            startActivity(intent);
+        });
+
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.VISIBLE);
