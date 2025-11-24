@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightestBlue"
+    tools:context=".AddEventActivity">
+
+    <View
+        android:id="@+id/top_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/darkestBlue"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/back_button_holder"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:background="@color/darkestBlue"
+        app:layout_constraintTop_toBottomOf="@id/top_status_bar" />
+
+    <ImageView
+        android:id="@+id/button_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/back_button_holder"
+        app:layout_constraintEnd_toEndOf="@+id/back_button_holder"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/back_button_holder"
+        app:layout_constraintTop_toTopOf="@+id/back_button_holder"
+        app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
+
+    <TextView
+        android:id="@+id/text_event_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/rounded_teal"
+        android:elevation="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="Event Name"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back_button_holder" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Entrants:"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Event Capacity:"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_name" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_tops_dark_teal"
+        app:layout_constraintBottom_toBottomOf="@id/click_event_description"
+        app:layout_constraintEnd_toEndOf="@id/click_event_guidelines"
+        app:layout_constraintStart_toStartOf="@id/click_event_description"
+        app:layout_constraintTop_toTopOf="@id/click_event_description" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Geolocation Required:"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:text="Event Start Time"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_start_time"
+        app:layout_constraintStart_toStartOf="@+id/text_event_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:text="Registration Starts"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_start_time"
+        app:layout_constraintStart_toStartOf="@+id/text_event_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_start_time" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:text="Registration Ends"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_start_time"
+        app:layout_constraintStart_toStartOf="@+id/text_event_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_start" />
+
+    <TextView
+        android:id="@+id/text_event_capacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_light_blue_input_shape"
+        android:minWidth="35dp"
+        android:padding="5dp"
+        android:text="-"
+        android:textAlignment="center"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/text_entrant_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_light_blue_input_shape"
+        android:minWidth="35dp"
+        android:padding="5dp"
+        android:text="-"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/text_event_start_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_bottom_light_blue_input_shape"
+        android:minWidth="35dp"
+        android:padding="5dp"
+        android:text="Event Start Time"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/rounded_dark_teal"
+        android:button="@drawable/empty_check"
+        android:clickable="false"
+        android:foreground="@drawable/checkbox_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/textView10"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintTop_toTopOf="@+id/textView10" />
+
+    <TextView
+        android:id="@+id/text_event_registration_start"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_bottom_light_blue_input_shape"
+        android:padding="5dp"
+        android:text="Registration Start"
+        android:textAlignment="center"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <TextView
+        android:id="@+id/text_event_registration_end"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_bottom_light_blue_input_shape"
+        android:padding="5dp"
+        android:text="Registration End"
+        android:textAlignment="center"
+        android:textColor="@color/darkestBlue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+    <TextView
+        android:id="@+id/click_event_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_tops_teal"
+        android:padding="5dp"
+        android:text="Description"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/click_event_poster"
+        app:layout_constraintStart_toStartOf="@+id/text_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_registration_end" />
+
+    <TextView
+        android:id="@+id/click_event_poster"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:padding="5dp"
+        android:text="Poster"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/click_event_guidelines"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/click_event_description"
+        app:layout_constraintTop_toTopOf="@+id/click_event_description" />
+
+    <TextView
+        android:id="@+id/click_event_guidelines"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_tops_dark_teal"
+        android:padding="5dp"
+        android:text="Guidelines"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/text_event_name"
+        app:layout_constraintStart_toEndOf="@+id/click_event_poster"
+        app:layout_constraintTop_toTopOf="@+id/click_event_description" />
+
+    <LinearLayout
+        android:id="@+id/description_poster_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_bottom_white"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/button_accept"
+        app:layout_constraintEnd_toEndOf="@+id/view2"
+        app:layout_constraintStart_toStartOf="@+id/view2"
+        app:layout_constraintTop_toBottomOf="@+id/view2">
+
+        <TextView
+            android:id="@+id/text_event_description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:padding="5dp"
+            android:text="You have no event description."
+            android:textColor="@color/darkestBlue"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/image_event_poster"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_bottom_white"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/text_event_guidelines"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:text="You have no event guidelines."
+            android:textColor="@color/darkestBlue"
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_accept"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/green"
+        android:padding="10dp"
+        android:text="Accept"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_decline"
+        app:layout_constraintStart_toStartOf="@+id/description_poster_container"
+        app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
+
+    <Button
+        android:id="@+id/button_decline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/red"
+        android:padding="10dp"
+        android:text="Decline"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
+        app:layout_constraintStart_toEndOf="@+id/button_accept"
+        app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
