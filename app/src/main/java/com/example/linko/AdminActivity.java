@@ -264,6 +264,27 @@ public class AdminActivity extends AppCompatActivity {
             eventSearchBar.setVisibility(View.GONE);
             eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+
+            allOrganizerList.clear();
+            // repopulate so if events from organizer is deleted manually one by one, organizers reflects that change
+            for (Event e : originalEventsList) {
+                UserDatabaseHandler organizerHelper = new UserDatabaseHandler();
+                organizerHelper.fetchUserById(e.getOwnerId(), new UserDatabaseHandler.UserFetchedFromId() {
+                    @Override
+                    public void userFetch(User user) {
+                        // avoid dupes
+                        if (!allOrganizerList.contains(user)) {
+                            allOrganizerList.add(user);
+                            organizerRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void userFetchFailed(Exception ee) {
+                        Log.e("AdminActivity", "Failed to fetch organizer: " + e.getOwnerId(), ee);
+                    }
+                });
+            }
         });
 
         eventSearchBar.addTextChangedListener(new TextWatcher() {
@@ -650,6 +671,7 @@ public class AdminActivity extends AppCompatActivity {
             imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             logsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
+
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, SettingsActivity.class));
             finish();
