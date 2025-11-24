@@ -297,7 +297,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     eventReceived.setInvitedEntrants(invited);
                     eventReceived.setSignedUpEntrants(signedUp);
 
-                    Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling complete! " + freeSpace + "users invited!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling complete! " + invited.size() + "users invited!", Toast.LENGTH_SHORT).show();
 
                     invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
                     signedUpEntrantsUserRecyclerAdapter.notifyDataSetChanged();
