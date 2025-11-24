@@ -383,7 +383,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <Button
             android:id="@+id/button_send_notification"
@@ -466,7 +466,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_invited_entrants"
@@ -488,7 +488,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited"/>
+            app:layout_constraintTop_toBottomOf="@+id/button_invited" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_cancelled_entrants"
@@ -499,7 +499,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited"/>
+            app:layout_constraintTop_toBottomOf="@+id/button_invited" />
 
         <Button
             android:id="@+id/button_send_notification_system"
@@ -618,9 +618,9 @@
             android:background="@drawable/rounded_tops_darkest_blue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Entrants"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
+            android:text="Entrants"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"

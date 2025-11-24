@@ -8,28 +8,20 @@ import java.io.Serializable;
 public class Notification implements Serializable {
     private String notificationId;
     private String eventId;
-    private String eventName;
     private String message;
     private String type; // "cancelled", "invited", "custom"
-    private long timestamp;
-    private int recipientCount;
-    private String status; // "success", "error"
 
     public Notification() {
         // Empty constructor for Firebase
     }
 
-    public Notification(String eventId, String eventName, String message, String type, int recipientCount, String status) {
+    public Notification(String notificationId, String eventId, String message, String type) {
+        this.notificationId = notificationId;
         this.eventId = eventId;
-        this.eventName = eventName;
         this.message = message;
         this.type = type;
-        this.recipientCount = recipientCount;
-        this.status = status;
-        this.timestamp = System.currentTimeMillis();
     }
 
-    // Getters and Setters
     public String getNotificationId() {
         return notificationId;
     }
@@ -46,14 +38,6 @@ public class Notification implements Serializable {
         this.eventId = eventId;
     }
 
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -68,29 +52,5 @@ public class Notification implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public int getRecipientCount() {
-        return recipientCount;
-    }
-
-    public void setRecipientCount(int recipientCount) {
-        this.recipientCount = recipientCount;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

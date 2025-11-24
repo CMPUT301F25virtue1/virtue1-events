@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,11 +58,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private UserRecyclerAdapter cancelledEntrantsUserRecyclerAdapter;
     private Event eventReceived;
 
+    // to keep track of which list to send notifications to in the system tab (0 = invited, 1 = signedup, 2 = cancelled)
+    int currentClicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_event_details);
+;       currentClicked = 0;
 
         // top bar
         ImageView backButton = findViewById(R.id.button_back_button);
@@ -88,6 +94,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // entrants tab ui
         ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
         TextView noEntrants = findViewById(R.id.text_no_entrants);
+        Button sendNotificationAll = findViewById(R.id.button_send_notification);
 
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
@@ -261,7 +268,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-
+            currentClicked = 0;
             invitedEntrantsRecyclerView.setVisibility(View.VISIBLE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.GONE);
@@ -271,7 +278,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-
+            currentClicked = 1;
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.VISIBLE);
             cancelledEntrantsRecyclerView.setVisibility(View.GONE);
@@ -281,12 +288,26 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
-
+            currentClicked = 2;
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.VISIBLE);
         });
 
+        // notification listeners
+        sendNotificationAll.setOnClickListener(v -> {
+            if (totalEntrantsList.isEmpty()) {
+                return;
+            }
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerNotificationsActivity.class);
+            intent.putExtra("listToNotify", (Serializable) totalEntrantsList);
+            intent.putExtra("event", eventReceived);
+            startActivity(intent);
+        });
+
+        sendNotificationSystem.setOnClickListener(v -> {
+
+        })
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.VISIBLE);
