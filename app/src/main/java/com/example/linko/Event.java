@@ -35,6 +35,7 @@ public class Event implements Serializable {
     private List<String> signedUpEntrants;
     private List<String> cancelledEntrants;
     private String eventId;
+    private boolean sampled;
 
 
     public Event() {
@@ -80,6 +81,7 @@ public class Event implements Serializable {
         this.signedUpEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
         this.eventId = eventId;
+        this.sampled = false;
     }
 
     public String getOwnerId() {
@@ -212,6 +214,14 @@ public class Event implements Serializable {
 
     public String getEntrantCount() {
         return String.valueOf(entrants.size());
+    }
+
+    public boolean isSampled() {
+        return sampled;
+    }
+
+    public void setSampled(boolean sampled){
+        this.sampled = sampled;
     }
 
     @Override

@@ -362,7 +362,21 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             exportEntrantsAsCsv(totalEntrantsList);
         });
 
+        //Greys out sampled button if it has already been pressed
+        if (eventReceived.isSampled()){
+            sampleButton.setEnabled(false);
+            sampleButton.setAlpha(0.5f);
+        }
+
         sampleButton.setOnClickListener(v -> {
+
+            eventReceived.setSampled(true);
+
+            if (!sampleButton.isEnabled()){
+                Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling already done.", Toast.LENGTH_SHORT).show();
+            }
+
+
             SampleButtonHandler handler = new SampleButtonHandler();
 
             handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
@@ -449,7 +463,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 invitedEntrantsUserRecyclerAdapter.notifyItemRemoved(pos);
 
                 eventReceived.getInvitedEntrants().remove(user.getUserId());
-                FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants());
+                eventReceived.getEntrants().remove(user.getUserId());
+                eventReceived.getCancelledEntrants().add(user.getUserId());
+                FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "totalEntrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants());
 
                 Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
             }

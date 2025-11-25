@@ -37,7 +37,7 @@ public class SampleButtonHandler {
         //Event capacity - num of invited = amount of free space. Debating on which to use
         //Signed up will stop me from sampling if I max out on signed up users even if they dont accept
         //Invited will allow me to keep sending out invites if sampled users havent accepted.
-        int freeSpace = event.getEventCapacity() - signedUp.size();
+        int freeSpace = event.getEventCapacity() - (signedUp.size() + invited.size());
 
         if(freeSpace <= 0){
             callback.onFail("Event full");

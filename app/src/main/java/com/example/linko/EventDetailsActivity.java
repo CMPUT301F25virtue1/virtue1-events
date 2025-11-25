@@ -191,6 +191,34 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                                 }
                             });
+
+                            SampleButtonHandler handler = new SampleButtonHandler();
+
+                            handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
+                                @Override
+                                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                                    eventReceived.setInvitedEntrants(invited);
+                                    eventReceived.setSignedUpEntrants(signedUp);
+
+                                    List<User> invitedEntrantsList = eventReceived.getInvitedEntrants();
+
+                                    UserRecyclerAdapter invitedEntrantsUserRecyclerAdapter;
+
+
+                                    invitedEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(invitedEntrantsList, true);
+
+                                    invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+
+
+
+                                }
+
+                                @Override
+                                public void onFail(String error) {
+                                    Toast.makeText(EventDetailsActivity.this, "Sampling failed: " + error, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
                         }
 
                         @Override
