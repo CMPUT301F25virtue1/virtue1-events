@@ -16,10 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ListUpdateCallback;
@@ -403,5 +405,29 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
+
+        //Move this where it needs to go.
+        //Swipe to delete invited users
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int pos = viewHolder.getAbsoluteAdapterPosition();
+                User user = invitedEntrantsList.get(pos);
+
+                invitedEntrantsList.remove(user);
+                invitedEntrantsUserRecyclerAdapter.notifyItemRemoved(pos);
+
+                eventReceived.getInvitedEntrants().remove(user.getUserId());
+                FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants());
+
+                Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
+            }
+        };
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(invitedEntrantsRecyclerView);
     }
 }
