@@ -31,7 +31,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
     private Button joinWaitlist;
     private Button leaveWaitlist;
+    private Button acceptInvite;
+    private Button declineInvite;
     private TextView entrantCount;
+    private TextView acceptedInvite;
+    private TextView eventClosed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         ImageView eventPoster = findViewById(R.id.image_event_poster);
         joinWaitlist = findViewById(R.id.button_join_waitlist);
         leaveWaitlist = findViewById(R.id.button_leave_waitlist);
+        acceptInvite = findViewById(R.id.button_accept);
+        declineInvite = findViewById(R.id.button_decline);
+        acceptedInvite = findViewById(R.id.text_accepted_invitation);
+        eventClosed = findViewById(R.id.text_closed_event);
 
         eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
@@ -76,6 +84,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         else {
             entrantCount.setText(eventReceived.getEntrantCount());
         }
+
 
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
 
@@ -133,6 +142,65 @@ public class EventDetailsActivity extends AppCompatActivity {
             joinWaitlist.setVisibility(View.VISIBLE);
             leaveWaitlist.setVisibility(View.INVISIBLE);
             changeUserWaitlist();
+        });
+
+        acceptInvite.setOnClickListener(v -> {
+            new UserDatabaseHandler().getCurrentUser(EventDetailsActivity.this, new UserDatabaseHandler.UserFetched() {
+                @Override
+                public void userLoaded(User user) {
+                    // shift the user to the signed up entrant list
+                    eventReceived.getInvitedEntrants().remove(user.getUserId());
+                    eventReceived.getSignedUpEntrants().add(user.getUserId());
+                    new EventDatabaseHandler().update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                        @Override
+                        public void eventUpdate() {
+                            Toast.makeText(EventDetailsActivity.this, "Successfully accepted the invitation!", Toast.LENGTH_LONG).show();
+                            checkUserRegistered();
+                        }
+
+                        @Override
+                        public void eventUpdateFailed(Exception e) {
+
+                        }
+                    });
+                }
+            });
+        });
+
+        declineInvite.setOnClickListener(v -> {
+            new UserDatabaseHandler().getCurrentUser(EventDetailsActivity.this, new UserDatabaseHandler.UserFetched() {
+                @Override
+                public void userLoaded(User user) {
+                    // remove any mention of the user in the event lists
+                    eventReceived.getEntrants().remove(user.getUserId());
+                    eventReceived.getInvitedEntrants().remove(user.getUserId());
+                    new EventDatabaseHandler().update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                        @Override
+                        public void eventUpdate() {
+                            checkUserRegistered();
+                            // now remove the event from the users registered events list
+                            user.getEventsRegistered().remove(eventReceived.getEventId());
+                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                @Override
+                                public void userAdd() {
+                                    Toast.makeText(EventDetailsActivity.this, "Successfully declined the invitation!", Toast.LENGTH_LONG).show();
+                                }
+
+                                @Override
+                                public void userFailedToAdd(Exception e) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void eventUpdateFailed(Exception e) {
+
+                        }
+                    });
+
+                }
+            });
         });
 
         descriptionButton.setOnClickListener(v -> {
@@ -241,14 +309,51 @@ public class EventDetailsActivity extends AppCompatActivity {
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
             List<String> userEventsRegistered = currentUser.getEventsRegistered();
-
-            if (userEventsRegistered.contains(eventReceived.getEventId())) {
+            Date now = new Date();
+            // if user is in the waitlist already, allow them to leave
+            if (eventReceived.getEntrants().contains(currentUser.getUserId())) {
                 joinWaitlist.setVisibility(View.INVISIBLE);
                 leaveWaitlist.setVisibility(View.VISIBLE);
+                acceptInvite.setVisibility(View.INVISIBLE);
+                declineInvite.setVisibility(View.INVISIBLE);
+                acceptedInvite.setVisibility(View.INVISIBLE);
+                eventClosed.setVisibility(View.INVISIBLE);
             }
+            // if user ISNT in the waitlist, and registration has ended (includes case where user declined)
+            else if (!eventReceived.getEntrants().contains(currentUser.getUserId()) && eventReceived.getRegistrationEnd().before(now)) {
+                joinWaitlist.setVisibility(View.INVISIBLE);
+                leaveWaitlist.setVisibility(View.INVISIBLE);
+                acceptInvite.setVisibility(View.INVISIBLE);
+                declineInvite.setVisibility(View.INVISIBLE);
+                acceptedInvite.setVisibility(View.INVISIBLE);
+                eventClosed.setVisibility(View.VISIBLE);
+            }
+            // user isnt in the waitlist but can still register
             else {
                 joinWaitlist.setVisibility(View.VISIBLE);
                 leaveWaitlist.setVisibility(View.INVISIBLE);
+                acceptInvite.setVisibility(View.INVISIBLE);
+                declineInvite.setVisibility(View.INVISIBLE);
+                acceptedInvite.setVisibility(View.INVISIBLE);
+                eventClosed.setVisibility(View.INVISIBLE);
+            }
+
+            // checks if they have been invited or signed up already
+            if (eventReceived.getInvitedEntrants().contains(currentUser.getUserId())) {
+                joinWaitlist.setVisibility(View.INVISIBLE);
+                leaveWaitlist.setVisibility(View.INVISIBLE);
+                acceptInvite.setVisibility(View.VISIBLE);
+                declineInvite.setVisibility(View.VISIBLE);
+                acceptedInvite.setVisibility(View.INVISIBLE);
+                eventClosed.setVisibility(View.INVISIBLE);
+            }
+            else if (eventReceived.getSignedUpEntrants().contains(currentUser.getUserId())) {
+                joinWaitlist.setVisibility(View.INVISIBLE);
+                leaveWaitlist.setVisibility(View.INVISIBLE);
+                acceptInvite.setVisibility(View.INVISIBLE);
+                declineInvite.setVisibility(View.INVISIBLE);
+                acceptedInvite.setVisibility(View.VISIBLE);
+                eventClosed.setVisibility(View.INVISIBLE);
             }
         });
     }

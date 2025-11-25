@@ -18,10 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ListUpdateCallback;
@@ -65,7 +67,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private Event eventReceived;
 
     // to keep track of which list to send notifications to in the system tab (0 = invited, 1 = signedup, 2 = cancelled)
-    int currentClicked;
+    private int currentClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         Button signedUp = findViewById(R.id.button_signed_up);
         Button cancelled = findViewById(R.id.button_cancelled);
         Button sendNotificationSystem = findViewById(R.id.button_send_notification_system);
+
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
@@ -203,6 +206,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     notYetSampled.setVisibility(View.VISIBLE);
                 }
                 Log.d("system", invitedEntrantsList.toString());
+
+                exportCsvButton.setEnabled(!totalEntrantsList.isEmpty());
+                exportCsvButton.setAlpha(totalEntrantsList.isEmpty() ? 0.5f : 1f);
+
                 entrantsUserRecyclerAdapter.notifyDataSetChanged();
                 invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
                 signedUpEntrantsUserRecyclerAdapter.notifyDataSetChanged();
@@ -219,9 +226,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         if (eventReceived.getEntrantLimit() != null) {
             entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
-        } else {
+        }
+        else {
             entrantCount.setText(eventReceived.getEntrantCount());
         }
+
         geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
 
         Date eventStart = eventReceived.getEventTime();
@@ -231,6 +240,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventTime.setText(sdf.format(eventStart));
         registrationStart.setText(sdf.format(start));
         registrationEnd.setText(sdf.format(end));
+
         eventDescription.setText(eventReceived.getDescription());
         eventGuidelines.setText(eventReceived.getGuidelines());
 
@@ -305,7 +315,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         // notification listeners
         sendNotificationAll.setOnClickListener(v -> {
-
             if (totalEntrantsList.isEmpty()) {
                 return;
             }
@@ -313,15 +322,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             intent.putExtra("listToNotify", (Serializable) totalEntrantsList);
             intent.putExtra("event", eventReceived);
             startActivity(intent);
-        });
-
-        // export csv button
-        exportCsvButton.setOnClickListener(v -> {
-            if (totalEntrantsList.isEmpty()) {
-                Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            exportEntrantsAsCsv(totalEntrantsList);
         });
 
 
@@ -351,6 +351,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 return;
             }
             startActivity(intent);
+        });
+
+        // export csv button
+        exportCsvButton.setOnClickListener(v -> {
+            if (totalEntrantsList.isEmpty()) {
+                Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            exportEntrantsAsCsv(totalEntrantsList);
         });
 
         sampleButton.setOnClickListener(v -> {
@@ -417,15 +426,46 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
         });
 
+            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
+            system.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
+            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
+            system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
+        });
+
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {
             String eventId = eventReceived.getEventId();
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
 
+        //Move this where it needs to go.
+        //Swipe to delete invited users
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int pos = viewHolder.getAbsoluteAdapterPosition();
+                User user = invitedEntrantsList.get(pos);
+
+                invitedEntrantsList.remove(user);
+                invitedEntrantsUserRecyclerAdapter.notifyItemRemoved(pos);
+
+                eventReceived.getInvitedEntrants().remove(user.getUserId());
+                FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants());
+
+                Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
+            }
+        };
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(invitedEntrantsRecyclerView);
     }
-    // Export CSV
+
+    // csv export
     private void exportEntrantsAsCsv(List<User> entrants) {
         StringBuilder csv = new StringBuilder();
         csv.append("Full Name,Email,UserID\n");
