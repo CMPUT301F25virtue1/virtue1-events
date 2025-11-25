@@ -22,6 +22,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.firebase.firestore.GeoPoint;
+import java.util.HashMap;
+
+
 /**
  * Our class for managing the UI interactive logic for event details.
  * Calls EventDatabaseHandler to update our event in the database with any changes
@@ -257,15 +261,36 @@ public class EventDetailsActivity extends AppCompatActivity {
             Log.d("eventReceived", eventReceived.getEventId());
             Log.d("eventReceived", "event received" + eventReceived.getOwnerId());
 
-            if (userEventsRegistered.contains(eventReceived.getEventId())) {
+            // make sure entrantLocations map is not null
+            if (eventReceived.getEntrantLocations() == null) {
+                eventReceived.setEntrantLocations(new HashMap<>());
+            }
+
+            boolean isCurrentlyRegistered = userEventsRegistered.contains(eventReceived.getEventId());
+
+            if (isCurrentlyRegistered) {
+                // user leaves waitlist
                 userEventsRegistered.remove(eventReceived.getEventId());
                 eventReceived.getEntrants().remove(currentUser.getUserId());
-            }
-            else {
+
+                // 🔻 remove their location for this event
+                eventReceived.getEntrantLocations().remove(currentUser.getUserId());
+            } else {
+                // user joins waitlist
                 userEventsRegistered.add(eventReceived.getEventId());
                 eventReceived.getEntrants().add(currentUser.getUserId());
+
                 if (!userEventHistory.contains(eventReceived.getEventId())) {
                     userEventHistory.add(eventReceived.getEventId());
+                }
+
+                // add their location for this event, if we have one stored on User
+                Double lat = currentUser.getLatitude();   // make sure User has these getters
+                Double lng = currentUser.getLongitude();
+
+                if (lat != null && lng != null) {
+                    eventReceived.getEntrantLocations()
+                            .put(currentUser.getUserId(), new GeoPoint(lat, lng));
                 }
             }
 
@@ -293,14 +318,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
+
             if (eventReceived.getEntrantLimit() != null) {
                 entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
-            }
-            else {
+            } else {
                 entrantCount.setText(eventReceived.getEntrantCount());
             }
         });
     }
+
 
     /**
      * Method to check the database to see if a user is registered for an event

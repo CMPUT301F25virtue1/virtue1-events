@@ -22,6 +22,10 @@ public class User implements Serializable {
     private List<String> notificationList;
     private boolean isAdmin;
 
+    // 🔹 NEW: optional location for this user
+    private Double latitude;
+    private Double longitude;
+
     public User() {
         // empty for firebase
     }
@@ -46,6 +50,8 @@ public class User implements Serializable {
         this.eventHistory = new ArrayList<>();
         this.notificationList = new ArrayList<>();
         this.isAdmin = false;
+        this.latitude = null;
+        this.longitude = null;
     }
 
     public String getUserId() {
@@ -100,16 +106,16 @@ public class User implements Serializable {
         return eventsRegistered;
     }
 
+    public void setEventsRegistered(List<String> eventsRegistered) {
+        this.eventsRegistered = eventsRegistered;
+    }
+
     public List<String> getEventHistory() {
         return eventHistory;
     }
 
     public void setEventHistory(List<String> eventHistory) {
         this.eventHistory = eventHistory;
-    }
-
-    public void setEventsRegistered(List<String> eventsRegistered) {
-        this.eventsRegistered = eventsRegistered;
     }
 
     public List<String> getNotificationList() {
@@ -126,6 +132,23 @@ public class User implements Serializable {
 
     public void setAdmin(boolean admin) {
         this.isAdmin = admin;
+    }
+
+    // 🔹 NEW getters/setters for geolocation
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     @Override

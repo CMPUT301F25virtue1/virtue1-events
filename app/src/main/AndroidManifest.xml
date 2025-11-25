@@ -42,7 +42,10 @@
             </intent-filter>
         </activity>
 
-        <!-- ⭐ Required for CSV Export & File Sharing ⭐ -->
+        <activity android:name=".EntrantsMapActivity" />
+
+
+        <!-- Required for CSV Export & File Sharing  -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
