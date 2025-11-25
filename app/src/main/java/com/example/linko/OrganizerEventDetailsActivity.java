@@ -99,6 +99,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
         ConstraintLayout notYetSampled = findViewById(R.id.container_not_sampled);
+        Button sampleButton = findViewById(R.id.sample_button);
         Button invited = findViewById(R.id.button_invited);
         Button signedUp = findViewById(R.id.button_signed_up);
         Button cancelled = findViewById(R.id.button_cancelled);
@@ -333,10 +334,35 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        sampleButton.setOnClickListener(v -> {
+            SampleButtonHandler handler = new SampleButtonHandler();
+
+            handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
+                @Override
+                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                    eventReceived.setInvitedEntrants(invited);
+                    eventReceived.setSignedUpEntrants(signedUp);
+
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling complete! " + invited.size() + "users invited!", Toast.LENGTH_SHORT).show();
+
+                    invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+                    signedUpEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+
+
+                }
+
+                @Override
+                public void onFail(String error) {
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling failed: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
         // top bar listeners
         eventDetails.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.VISIBLE);
             entrantsContainer.setVisibility(View.GONE);
+            systemContainer.setVisibility(View.GONE);
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
@@ -349,6 +375,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         totalEntrants.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.GONE);
             entrantsContainer.setVisibility(View.VISIBLE);
+            systemContainer.setVisibility(View.GONE);
 
             eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
