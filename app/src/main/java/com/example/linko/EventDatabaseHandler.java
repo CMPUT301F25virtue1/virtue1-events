@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class EventDatabaseHandler {
      * Adds event to the Firebase database
      * @param eventToAdd The event were adding to the database
      * @param added Checks exceptions
-     * @param docRef Reference to where the event is in the database. Nessicery to allow us to read, write, and edit out events
+     * @param docRef Reference to where the event is in the database. Necessary to allow us to read, write, and edit out events
      * @param eventId The Firebase Id for the event
      */
     public void addEvent(Event eventToAdd, EventDatabaseHandler.EventAdded added, DocumentReference docRef, String eventId) {
@@ -99,6 +100,30 @@ public class EventDatabaseHandler {
         }
 
         String eventIdToDelete = event.getEventId();
+
+        // delete any notifications from that event
+        CollectionReference notifsRef = db.collection("notifications");
+        List<String> notifIdsToRemove = new ArrayList<>();
+        notifsRef.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("NOTIFTEST", "Error fetching notifications", task.getException());
+                return;
+            }
+            for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                Notification notif = snapshot.toObject(Notification.class);
+
+                // delete if event id matches
+                if (notif.getEventId().equals(eventIdToDelete)) {
+                    snapshot.getReference().delete().addOnSuccessListener(a -> {
+                        Log.d("NOTIFTEST", "Deleted notif: " + snapshot.getId());
+                    }).addOnFailureListener(e -> {
+                        Log.e("NOTIFTEST", "Failed to delete notif", e);
+                    });
+                    notifIdsToRemove.add(notif.getNotificationId());
+                }
+            }
+        });
+
         // hard delete it from database, and user event lists
         eventsRef.document(eventIdToDelete).delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -122,6 +147,7 @@ public class EventDatabaseHandler {
                             userEventHistory.remove(eventIdToDelete);
                         }
                         User userToUpdate = snapshot.toObject(User.class);
+                        userToUpdate.getNotificationList().removeAll(notifIdsToRemove);
                         userToUpdate.setEventsRegistered(userRegisteredEvents);
                         userToUpdate.setEventHistory(userEventHistory);
 

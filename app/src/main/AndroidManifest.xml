@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature
@@ -17,54 +18,43 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Linko">
-        <activity
-            android:name=".AdminActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerEventDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EventDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditEventActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AddEventActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DeleteProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ExploreEventsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MyEventsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".NotificationsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+
+        <!-- Activities -->
+        <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
+        <activity android:name=".AdminActivity" android:exported="false" />
+        <activity android:name=".EditProfileActivity" android:exported="false" />
+        <activity android:name=".OrganizerEventDetailsActivity" android:exported="false" />
+        <activity android:name=".EventDetailsActivity" android:exported="false" />
+        <activity android:name=".EditEventActivity" android:exported="false" />
+        <activity android:name=".AddEventActivity" android:exported="false" />
+        <activity android:name=".DeleteProfileActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".ExploreEventsActivity" android:exported="false" />
+        <activity android:name=".MyEventsActivity" android:exported="false" />
+        <activity android:name=".NotificationsActivity" android:exported="false" />
+        <activity android:name=".SignUpActivity" android:exported="false" />
+
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- ⭐ Required for CSV Export & File Sharing ⭐ -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+
+        </provider>
+
     </application>
 
 </manifest>
