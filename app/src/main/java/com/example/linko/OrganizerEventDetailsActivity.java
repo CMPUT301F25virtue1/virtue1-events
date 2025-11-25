@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Handles organizer event details, entrants, CSV export, notifications, and system tools.
+ * This is the class for handling the event details for the organizer logic that interacts with the UI.
  */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
@@ -63,17 +63,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         currentClicked = 0;
 
-        //---------------------------------------------
-        // TOP BAR
-        //---------------------------------------------
+        // top bar
         ImageView backButton = findViewById(R.id.button_back_button);
         Button eventDetails = findViewById(R.id.button_event);
         Button totalEntrants = findViewById(R.id.button_entrants);
         Button system = findViewById(R.id.button_system);
 
-        //---------------------------------------------
-        // EVENT TAB UI
-        //---------------------------------------------
+        // event tab ui
         ConstraintLayout eventDetailsContainer = findViewById(R.id.event_details_container);
 
         TextView eventName = findViewById(R.id.text_event_name);
@@ -94,18 +90,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         ImageView eventPoster = findViewById(R.id.image_event_poster);
         Button editEvent = findViewById(R.id.button_edit_event);
 
-        //---------------------------------------------
-        // ENTRANTS TAB UI
-        //---------------------------------------------
+        // entrants tab ui
         ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
         TextView noEntrants = findViewById(R.id.text_no_entrants);
         Button sendNotificationAll = findViewById(R.id.button_send_notification);
 
         Button exportCsvButton = findViewById(R.id.button_export_csv);
 
-        //---------------------------------------------
-        // SYSTEM TAB UI
-        //---------------------------------------------
+        // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
         ConstraintLayout notYetSampled = findViewById(R.id.container_not_sampled);
         Button sampleButton = findViewById(R.id.sample_button);
@@ -114,9 +106,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         Button cancelled = findViewById(R.id.button_cancelled);
         Button sendNotificationSystem = findViewById(R.id.button_send_notification_system);
 
-        //---------------------------------------------
-        // RECYCLER VIEWS
-        //---------------------------------------------
+        // system recycler views
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
         entrantsUserRecyclerAdapter = new UserRecyclerAdapter(totalEntrantsList, false);
@@ -143,18 +133,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         signedUpEntrantsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         cancelledEntrantsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        //---------------------------------------------
-        // GET EVENT PASSED IN
-        //---------------------------------------------
+
         eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
         if (eventReceived == null) {
             finish();
             return;
         }
 
-        //---------------------------------------------
-        // FIRESTORE LISTENER
-        //---------------------------------------------
+
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
 
@@ -206,9 +192,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        //---------------------------------------------
-        // SET EVENT DETAILS
-        //---------------------------------------------
+
         eventName.setText(eventReceived.getName());
         eventCapacity.setText(String.valueOf(eventReceived.getEventCapacity()));
 
@@ -233,9 +217,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventDescription.setText(eventReceived.getDescription());
         eventGuidelines.setText(eventReceived.getGuidelines());
 
-        //---------------------------------------------
-        // DESCRIPTION / POSTER / GUIDELINES SWITCHING
-        //---------------------------------------------
+
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
             eventPoster.setVisibility(View.GONE);
@@ -254,17 +236,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventGuidelines.setVisibility(View.VISIBLE);
         });
 
-        //---------------------------------------------
-        // BACK BUTTON
-        //---------------------------------------------
+
         backButton.setOnClickListener(v -> {
             startActivity(new Intent(this, MyEventsActivity.class));
             finish();
         });
 
-        //---------------------------------------------
-        // EDIT EVENT POSTER
-        //---------------------------------------------
+
         editEvent.setOnClickListener(v -> {
             EditEventPosterDialog dialog = EditEventPosterDialog.newInstance(eventReceived);
             dialog.setOnPosterUpdatedListener(url ->
@@ -273,9 +251,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "EditPosterDialog");
         });
 
-        //---------------------------------------------
-        // SYSTEM TAB — FILTER BUTTONS
-        //---------------------------------------------
+
 
 
         signedUp.setOnClickListener(v -> {
@@ -292,9 +268,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             cancelledEntrantsRecyclerView.setVisibility(View.VISIBLE);
         });
 
-        //---------------------------------------------
-        // SEND NOTIFICATION (ALL)
-        //---------------------------------------------
+        // notification listeners
         sendNotificationAll.setOnClickListener(v -> {
             if (totalEntrantsList.isEmpty()) return;
 
@@ -304,9 +278,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        //---------------------------------------------
-        // SEND NOTIFICATION (SYSTEM TAB)
-        //---------------------------------------------
+
         sendNotificationSystem.setOnClickListener(v -> {
             List<User> target;
             if (currentClicked == 0) target = invitedEntrantsList;
@@ -321,9 +293,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        //---------------------------------------------
-        // CSV EXPORT BUTTON
-        //---------------------------------------------
+        // export csv button
         exportCsvButton.setOnClickListener(v -> {
             if (totalEntrantsList.isEmpty()) {
                 Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
@@ -332,9 +302,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             exportEntrantsAsCsv(totalEntrantsList);
         });
 
-        //---------------------------------------------
-        // SAMPLE BUTTON (SYSTEM TAB)
-        //---------------------------------------------
+
         sampleButton.setOnClickListener(v -> {
             SampleButtonHandler handler = new SampleButtonHandler();
 
@@ -363,9 +331,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             });
         });
 
-        //---------------------------------------------
-        // TAB SWITCHING
-        //---------------------------------------------
+        // top bar listeners
         eventDetails.setOnClickListener(v -> {
             eventDetailsContainer.setVisibility(View.VISIBLE);
             entrantsContainer.setVisibility(View.GONE);
@@ -384,18 +350,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             systemContainer.setVisibility(View.VISIBLE);
         });
 
-        //---------------------------------------------
-        // QR DIALOG
-        //---------------------------------------------
+
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventReceived.getEventId());
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
     }
 
-    //----------------------------------------------------------
-    // ⭐ NEW CSV EXPORT — SAVES TO DOWNLOADS/LINKO ⭐
-    //----------------------------------------------------------
+    // csv export
     private void exportEntrantsAsCsv(List<User> entrants) {
         StringBuilder csv = new StringBuilder();
         csv.append("Full Name,Email,UserID\n");
@@ -439,3 +401,4 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
     }
 }
+
