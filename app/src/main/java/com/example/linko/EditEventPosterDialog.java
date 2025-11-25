@@ -48,7 +48,11 @@ public class EditEventPosterDialog extends DialogFragment {
         eventReceived = (Event) getArguments().getSerializable("event");
 
         // load the current poster OR placeholder if event had none
-        Glide.with(this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(editPoster);
+        Glide.with(this)
+                .load(eventReceived.getEventPosterURL())
+                .placeholder(R.drawable.outline_photo_camera_24)
+                .centerCrop()
+                .into(editPoster);
 
         closeButton.setOnClickListener(v -> dismiss());
 

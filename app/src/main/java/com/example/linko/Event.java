@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This is for Event objects. Stores all the necessary info for events as well as
@@ -212,17 +211,5 @@ public class Event implements Serializable {
 
     public String getEntrantCount() {
         return String.valueOf(entrants.size());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Event event = (Event) o;
-        return Objects.equals(eventId, event.eventId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(eventId);
     }
 }

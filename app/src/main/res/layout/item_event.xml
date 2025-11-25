@@ -6,23 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    app:cardBackgroundColor="@color/blue"
+    app:cardBackgroundColor="@color/red"
     app:cardCornerRadius="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <View
             android:id="@+id/shadow"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:background="@color/darkerBlue"
+            android:background="@color/darkRed"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <ImageView
             android:id="@+id/image_event_poster"

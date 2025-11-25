@@ -76,7 +76,10 @@ public class ProfileActivity extends AppCompatActivity {
             // get events from db
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             CollectionReference eventsRef = db.collection("events");
-            eventsRef.get().addOnSuccessListener(value -> {
+            eventsRef.addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.e("Firestore", error.toString());
+                }
                 if (value != null && !value.isEmpty()) {
                     Log.d("firebase", "checking documents");
                     eventHistoryList.clear();
@@ -88,8 +91,6 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                     eventHistoryRecyclerAdapter.notifyDataSetChanged();
                 }
-            }).addOnFailureListener(error -> {
-                Log.e("firebase", error.toString());
             });
         });
 

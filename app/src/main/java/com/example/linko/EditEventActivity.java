@@ -192,16 +192,6 @@ public class EditEventActivity extends AppCompatActivity {
             Date registrationStartSave = startCalendar.getTime();
             Date registrationEndSave = endCalendar.getTime();
 
-            if (endCalendar.before(startCalendar)) {
-                Toast.makeText(this, "Registration end must be after registration start.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (eventTimeCalendar.before(endCalendar)) {
-                Toast.makeText(this, "Event start time must be after registration end.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
             String eventGuidelines = eventGuidelinesInput.getText().toString();
             if (eventGuidelines.isEmpty()) {
                 Toast.makeText(this, "Please fill out your event guidelines.", Toast.LENGTH_SHORT).show();

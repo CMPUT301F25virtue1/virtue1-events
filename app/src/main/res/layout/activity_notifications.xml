@@ -5,45 +5,23 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightestBlue"
-    tools:context=".NotificationsActivity">
+    tools:context=".NotificationsActivity"
+    android:background="@color/red">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_notifications"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/lightestBlue"
-        android:visibility="gone"
+        android:background="@color/lightBlue"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/nav_bar"
-        app:layout_constraintTop_toBottomOf="@+id/top_status_bar"
-        tools:visibility="gone" />
-
-    <TextView
-        android:id="@+id/text_no_notifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="You currently have no event notifications."
-        android:textColor="@color/darkestBlue"
-        android:textSize="20sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@id/nav_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_status_bar" />
+
+    <include layout="@layout/navigation_bar"/>
 
     <View
         android:id="@+id/top_status_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/darkestBlue"
+        android:background="@color/red"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/nav_bar"
-        layout="@layout/navigation_bar"
-        android:layout_width="match_parent"
-        android:layout_height="85dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

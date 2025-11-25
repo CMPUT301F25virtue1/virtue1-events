@@ -41,25 +41,31 @@ public class DeleteProfileActivity extends AppCompatActivity {
         deleteProfile.setOnClickListener(v -> {
             String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+            // delete all events that have this user as their organizer first
             EventDatabaseHandler deleteEventsHelper = new EventDatabaseHandler();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             CollectionReference eventsRef = db.collection("events");
-            // delete all events that have this user as their organizer first
-            eventsRef.get().addOnSuccessListener(query -> {
-                for (QueryDocumentSnapshot snapshot : query) {
-                    Event eventToDelete = snapshot.toObject(Event.class);
-                    if (eventToDelete.getOwnerId().equals(userId)) {
-                        deleteEventsHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
-                            @Override
-                            public void eventDelete() {
+            eventsRef.addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.e("Firestore", error.toString());
+                }
+                if (value != null && !value.isEmpty()) {
+                    Log.d("Firebase", "checking documents");
+                    for (QueryDocumentSnapshot snapshot : value) {
+                        Event eventToDelete = snapshot.toObject(Event.class);
+                        if (eventToDelete.getOwnerId().equals(userId)) {
+                            deleteEventsHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
+                                @Override
+                                public void eventDelete() {
 
-                            }
+                                }
 
-                            @Override
-                            public void eventDeleteFailed(Exception e) {
-                                Toast.makeText(DeleteProfileActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                @Override
+                                public void eventDeleteFailed(Exception e) {
+                                    Toast.makeText(DeleteProfileActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
                     }
                 }
             });

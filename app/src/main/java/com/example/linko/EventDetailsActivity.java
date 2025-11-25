@@ -139,27 +139,27 @@ public class EventDetailsActivity extends AppCompatActivity {
             eventDescription.setVisibility(View.VISIBLE);
             eventPoster.setVisibility(View.GONE);
             eventGuidelines.setVisibility(View.GONE);
-            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
-            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
 
         posterButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.VISIBLE);
             eventGuidelines.setVisibility(View.GONE);
-            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
-            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
         });
 
         guidelinesButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.GONE);
             eventPoster.setVisibility(View.GONE);
             eventGuidelines.setVisibility(View.VISIBLE);
-            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            descriptionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            posterButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerTeal)));
+            guidelinesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.teal)));
         });
 
         backButton.setOnClickListener(v -> {
@@ -167,11 +167,9 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (activityFrom.equals("exploreEvents")) {
                 startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
             }
-            else if (activityFrom.equals("myEvents")) {
+            else {
                 startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
-            }
-            else if (activityFrom.equals("notifications")) {
-                startActivity(new Intent(EventDetailsActivity.this, NotificationsActivity.class));
+
             }
             finish();
         });
