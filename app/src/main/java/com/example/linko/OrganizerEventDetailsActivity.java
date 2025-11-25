@@ -468,13 +468,20 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     // csv export
     private void exportEntrantsAsCsv(List<User> entrants) {
         StringBuilder csv = new StringBuilder();
-        csv.append("Full Name,Email,UserID\n");
+        csv.append("First Name,Last Name,Email,Phone Number\n");
 
         for (User u : entrants) {
-            String fullName = u.getFirstName() + " " + u.getLastName();
-            csv.append(fullName).append(",");
-            csv.append(u.getEmail()).append(",");
-            csv.append(u.getUserId()).append("\n");
+            String first = u.getFirstName() != null ? u.getFirstName() : "";
+            String last = u.getLastName() != null ? u.getLastName() : "";
+            String email = u.getEmail() != null ? u.getEmail() : "";
+            String phone = (u.getPhone() != null && !u.getPhone().isEmpty())
+                    ? u.getPhone()
+                    : "N/A";
+
+            csv.append(first).append(",");
+            csv.append(last).append(",");
+            csv.append(email).append(",");
+            csv.append(phone).append("\n");
         }
 
         try {
@@ -488,27 +495,19 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 linkoFolder.mkdirs();
             }
 
-            // File name
+            // Safe filename (avoid illegal characters)
             String safeName = eventReceived.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_");
             String fileName = "entrants_" + safeName + ".csv";
             File file = new File(linkoFolder, fileName);
 
-            // Write CSV
             FileWriter writer = new FileWriter(file);
             writer.write(csv.toString());
             writer.close();
 
-            Toast.makeText(
-                    this,
-                    "Exported to Downloads/Linko",
-                    Toast.LENGTH_LONG
-            ).show();
+            Toast.makeText(this, "Exported to Downloads/Linko", Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to export CSV", Toast.LENGTH_SHORT).show();
         }
-    }
-
-}
-
+    } }
