@@ -426,14 +426,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
         });
 
-            eventDetails.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
-            totalEntrants.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
-            system.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
-            eventDetails.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
-            totalEntrants.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
-            system.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
-        });
-
         findViewById(R.id.button_qr_code).setOnClickListener(v -> {
             String eventId = eventReceived.getEventId();
             QRCodeDialog dialog = QRCodeDialog.newInstance(eventId);
@@ -510,4 +502,5 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Failed to export CSV", Toast.LENGTH_SHORT).show();
         }
-    } }
+    }
+}
