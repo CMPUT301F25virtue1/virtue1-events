@@ -45,6 +45,7 @@ public class NotificationListenerService extends Service {
         db = FirebaseFirestore.getInstance();
         CollectionReference notifsRef = db.collection("notifications");
 
+        // IF THE FOREGROUND SERVICE HASN'T BEEN MADE YET FOR WHATEVER REASON (or if the user killed the apps process)
         // retrieve all notifs that were made when the user wasn't on the app, and send those
         notifsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             new UserDatabaseHandler().getCurrentUser(NotificationListenerService.this, new UserDatabaseHandler.UserFetched() {
@@ -86,6 +87,7 @@ public class NotificationListenerService extends Service {
             });
         });
 
+        // ONCE THE FOREGROUND SERVICE WAS MADE/INSTANTIATED
         // if the user is on the app, WHILE an organizer sends a notif, get notifs
         notifsRef.addSnapshotListener((value, error) -> {
             if (error != null) {
