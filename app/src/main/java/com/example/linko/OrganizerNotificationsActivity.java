@@ -1,8 +1,6 @@
 package com.example.linko;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,9 +8,6 @@ import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -43,7 +38,7 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
             DocumentReference docRef = notifsRef.document();
             String notifId = docRef.getId();
             String message = customMessage.getText().toString().trim();
-            Notification notificationToSend = new Notification(notifId, eventReceived.getEventId(), message, "custom");
+            UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), message, "custom");
             // add notif to db
             docRef.set(notificationToSend).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -56,6 +51,7 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
             // add notif to the users of the list received
             for (User user : listToNotify) {
                 user.getNotificationList().add(notifId);
+                user.getLocalAndroidNotificationlist().add(notifId);
                 new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
                     @Override
                     public void userAdd() {

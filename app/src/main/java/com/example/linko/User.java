@@ -20,6 +20,7 @@ public class User implements Serializable {
     private List<String> eventsRegistered;
     private List<String> eventHistory;
     private List<String> notificationList;
+    private List<String> localAndroidNotificationlist;
     private boolean isAdmin;
 
     public User() {
@@ -45,6 +46,7 @@ public class User implements Serializable {
         this.eventsRegistered = new ArrayList<>();
         this.eventHistory = new ArrayList<>();
         this.notificationList = new ArrayList<>();
+        this.localAndroidNotificationlist = new ArrayList<>();
         this.isAdmin = false;
     }
 
@@ -120,12 +122,21 @@ public class User implements Serializable {
         this.notificationList = notificationList;
     }
 
+
     public boolean isAdmin() {
         return isAdmin;
     }
 
     public void setAdmin(boolean admin) {
         this.isAdmin = admin;
+    }
+
+    public List<String> getLocalAndroidNotificationlist() {
+        return localAndroidNotificationlist;
+    }
+
+    public void setLocalAndroidNotificationlist(List<String> localAndroidNotificationlist) {
+        this.localAndroidNotificationlist = localAndroidNotificationlist;
     }
 
     @Override
