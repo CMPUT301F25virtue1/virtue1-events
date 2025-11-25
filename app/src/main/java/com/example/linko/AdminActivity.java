@@ -45,6 +45,7 @@ public class AdminActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     private CollectionReference usersRef;
+    private CollectionReference notifsRef;
     private List<Event> allEventsList;
     private List<Event> originalEventsList;
     private List<User> allOrganizerList;
@@ -54,6 +55,7 @@ public class AdminActivity extends AppCompatActivity {
     private List<Event> originalEventPostersList;
     private List<User> allProfilePicturesList;
     private List<User> originalProfilePicturesList;
+    private List<Notification> notificationsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +89,17 @@ public class AdminActivity extends AppCompatActivity {
         RecyclerView eventPostersRecyclerView = findViewById(R.id.recycler_event_posters);
         RecyclerView profilePicturesRecyclerView = findViewById(R.id.recycler_profile_pictures);
 
+        // views under logs
+        Button logsButton = findViewById(R.id.button_logs);
+        ConstraintLayout logsContainer = findViewById(R.id.logs_container);
+        RecyclerView notificationLogsRecyclerView = findViewById(R.id.recycler_notification_logs);
+
         // lists to populate
         allEventsList = new ArrayList<>();
         allOrganizerList = new ArrayList<>();
         allEventPostersList = new ArrayList<>();
         allProfilePicturesList = new ArrayList<>();
+        notificationsList = new ArrayList<>();
 
         // events recycler view setup
         EventRecyclerAdapter eventRecyclerAdapter = new EventRecyclerAdapter(allEventsList, true);
@@ -256,6 +264,27 @@ public class AdminActivity extends AppCompatActivity {
             eventSearchBar.setVisibility(View.GONE);
             eventEventsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             eventOrganizersButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+
+            allOrganizerList.clear();
+            // repopulate so if events from organizer is deleted manually one by one, organizers reflects that change
+            for (Event e : originalEventsList) {
+                UserDatabaseHandler organizerHelper = new UserDatabaseHandler();
+                organizerHelper.fetchUserById(e.getOwnerId(), new UserDatabaseHandler.UserFetchedFromId() {
+                    @Override
+                    public void userFetch(User user) {
+                        // avoid dupes
+                        if (!allOrganizerList.contains(user)) {
+                            allOrganizerList.add(user);
+                            organizerRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void userFetchFailed(Exception ee) {
+                        Log.e("AdminActivity", "Failed to fetch organizer: " + e.getOwnerId(), ee);
+                    }
+                });
+            }
         });
 
         eventSearchBar.addTextChangedListener(new TextWatcher() {
@@ -571,32 +600,76 @@ public class AdminActivity extends AppCompatActivity {
                 profilePicturesRecyclerAdapter.notifyDataSetChanged();
             }
         });
+
+        // notification logs setup
+        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
+        notificationLogsRecyclerView.setAdapter(notificationsRecyclerAdapter);
+
+        LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        notificationLogsRecyclerView.setLayoutManager(notificationsLayoutManager);
+
+        notifsRef = db.collection("notifications");
+
+        notifsRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null && !value.isEmpty()) {
+                Log.d("firebase", "checking documents");
+
+                notificationsList.clear();
+
+                for (QueryDocumentSnapshot snapshot : value) {
+                    Notification notificationToAdd = snapshot.toObject(Notification.class);
+                    notificationsList.add(notificationToAdd);
+                    notificationsRecyclerAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
         // top bar
         eventButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.VISIBLE);
             profilesContainer.setVisibility(View.GONE);
             imagesContainer.setVisibility(View.GONE);
+            logsContainer.setVisibility(View.GONE);
             eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            logsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         profilesButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.GONE);
             profilesContainer.setVisibility(View.VISIBLE);
             imagesContainer.setVisibility(View.GONE);
+            logsContainer.setVisibility(View.GONE);
             eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            logsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
         });
 
         imagesButton.setOnClickListener(v -> {
             eventContainer.setVisibility(View.GONE);
             profilesContainer.setVisibility(View.GONE);
             imagesContainer.setVisibility(View.VISIBLE);
+            logsContainer.setVisibility(View.GONE);
             eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
+            logsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+        });
+
+        logsButton.setOnClickListener(v -> {
+            eventContainer.setVisibility(View.GONE);
+            profilesContainer.setVisibility(View.GONE);
+            imagesContainer.setVisibility(View.GONE);
+            logsContainer.setVisibility(View.VISIBLE);
+            eventButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            profilesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            imagesButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
+            logsButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
         });
 
         backButton.setOnClickListener(v -> {

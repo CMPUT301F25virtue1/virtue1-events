@@ -1,5 +1,6 @@
 package com.example.linko;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.Objects;
  * @see SignUpActivity
  * @see UserDatabaseHandler
  */
-public class User {
+public class User implements Serializable {
     private String userId ;
     private String firstName ;
     private String lastName;
@@ -18,6 +19,7 @@ public class User {
     private String profileUrl;
     private List<String> eventsRegistered;
     private List<String> eventHistory;
+    private List<String> notificationList;
     private boolean isAdmin;
 
     public User() {
@@ -42,6 +44,7 @@ public class User {
         this.profileUrl = profileUrl;
         this.eventsRegistered = new ArrayList<>();
         this.eventHistory = new ArrayList<>();
+        this.notificationList = new ArrayList<>();
         this.isAdmin = false;
     }
 
@@ -107,6 +110,14 @@ public class User {
 
     public void setEventsRegistered(List<String> eventsRegistered) {
         this.eventsRegistered = eventsRegistered;
+    }
+
+    public List<String> getNotificationList() {
+        return notificationList;
+    }
+
+    public void setNotificationList(List<String> notificationList) {
+        this.notificationList = notificationList;
     }
 
     public boolean isAdmin() {

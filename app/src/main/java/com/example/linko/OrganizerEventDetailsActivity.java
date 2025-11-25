@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,11 +58,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private UserRecyclerAdapter cancelledEntrantsUserRecyclerAdapter;
     private Event eventReceived;
 
+    // to keep track of which list to send notifications to in the system tab (0 = invited, 1 = signedup, 2 = cancelled)
+    int currentClicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_organizer_event_details);
+;       currentClicked = 0;
 
         // top bar
         ImageView backButton = findViewById(R.id.button_back_button);
@@ -88,6 +94,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // entrants tab ui
         ConstraintLayout entrantsContainer = findViewById(R.id.event_entrants_container);
         TextView noEntrants = findViewById(R.id.text_no_entrants);
+        Button sendNotificationAll = findViewById(R.id.button_send_notification);
 
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
@@ -96,7 +103,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         Button invited = findViewById(R.id.button_invited);
         Button signedUp = findViewById(R.id.button_signed_up);
         Button cancelled = findViewById(R.id.button_cancelled);
-
+        Button sendNotificationSystem = findViewById(R.id.button_send_notification_system);
         // total entrants recycler view
         RecyclerView entrantsRecyclerView = findViewById(R.id.recycler_event_entrants);
         totalEntrantsList = new ArrayList<>();
@@ -262,7 +269,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-
+            currentClicked = 0;
             invitedEntrantsRecyclerView.setVisibility(View.VISIBLE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.GONE);
@@ -272,7 +279,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
-
+            currentClicked = 1;
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.VISIBLE);
             cancelledEntrantsRecyclerView.setVisibility(View.GONE);
@@ -282,10 +289,49 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invited.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             signedUp.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkerBlue)));
             cancelled.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue)));
-
+            currentClicked = 2;
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.VISIBLE);
+        });
+
+        // notification listeners
+        sendNotificationAll.setOnClickListener(v -> {
+            if (totalEntrantsList.isEmpty()) {
+                return;
+            }
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerNotificationsActivity.class);
+            intent.putExtra("listToNotify", (Serializable) totalEntrantsList);
+            intent.putExtra("event", eventReceived);
+            startActivity(intent);
+        });
+
+        sendNotificationSystem.setOnClickListener(v -> {
+            if (currentClicked == 0 && invitedEntrantsList.isEmpty()) {
+                return;
+            }
+            else if (currentClicked == 1 && signedUpEntrantsList.isEmpty()) {
+                return;
+            }
+            else if (currentClicked == 2 && cancelledEntrantsList.isEmpty()){
+                return;
+            }
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerNotificationsActivity.class);
+            intent.putExtra("event", eventReceived);
+
+            if (currentClicked == 0) {
+                intent.putExtra("listToNotify", (Serializable) invitedEntrantsList);
+            }
+            else if (currentClicked == 1) {
+                intent.putExtra("listToNotify", (Serializable) signedUpEntrantsList);
+            }
+            else if (currentClicked == 2) {
+                intent.putExtra("listToNotify", (Serializable) cancelledEntrantsList);
+            }
+            else {
+                return;
+            }
+            startActivity(intent);
         });
 
         sampleButton.setOnClickListener(v -> {
