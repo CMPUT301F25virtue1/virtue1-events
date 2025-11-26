@@ -1,7 +1,6 @@
 package com.example.linko;
 
 import android.util.Log;
-import android.view.View;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -110,7 +109,7 @@ public class EventDatabaseHandler {
                 return;
             }
             for (QueryDocumentSnapshot snapshot : task.getResult()) {
-                Notification notif = snapshot.toObject(Notification.class);
+                UserNotification notif = snapshot.toObject(UserNotification.class);
 
                 // delete if event id matches
                 if (notif.getEventId().equals(eventIdToDelete)) {
