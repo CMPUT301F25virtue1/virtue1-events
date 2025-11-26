@@ -31,7 +31,6 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
 
         List<User> listToNotify = (List<User>) getIntent().getSerializableExtra("listToNotify");
         Event eventReceived = (Event) getIntent().getSerializableExtra("event");
-        Log.d("notificationactivity", listToNotify.toString());
         sendNotification.setOnClickListener(v -> {
             db = FirebaseFirestore.getInstance();
             notifsRef = db.collection("notifications");
@@ -42,13 +41,10 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
             // add notif to db
             docRef.set(notificationToSend).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Log.d("notification", "successfully added to database" + notifId + " " + notificationToSend.getNotificationId());
                     // add notif to the users of the list received
                     for (User user : listToNotify) {
-                        Log.d("notification", "user list before:" + user.getNotificationList().toString());
                         user.getNotificationList().add(notifId);
                         user.getLocalAndroidNotificationlist().add(notifId);
-                        Log.d("notification", "Adding notification" + notifId + "to user" + user.getUserId() + user.getNotificationList().toString());
                         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
                             @Override
                             public void userAdd() {

@@ -62,18 +62,13 @@ public class NotificationsActivity extends AppCompatActivity {
                     @Override
                     public void userLoaded(User user) {
                         notificationsList.clear();
-                        Log.d("notiftest", "loaded user!");
 
                         notifsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
                             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                                 UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
-                                Log.d("notiftest", "notif to check if inside user list: " + notificationToAdd.getNotificationId());
-                                Log.d("notiftest", "user list: " + user.getNotificationList().toString());
 
                                 if (user.getNotificationList().contains(notificationToAdd.getNotificationId())) {
                                     notificationsList.add(notificationToAdd);
-                                    Log.d("notiftest", "updating notification list with" + notificationToAdd.getNotificationId());
-
                                 }
                             }
 
