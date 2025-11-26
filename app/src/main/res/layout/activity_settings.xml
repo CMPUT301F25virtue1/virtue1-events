@@ -87,7 +87,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+            android:id="@+id/all_notifications_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/green"
@@ -98,8 +98,8 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="match_parent"
+                    android:id="@+id/all_notifications_title"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@color/green"
                     android:backgroundTint="#36000000"
@@ -113,7 +113,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/all_notifications_description"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
@@ -121,14 +121,33 @@
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/all_notifications_checkbox"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                    app:layout_constraintTop_toBottomOf="@+id/all_notifications_title" />
+
+                <CheckBox
+                    android:id="@+id/all_notifications_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:buttonTint="@color/white"
+                    android:checked="false"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:button="@drawable/custom_checkbox_selector"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/silence_notifications_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -140,10 +159,10 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="match_parent"
+                    android:id="@+id/silence_notifications_title"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@color/green"
+                    android:background="@color/darkRed"
                     android:backgroundTint="#36000000"
                     android:backgroundTintMode="multiply"
                     android:padding="8dp"
@@ -155,7 +174,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView7"
+                    android:id="@+id/silence_notifications_description"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
@@ -163,9 +182,24 @@
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
+                    app:layout_constraintTop_toBottomOf="@+id/silence_notifications_title" />
+
+                <CheckBox
+                    android:id="@+id/silence_notifications_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="36dp"
+                    android:buttonTint="@color/white"
+                    android:checked="false"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:button="@drawable/custom_checkbox_selector"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
