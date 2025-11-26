@@ -137,7 +137,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
                 finish();
                 Toast.makeText(EventDetailsActivity.this, "You have left the waitlist after the registration deadline. You cannot rejoin.", Toast.LENGTH_LONG).show();
-                return;
             }
 
             joinWaitlist.setVisibility(View.VISIBLE);
@@ -155,6 +154,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     new EventDatabaseHandler().update(eventReceived, new EventDatabaseHandler.EventUpdated() {
                         @Override
                         public void eventUpdate() {
+                            Toast.makeText(EventDetailsActivity.this, "Successfully accepted the invitation!", Toast.LENGTH_LONG).show();
                             checkUserRegistered();
                         }
 
@@ -178,22 +178,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                         @Override
                         public void eventUpdate() {
                             checkUserRegistered();
-
-                            // sample a new entrant
-                            SampleButtonHandler handler = new SampleButtonHandler();
-
-                            handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
+                            // now remove the event from the users registered events list
+                            user.getEventsRegistered().remove(eventReceived.getEventId());
+                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
                                 @Override
-                                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
-                                    // sampling handler handles the event sampling updates itself
+                                public void userAdd() {
+                                    Toast.makeText(EventDetailsActivity.this, "Successfully declined the invitation!", Toast.LENGTH_LONG).show();
                                 }
 
                                 @Override
-                                public void onFail(String error) {
+                                public void userFailedToAdd(Exception e) {
 
                                 }
                             });
-
                         }
 
                         @Override
@@ -254,18 +251,18 @@ public class EventDetailsActivity extends AppCompatActivity {
     public void changeUserWaitlist() {
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
+            List<String> userEventsRegistered = currentUser.getEventsRegistered();
             List<String> userEventHistory = currentUser.getEventHistory();
 
             Log.d("eventReceived", eventReceived.getEventId());
             Log.d("eventReceived", "event received" + eventReceived.getOwnerId());
-            Log.d("eventReceived", "event received" + eventReceived.getEntrants().toString());
 
-            if (eventReceived.getEntrants().contains(currentUser.getUserId())) {
-                Log.d("eventReceived", "removing entrant from waitlist");
-
+            if (userEventsRegistered.contains(eventReceived.getEventId())) {
+                userEventsRegistered.remove(eventReceived.getEventId());
                 eventReceived.getEntrants().remove(currentUser.getUserId());
             }
             else {
+                userEventsRegistered.add(eventReceived.getEventId());
                 eventReceived.getEntrants().add(currentUser.getUserId());
                 if (!userEventHistory.contains(eventReceived.getEventId())) {
                     userEventHistory.add(eventReceived.getEventId());
@@ -276,7 +273,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
                 @Override
                 public void eventUpdate() {
-                    Log.d("eventReceived", eventReceived.getEntrants().toString());
                 }
 
                 @Override
@@ -285,6 +281,18 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
 
+            // adding user is the same as updating
+            databaseHandler.addUser(currentUser, new UserDatabaseHandler.UserAdded() {
+                @Override
+                public void userAdd() {
+                    Toast.makeText(EventDetailsActivity.this, "Success!", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void userFailedToAdd(Exception e) {
+                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
             if (eventReceived.getEntrantLimit() != null) {
                 entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
             }
@@ -300,6 +308,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     public void checkUserRegistered() {
         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();
         databaseHandler.getCurrentUser(this, currentUser -> {
+            List<String> userEventsRegistered = currentUser.getEventsRegistered();
             Date now = new Date();
             // if user is in the waitlist already, allow them to leave
             if (eventReceived.getEntrants().contains(currentUser.getUserId())) {
