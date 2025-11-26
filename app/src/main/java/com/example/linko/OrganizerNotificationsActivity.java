@@ -42,28 +42,28 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
             // add notif to db
             docRef.set(notificationToSend).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Log.d("notification", "successfully added to database");
+                    // add notif to the users of the list received
+                    for (User user : listToNotify) {
+                        user.getNotificationList().add(notifId);
+                        user.getLocalAndroidNotificationlist().add(notifId);
+                        new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                            @Override
+                            public void userAdd() {
+                                Log.d("notification", "successfully added to user list in database");
+                            }
+
+                            @Override
+                            public void userFailedToAdd(Exception e) {
+                                Log.e("notification", "error adding notif to user list in database");
+                            }
+                        });
+                    }
                 }
                 else {
                     Log.e("notification", "Error adding notification to database", task.getException());
                 }
             });
-            // add notif to the users of the list received
-            for (User user : listToNotify) {
-                user.getNotificationList().add(notifId);
-                user.getLocalAndroidNotificationlist().add(notifId);
-                new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
-                    @Override
-                    public void userAdd() {
-                        Log.d("notification", "successfully added to user list in database");
-                    }
 
-                    @Override
-                    public void userFailedToAdd(Exception e) {
-                        Log.e("notification", "error adding notif to user list in database");
-                    }
-                });
-            }
             finish();
         });
 

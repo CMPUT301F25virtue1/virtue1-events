@@ -32,6 +32,7 @@ public class NotificationsActivity extends AppCompatActivity {
     private NotificationRecyclerAdapter notificationsRecyclerAdapter;
     private FirebaseFirestore db;
     private CollectionReference notifsRef;
+    private CollectionReference usersRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,37 +51,36 @@ public class NotificationsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         notifsRef = db.collection("notifications");
+        usersRef = db.collection("users");
 
-        notifsRef.addSnapshotListener((value, error) -> {
+        usersRef.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
             if (value != null && !value.isEmpty()) {
-                Log.d("firebase", "checking documents");
-
-                // this is for the recycler view
                 new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
                     @Override
                     public void userLoaded(User user) {
                         notificationsList.clear();
 
-                        for (QueryDocumentSnapshot snapshot : value) {
-                            UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
+                        notifsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
 
-                            if (user.getNotificationList().contains(notificationToAdd.getNotificationId())) {
-                                notificationsList.add(notificationToAdd);
+                                if (user.getNotificationList().contains(notificationToAdd.getNotificationId())) {
+                                    notificationsList.add(notificationToAdd);
+                                }
                             }
-                        }
 
-                        notificationsRecyclerAdapter.notifyDataSetChanged();
-                        if (notificationsList.isEmpty()) {
-                            noNotifications.setVisibility(View.VISIBLE);
-                            notificationsRecyclerView.setVisibility(View.GONE);
-                        }
-                        else {
-                            noNotifications.setVisibility(View.GONE);
-                            notificationsRecyclerView.setVisibility(View.VISIBLE);
-                        }
+                            notificationsRecyclerAdapter.notifyDataSetChanged();
+                            if (notificationsList.isEmpty()) {
+                                noNotifications.setVisibility(View.VISIBLE);
+                                notificationsRecyclerView.setVisibility(View.GONE);
+                            } else {
+                                noNotifications.setVisibility(View.GONE);
+                                notificationsRecyclerView.setVisibility(View.VISIBLE);
+                            }
+                        });
                     }
                 });
             }
