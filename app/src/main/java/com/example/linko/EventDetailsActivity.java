@@ -200,16 +200,17 @@ public class EventDetailsActivity extends AppCompatActivity {
                                     eventReceived.setInvitedEntrants(invited);
                                     eventReceived.setSignedUpEntrants(signedUp);
 
-                                    List<User> invitedEntrantsList = eventReceived.getInvitedEntrants();
+                                    new EventDatabaseHandler().update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                                        @Override
+                                        public void eventUpdate() {
 
-                                    UserRecyclerAdapter invitedEntrantsUserRecyclerAdapter;
+                                        }
 
+                                        @Override
+                                        public void eventUpdateFailed(Exception e) {
 
-                                    invitedEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(invitedEntrantsList, true);
-
-                                    invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
-
-
+                                        }
+                                    });
 
                                 }
 

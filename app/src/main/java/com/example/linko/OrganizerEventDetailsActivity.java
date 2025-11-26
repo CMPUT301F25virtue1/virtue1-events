@@ -201,9 +201,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 // update systems tab
                 if (!invitedEntrantsList.isEmpty() || !signedUpEntrantsList.isEmpty() || !cancelledEntrantsList.isEmpty()) {
                     notYetSampled.setVisibility(View.GONE);
+                    sampleButton.setEnabled(false);
+                    sampleButton.setAlpha(0.5f);
                 }
                 else {
                     notYetSampled.setVisibility(View.VISIBLE);
+                    sampleButton.setEnabled(true);
+                    sampleButton.setAlpha(1f);
                 }
                 Log.d("system", invitedEntrantsList.toString());
 
@@ -362,15 +366,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             exportEntrantsAsCsv(totalEntrantsList);
         });
 
-        //Greys out sampled button if it has already been pressed
-        if (eventReceived.isSampled()){
-            sampleButton.setEnabled(false);
-            sampleButton.setAlpha(0.5f);
-        }
-
         sampleButton.setOnClickListener(v -> {
-
-            eventReceived.setSampled(true);
 
             if (!sampleButton.isEnabled()){
                 Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling already done.", Toast.LENGTH_SHORT).show();
