@@ -61,10 +61,15 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
             holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkGreen));
             holder.chevron.setVisibility(View.VISIBLE);
         }
-        else {
+        else if (notification.getType().equals("cancelled")){
             holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
             holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
             holder.chevron.setVisibility(View.GONE);
+        }
+        else {
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
+            holder.chevron.setVisibility(View.VISIBLE);
         }
     }
 
