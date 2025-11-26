@@ -2,19 +2,17 @@ package com.example.linko;
 
 import static com.example.linko.NavigationBarHandler.navigationListener;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +28,7 @@ import java.util.List;
  */
 public class NotificationsActivity extends AppCompatActivity {
 
-    private List<Notification> notificationsList;
+    private List<UserNotification> notificationsList;
     private NotificationRecyclerAdapter notificationsRecyclerAdapter;
     private FirebaseFirestore db;
     private CollectionReference notifsRef;
@@ -60,13 +58,14 @@ public class NotificationsActivity extends AppCompatActivity {
             if (value != null && !value.isEmpty()) {
                 Log.d("firebase", "checking documents");
 
+                // this is for the recycler view
                 new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
                     @Override
                     public void userLoaded(User user) {
                         notificationsList.clear();
 
                         for (QueryDocumentSnapshot snapshot : value) {
-                            Notification notificationToAdd = snapshot.toObject(Notification.class);
+                            UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
 
                             if (user.getNotificationList().contains(notificationToAdd.getNotificationId())) {
                                 notificationsList.add(notificationToAdd);
@@ -89,7 +88,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
         // go to the event details on click of each recycler view  item
         notificationsRecyclerAdapter.setOnItemClickListener(position -> {
-            Notification notificationFromEvent = notificationsList.get(position);
+            UserNotification notificationFromEvent = notificationsList.get(position);
             new EventDatabaseHandler().fetchEventById(notificationFromEvent.getEventId(), new EventDatabaseHandler.EventFetched() {
                 @Override
                 public void eventFetch(Event event) {
@@ -107,6 +106,21 @@ public class NotificationsActivity extends AppCompatActivity {
             });
         });
 
+        // when the user is in the app, start sending out notifs if they have any (this also listens if a notif is sent out while the user is already in the app)
+        Intent serviceIntent = new Intent(this, NotificationListenerService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+
+
+        // check app notification permissions
+        // https://developer.android.com/training/permissions/requesting
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 527);
+        }
         navigationListener(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

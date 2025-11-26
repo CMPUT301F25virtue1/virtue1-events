@@ -5,17 +5,17 @@ import java.io.Serializable;
 /**
  * Model class for storing notification logs
  */
-public class Notification implements Serializable {
+public class UserNotification implements Serializable {
     private String notificationId;
     private String eventId;
     private String message;
     private String type; // "cancelled", "invited", "custom"
 
-    public Notification() {
+    public UserNotification() {
         // Empty constructor for Firebase
     }
 
-    public Notification(String notificationId, String eventId, String message, String type) {
+    public UserNotification(String notificationId, String eventId, String message, String type) {
         this.notificationId = notificationId;
         this.eventId = eventId;
         this.message = message;
