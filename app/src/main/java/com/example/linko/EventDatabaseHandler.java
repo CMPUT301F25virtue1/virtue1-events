@@ -126,7 +126,7 @@ public class EventDatabaseHandler {
         // hard delete it from database, and user event lists
         eventsRef.document(eventIdToDelete).delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                // delete event from any event history list for users
+                // delete event from any event history/registered events list for users
                 CollectionReference usersRef = db.collection("users");
                 usersRef.get().addOnCompleteListener(deleteTask -> {
                     if (!deleteTask.isSuccessful()) {
@@ -135,13 +135,19 @@ public class EventDatabaseHandler {
                     }
                     QuerySnapshot users = deleteTask.getResult();
                     for (QueryDocumentSnapshot snapshot : users) {
+                        List<String> userRegisteredEvents = (List<String>) snapshot.get("eventsRegistered");
                         List<String> userEventHistory = (List<String>) snapshot.get("eventHistory");
+
+                        if (userRegisteredEvents.contains(eventIdToDelete)) {
+                            userRegisteredEvents.remove(eventIdToDelete);
+                        }
 
                         if (userEventHistory.contains(eventIdToDelete)) {
                             userEventHistory.remove(eventIdToDelete);
                         }
                         User userToUpdate = snapshot.toObject(User.class);
                         userToUpdate.getNotificationList().removeAll(notifIdsToRemove);
+                        userToUpdate.setEventsRegistered(userRegisteredEvents);
                         userToUpdate.setEventHistory(userEventHistory);
 
                         UserDatabaseHandler userDb = new UserDatabaseHandler();
