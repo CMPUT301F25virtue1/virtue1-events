@@ -408,7 +408,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
                 @Override
-                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
                     eventReceived.setInvitedEntrants(invited);
 
                     Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling complete! " + invited.size() + "entrants invited!", Toast.LENGTH_SHORT).show();
@@ -437,6 +437,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // add notif to the users of the list received
                                 for (User user : invitedUsersToNotify) {
+                                    if (!user.isNotificationsEnabled()) {
+                                        continue;
+                                    }
                                     user.getNotificationList().add(invitedNotifId);
                                     user.getLocalAndroidNotificationlist().add(invitedNotifId);
                                     new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
@@ -466,6 +469,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // add notif to the users of the list received
                                 for (User user : usersNotInvited) {
+                                    if (!user.isNotificationsEnabled()) {
+                                        continue;
+                                    }
                                     user.getNotificationList().add(notInvitedNotifId);
                                     user.getLocalAndroidNotificationlist().add(notInvitedNotifId);
                                     new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
@@ -565,6 +571,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
                 Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
 
+                if (!user.isNotificationsEnabled()) {
+                    return;
+                }
+
                 DocumentReference docRef = notifsRef.document();
                 String notifId = docRef.getId();
                 UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), "Your invitation has been cancelled", "cancelled");
@@ -572,6 +582,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 docRef.set(notificationToSend).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // add notif to the users of the list received
+
                         user.getNotificationList().add(notifId);
                         user.getLocalAndroidNotificationlist().add(notifId);
                         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
@@ -596,7 +607,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
                 handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
                     @Override
-                    public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                    public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
                         // sampling handler handles the event sampling updates itself
 
                         // now just send the invitation to the person that just got sampled
@@ -607,10 +618,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // add notif to the users of the list received
-                                for (String user : invited) {
+                                for (String user : newInvited) {
                                     new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
                                         @Override
                                         public void userFetch(User user) {
+                                            if (!user.isNotificationsEnabled()) {
+                                                return;
+                                            }
                                             user.getNotificationList().add(invitedNotifId);
                                             user.getLocalAndroidNotificationlist().add(invitedNotifId);
                                             new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {

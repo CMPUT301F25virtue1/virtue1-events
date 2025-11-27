@@ -43,6 +43,9 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // add notif to the users of the list received
                     for (User user : listToNotify) {
+                        if (!user.isNotificationsEnabled()) {
+                            return;
+                        }
                         user.getNotificationList().add(notifId);
                         user.getLocalAndroidNotificationlist().add(notifId);
                         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {

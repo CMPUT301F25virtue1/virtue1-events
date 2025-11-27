@@ -203,7 +203,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                             handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
                                 @Override
-                                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                                public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
                                     // sampling handler handles the event sampling updates itself
 
                                     // now just send the invitation to the person that just got sampled
@@ -213,11 +213,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                                     // add notif to db
                                     invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
-                                            // add notif to the users of the list received
-                                            for (String user : invited) {
+                                            // add notif to the newly invited entrants
+                                            for (String user : newInvited) {
                                                 new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
                                                     @Override
                                                     public void userFetch(User user) {
+                                                        if (!user.isNotificationsEnabled()) {
+                                                            return;
+                                                        }
                                                         user.getNotificationList().add(invitedNotifId);
                                                         user.getLocalAndroidNotificationlist().add(invitedNotifId);
                                                         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
