@@ -110,7 +110,7 @@ public class NotificationListenerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "linko";
             String description = "local android notifications for linko events";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel userNotifChannel = new NotificationChannel(CHANNEL_ID_USER_NOTIFS, name, importance);
             userNotifChannel.setDescription(description);
 

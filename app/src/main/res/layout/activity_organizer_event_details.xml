@@ -146,7 +146,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_teal"
-            android:elevation="10dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="Event Name"
@@ -433,6 +432,7 @@
             android:id="@+id/recycler_event_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:paddingTop="5dp"
             app:layout_constraintBottom_toTopOf="@+id/button_send_notification"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -473,17 +473,20 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:paddingTop="5dp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited" />
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_signed_up_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:paddingTop="5dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -495,6 +498,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:paddingTop="5dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -525,7 +529,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_signed_up">
+            app:layout_constraintTop_toBottomOf="@+id/button_signed_up"
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -570,14 +575,17 @@
         <Button
             android:id="@+id/button_invited"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:backgroundTint="@color/blue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Invited"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:cornerRadius="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_signed_up"
+            app:layout_constraintEnd_toStartOf="@+id/button_signed_up"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
@@ -588,11 +596,12 @@
             android:backgroundTint="@color/darkerBlue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Signed Up"
+            android:text="Accepted"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:cornerRadius="0dp"
             app:layout_constraintEnd_toStartOf="@+id/button_cancelled"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/button_invited"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
@@ -605,9 +614,12 @@
             android:insetBottom="0dp"
             android:text="Cancelled"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:cornerRadius="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_signed_up"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/button_signed_up"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
         <TextView

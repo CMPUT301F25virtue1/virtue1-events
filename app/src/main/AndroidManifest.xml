@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
-    <!-- notification permission for local android notifications -->
+        android:required="false" /> <!-- notification permission for local android notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-
-    <!-- location permission for map  -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" /> <!-- location permission for map -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -31,22 +27,18 @@
         <service
             android:name=".NotificationListenerService"
             android:enabled="true"
-            android:foregroundServiceType="dataSync"
-            android:exported="true"></service>
-
-        <!-- https://developers.google.com/maps/documentation/android-sdk/config#kotlin_2 -->
+            android:exported="true"
+            android:foregroundServiceType="dataSync" /> <!-- https://developers.google.com/maps/documentation/android-sdk/config#kotlin_2 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD4M5heFYnw2Zy2aLqBQ4-abFuf57L-SXU" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <!-- activities -->
         <activity
             android:name=".EntrantsMapActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".OrganizerNotificationsActivity"
             android:exported="false" />
@@ -98,6 +90,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
         <!-- needed for csv and file sharing -->
         <provider
             android:name="androidx.core.content.FileProvider"

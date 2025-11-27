@@ -41,7 +41,6 @@
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/darkestBlue"
-        android:elevation="5dp"
         android:stateListAnimator="@null"
         android:text="Enter Admin Mode"
         android:textColor="@color/white"
@@ -60,7 +59,6 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="@color/darkestRed"
-        android:elevation="5dp"
         android:stateListAnimator="@null"
         android:text="@string/delete_profile"
         android:textColor="@color/white"
@@ -94,7 +92,6 @@
             android:visibility="visible"
             app:cardBackgroundColor="@color/green"
             app:cardCornerRadius="10dp"
-            app:cardElevation="5dp"
             tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -142,7 +139,6 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/darkRed"
             app:cardCornerRadius="10dp"
-            app:cardElevation="5dp"
             tools:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
