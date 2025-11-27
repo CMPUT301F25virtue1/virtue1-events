@@ -16,6 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,14 +32,30 @@ import java.util.Locale;
  * @see EventDatabaseHandler
  */
 public class EventDetailsActivity extends AppCompatActivity {
-    private Event eventReceived;
     private Button joinWaitlist;
     private Button leaveWaitlist;
     private Button acceptInvite;
     private Button declineInvite;
-    private TextView entrantCount;
     private TextView acceptedInvite;
     private TextView eventClosed;
+    private FirebaseFirestore db;
+    private CollectionReference notifsRef;
+    private CollectionReference eventsRef;
+    private Event eventReceived;
+    private TextView eventName;
+    private TextView eventCapacity;
+    private TextView entrantCount;
+    private CheckBox geolocationCheck;
+    private TextView eventTime;
+    private TextView registrationStart;
+    private TextView registrationEnd;
+    private TextView eventDescription;
+    private TextView eventGuidelines;
+    private ImageView eventPoster;
+    private Date eventStart;
+    private Date start;
+    private Date end;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,19 +65,20 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // ui
         ImageView backButton = findViewById(R.id.button_back_button);
-        TextView eventName = findViewById(R.id.text_event_name);
-        TextView eventCapacity = findViewById(R.id.text_event_capacity);
+        eventName = findViewById(R.id.text_event_name);
+        eventCapacity = findViewById(R.id.text_event_capacity);
         entrantCount = findViewById(R.id.text_entrant_count);
-        CheckBox geolocationCheck = findViewById(R.id.checkBox);
-        TextView eventTime = findViewById(R.id.text_event_start_time);
-        TextView registrationStart = findViewById(R.id.text_event_registration_start);
-        TextView registrationEnd = findViewById(R.id.text_event_registration_end);
-        TextView eventDescription = findViewById(R.id.text_event_description);
-        TextView eventGuidelines = findViewById(R.id.text_event_guidelines);
+        geolocationCheck = findViewById(R.id.checkBox);
+        eventTime = findViewById(R.id.text_event_start_time);
+        registrationStart = findViewById(R.id.text_event_registration_start);
+        registrationEnd = findViewById(R.id.text_event_registration_end);
+        eventDescription = findViewById(R.id.text_event_description);
+        eventGuidelines = findViewById(R.id.text_event_guidelines);
+        eventPoster = findViewById(R.id.image_event_poster);
+
         TextView descriptionButton = findViewById(R.id.click_event_description);
         TextView posterButton = findViewById(R.id.click_event_poster);
         TextView guidelinesButton = findViewById(R.id.click_event_guidelines);
-        ImageView eventPoster = findViewById(R.id.image_event_poster);
         joinWaitlist = findViewById(R.id.button_join_waitlist);
         leaveWaitlist = findViewById(R.id.button_leave_waitlist);
         acceptInvite = findViewById(R.id.button_accept);
@@ -72,32 +93,30 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        eventName.setText(eventReceived.getName());
-        Integer eventCapacityNumber = eventReceived.getEventCapacity();
-        String eventCapacityString = eventCapacityNumber.toString();
-        eventCapacity.setText(eventCapacityString);
-        Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
+        db = FirebaseFirestore.getInstance();
+        notifsRef = db.collection("notifications");
+        eventsRef = db.collection("events");
+        // update every event details in real time
+        eventsRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+            }
+            if (value != null && !value.isEmpty()) {
+                Log.d("firebase", "checking documents");
+                // update the event received lists so the entrants are updated in real time
+                for (QueryDocumentSnapshot doc : value) {
+                    if (doc.getId().equals(eventReceived.getEventId())) {
+                        eventReceived = doc.toObject(Event.class);
+                        updateEventDetails();
+                        checkUserRegistered();
+                    }
+                }
+            }
+        });
 
-        if (eventReceived.getEntrantLimit() != null) {
-            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
-        }
-        else {
-            entrantCount.setText(eventReceived.getEntrantCount());
-        }
-
-
-        geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
-
-        Date eventStart = eventReceived.getEventTime();
-        Date start = eventReceived.getRegistrationStart();
-        Date end = eventReceived.getRegistrationEnd();
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
-        eventTime.setText(sdf.format(eventStart));
-        registrationStart.setText(sdf.format(start));
-        registrationEnd.setText(sdf.format(end));
-        eventDescription.setText(eventReceived.getDescription());
-        eventGuidelines.setText(eventReceived.getGuidelines());
+        updateEventDetails();
         checkUserRegistered();
+
         joinWaitlist.setOnClickListener(v -> {
             Date now = new Date();
 
@@ -186,6 +205,46 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
                                     // sampling handler handles the event sampling updates itself
+
+                                    // now just send the invitation to the person that just got sampled
+                                    DocumentReference invitedDocRef = notifsRef.document();
+                                    String invitedNotifId = invitedDocRef.getId();
+                                    UserNotification invitedNotificationToSend = new UserNotification(invitedNotifId, eventReceived.getEventId(), "You have received an invitation!", "invited");
+                                    // add notif to db
+                                    invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            // add notif to the users of the list received
+                                            for (String user : invited) {
+                                                new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
+                                                    @Override
+                                                    public void userFetch(User user) {
+                                                        user.getNotificationList().add(invitedNotifId);
+                                                        user.getLocalAndroidNotificationlist().add(invitedNotifId);
+                                                        new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                                            @Override
+                                                            public void userAdd() {
+                                                                Log.d("notification", "successfully added to user list in database");
+                                                            }
+
+                                                            @Override
+                                                            public void userFailedToAdd(Exception e) {
+                                                                Log.e("notification", "error adding notif to user list in database");
+                                                            }
+                                                        });
+                                                    }
+
+                                                    @Override
+                                                    public void userFetchFailed(Exception e) {
+
+                                                    }
+                                                });
+
+                                            }
+                                        }
+                                        else {
+                                            Log.e("notification", "Error adding notification to database", task.getException());
+                                        }
+                                    });
                                 }
 
                                 @Override
@@ -284,13 +343,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
-
-            if (eventReceived.getEntrantLimit() != null) {
-                entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
-            }
-            else {
-                entrantCount.setText(eventReceived.getEntrantCount());
-            }
         });
     }
 
@@ -347,5 +399,33 @@ public class EventDetailsActivity extends AppCompatActivity {
                 eventClosed.setVisibility(View.INVISIBLE);
             }
         });
+    }
+
+    private void updateEventDetails() {
+        eventName.setText(eventReceived.getName());
+        Integer eventCapacityNumber = eventReceived.getEventCapacity();
+        String eventCapacityString = eventCapacityNumber.toString();
+        eventCapacity.setText(eventCapacityString);
+        Glide.with(EventDetailsActivity.this).load(eventReceived.getEventPosterURL()).placeholder(R.drawable.outline_photo_camera_24).centerCrop().into(eventPoster);
+
+        if (eventReceived.getEntrantLimit() != null) {
+            entrantCount.setText(eventReceived.getEntrantCount() + "/" + eventReceived.getEntrantLimit());
+        }
+        else {
+            entrantCount.setText(eventReceived.getEntrantCount());
+        }
+
+
+        geolocationCheck.setChecked(eventReceived.isGeolocationRequired());
+
+        eventStart = eventReceived.getEventTime();
+        start = eventReceived.getRegistrationStart();
+        end = eventReceived.getRegistrationEnd();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy | hh:mm a", Locale.getDefault());
+        eventTime.setText(sdf.format(eventStart));
+        registrationStart.setText(sdf.format(start));
+        registrationEnd.setText(sdf.format(end));
+        eventDescription.setText(eventReceived.getDescription());
+        eventGuidelines.setText(eventReceived.getGuidelines());
     }
 }

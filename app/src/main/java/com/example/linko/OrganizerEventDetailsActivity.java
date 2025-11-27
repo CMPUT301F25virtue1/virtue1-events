@@ -1,15 +1,12 @@
 package com.example.linko;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.os.Environment;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,13 +18,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ListUpdateCallback;
-import android.os.Environment;
 
 
 import com.bumptech.glide.Glide;
@@ -37,18 +31,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * This is the class for handling the event details for the organizer logic that interacts with the UI.
@@ -186,7 +176,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 for (QueryDocumentSnapshot doc : value) {
                     if (doc.getId().equals(eventReceived.getEventId())) {
                         eventReceived = doc.toObject(Event.class);
-                        updateEventDetails();
+                        updateOrganizerEventDetails();
                     }
                 }
 
@@ -264,7 +254,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        updateEventDetails();
+        updateOrganizerEventDetails();
 
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
@@ -578,7 +568,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 DocumentReference docRef = notifsRef.document();
                 String notifId = docRef.getId();
                 UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), "Your invitation has been cancelled", "cancelled");
-                // add notif to db
+                // add cancelled notif to db
                 docRef.set(notificationToSend).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // add notif to the users of the list received
@@ -601,6 +591,60 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     }
                 });
 
+                // now sample a new entrant and send the new invite
+                SampleButtonHandler handler = new SampleButtonHandler();
+
+                handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
+                    @Override
+                    public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                        // sampling handler handles the event sampling updates itself
+
+                        // now just send the invitation to the person that just got sampled
+                        DocumentReference invitedDocRef = notifsRef.document();
+                        String invitedNotifId = invitedDocRef.getId();
+                        UserNotification invitedNotificationToSend = new UserNotification(invitedNotifId, eventReceived.getEventId(), "You have received an invitation!", "invited");
+                        // add notif to db
+                        invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // add notif to the users of the list received
+                                for (String user : invited) {
+                                    new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
+                                        @Override
+                                        public void userFetch(User user) {
+                                            user.getNotificationList().add(invitedNotifId);
+                                            user.getLocalAndroidNotificationlist().add(invitedNotifId);
+                                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                                @Override
+                                                public void userAdd() {
+                                                    Log.d("notification", "successfully added to user list in database");
+                                                }
+
+                                                @Override
+                                                public void userFailedToAdd(Exception e) {
+                                                    Log.e("notification", "error adding notif to user list in database");
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void userFetchFailed(Exception e) {
+
+                                        }
+                                    });
+
+                                }
+                            }
+                            else {
+                                Log.e("notification", "Error adding notification to database", task.getException());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail(String error) {
+
+                    }
+                });
             }
         };
         new ItemTouchHelper(simpleCallback).attachToRecyclerView(invitedEntrantsRecyclerView);
@@ -653,7 +697,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateEventDetails() {
+    private void updateOrganizerEventDetails() {
         eventName.setText(eventReceived.getName());
         Integer eventCapacityNumber = eventReceived.getEventCapacity();
         String eventCapacityString = eventCapacityNumber.toString();
