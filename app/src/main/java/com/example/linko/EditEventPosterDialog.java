@@ -69,7 +69,7 @@ public class EditEventPosterDialog extends DialogFragment {
                     db.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
                         @Override
                         public void eventUpdate() {
-                            Toast.makeText(getContext(), "Poster successfully updated!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Poster successfully updated!", Toast.LENGTH_SHORT).show();
                             onPosterUpdatedListener.onPosterUpdated(eventReceived.getEventPosterURL());
                             Glide.with(EditEventPosterDialog.this).load(imageUri).centerCrop().into(editPoster);
                             dismiss();

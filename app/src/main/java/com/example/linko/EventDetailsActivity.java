@@ -349,6 +349,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     @Override
                     public void eventUpdate() {
                         Log.d("eventReceived", eventReceived.getEntrants().toString());
+                        Toast.makeText(EventDetailsActivity.this, "Successfully left the waitlist.", Toast.LENGTH_SHORT).show();
                         checkUserRegistered();
                     }
 
@@ -382,6 +383,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 @Override
                                                 public void eventUpdate() {
                                                     Log.d("eventReceived", eventReceived.getEntrants().toString());
+                                                    Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
                                                     checkUserRegistered();
                                                 }
 
@@ -411,6 +413,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                         @Override
                         public void eventUpdate() {
                             Log.d("eventReceived", eventReceived.getEntrants().toString());
+                            Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
                             checkUserRegistered();
                         }
 
@@ -536,6 +539,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 @Override
                                                 public void eventUpdate() {
                                                     Log.d("eventReceived", eventReceived.getEntrants().toString());
+                                                    Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
                                                     checkUserRegistered();
                                                 }
 
