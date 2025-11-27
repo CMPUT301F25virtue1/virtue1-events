@@ -66,6 +66,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
     private TextView noEventsMatchFilter;
     private RecyclerView availableRecyclerView;
 
+    // https://github.com/journeyapps/zxing-android-embedded
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
             registerForActivityResult(new ScanContract(), result -> {
                 if (result.getContents() != null) {
@@ -84,7 +85,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
                             }
 
                             Intent intent = new Intent(ExploreEventsActivity.this, EventDetailsActivity.class);
-                            intent.putExtra("clickedEvent", event);
+                            intent.putExtra("eventId", event.getEventId());
                             intent.putExtra("activity", "exploreEvents");
                             startActivity(intent);
                             finish();
@@ -170,7 +171,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
                 return;
             }
             Intent intent = new Intent(this, EventDetailsActivity.class);
-            intent.putExtra("clickedEvent", clickedEvent);
+            intent.putExtra("eventId", clickedEvent.getEventId());
             intent.putExtra("activity", "exploreEvents");
             startActivity(intent);
             finish();

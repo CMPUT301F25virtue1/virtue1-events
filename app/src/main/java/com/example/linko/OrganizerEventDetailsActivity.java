@@ -115,6 +115,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView noEntrants = findViewById(R.id.text_no_entrants);
         Button sendNotificationAll = findViewById(R.id.button_send_notification);
         Button exportCsvButton = findViewById(R.id.button_export_csv);
+        ImageView entrantLocationButton = findViewById(R.id.button_entrant_location);
 
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
@@ -159,8 +160,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         cancelledEntrantsRecyclerView.setLayoutManager(cancelledEntrantsLayoutManager);
 
         // get event
-        eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
-        if (eventReceived == null) {
+        String eventIdReceived = getIntent().getStringExtra("eventId");
+        if (eventIdReceived == null) {
             Log.e("Event", "The event clicked was null.");
             finish();
             return;
@@ -180,7 +181,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 Log.d("firebase", "checking documents");
                 // update the event received lists so the entrants are updated in real time
                 for (QueryDocumentSnapshot doc : value) {
-                    if (doc.getId().equals(eventReceived.getEventId())) {
+                    if (doc.getId().equals(eventIdReceived)) {
                         eventReceived = doc.toObject(Event.class);
                         updateOrganizerEventDetails();
                     }
@@ -217,17 +218,29 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                                 totalEntrantsList.add(userToAdd);
                             }
                         }
+
+                        if (eventReceived.isGeolocationRequired()) {
+                            entrantLocationButton.setAlpha(1f);
+                        }
+                        else {
+                            entrantLocationButton.setAlpha(0.5f);
+                        }
+
                         // update entrants tab
                         if (totalEntrantsList.isEmpty()) {
                             noEntrants.setVisibility(View.VISIBLE);
                             entrantsRecyclerView.setVisibility(View.GONE);
                             exportCsvButton.setAlpha(0.5f);
                             sendNotificationAll.setAlpha(0.5f);
+                            entrantLocationButton.setAlpha(0.5f);
+
                         } else {
                             noEntrants.setVisibility(View.GONE);
                             entrantsRecyclerView.setVisibility(View.VISIBLE);
                             exportCsvButton.setAlpha(1f);
                             sendNotificationAll.setAlpha(1f);
+                            entrantLocationButton.setAlpha(1f);
+
                         }
 
                         // update systems tab
@@ -259,8 +272,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 });
             }
         });
-
-        updateOrganizerEventDetails();
 
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
@@ -397,6 +408,20 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             exportEntrantsAsCsv(totalEntrantsList);
         });
 
+        // map
+        entrantLocationButton.setOnClickListener(v -> {
+            if (!eventReceived.isGeolocationRequired()) {
+                Toast.makeText(this, "Your event does not have geolocation required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (eventReceived.getEntrants().isEmpty()) {
+                Toast.makeText(this, "No entrants to show", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EntrantsMapActivity.class);
+            intent.putExtra("eventId", eventReceived.getEventId());
+            startActivity(intent);
+        });
         sampleButton.setOnClickListener(v -> {
 
             // if sampling related lists are filled with at least one entrant, that means sampling is done.
@@ -572,6 +597,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 eventReceived.getInvitedEntrants().remove(user.getUserId());
                 eventReceived.getEntrants().remove(user.getUserId());
                 eventReceived.getCancelledEntrants().add(user.getUserId());
+                eventReceived.getEntrantLocations().remove(user.getUserId());
+
                 FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "entrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants());
 
                 Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();

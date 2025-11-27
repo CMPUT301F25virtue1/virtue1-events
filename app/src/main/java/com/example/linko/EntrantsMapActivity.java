@@ -2,8 +2,10 @@ package com.example.linko;
 
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +37,7 @@ public class EntrantsMapActivity extends AppCompatActivity implements OnMapReady
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_entrants_map);
 
         eventId = getIntent().getStringExtra("eventId");
@@ -47,39 +50,12 @@ public class EntrantsMapActivity extends AppCompatActivity implements OnMapReady
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
 
-        ImageButton backButton = findViewById(R.id.button_back);
+        ImageView backButton = findViewById(R.id.button_back_button);
         backButton.setOnClickListener(v -> finish());   // back to OrganizerEventDetailsActivity
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
-
-        listenForEntrantLocations();
-    }
-
-    private void listenForEntrantLocations() {
-        // Listen to changes on this event document
-        eventsRef.document(eventId)
-                .addSnapshotListener((@Nullable DocumentSnapshot snapshot,
-                                      @Nullable FirebaseFirestoreException e) -> {
-                    if (e != null) {
-                        Toast.makeText(this, "Failed to load entrant locations", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (snapshot == null || !snapshot.exists()) {
-                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    currentEvent = snapshot.toObject(Event.class);
-                    if (currentEvent == null) return;
-
-                    if (mMap != null) {
-                        drawMarkers();
-                    }
-                });
+        // https://developers.google.com/maps/documentation/android-sdk/map#maps_android_on_map_ready_callback-java
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -89,39 +65,41 @@ public class EntrantsMapActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void drawMarkers() {
-        if (mMap == null || currentEvent == null) return;
+        // Listen to changes on this event document
+        new EventDatabaseHandler().fetchEventById(eventId, new EventDatabaseHandler.EventFetched() {
+            @Override
+            public void eventFetch(Event event) {
+                currentEvent = event;
+                Map<String, GeoPoint> entrantLocations = currentEvent.getEntrantLocations();
 
-        mMap.clear();
-        LatLng first = null;
+                for (String entrantId : event.getEntrants()) {
+                    new UserDatabaseHandler().fetchUserById(entrantId, new UserDatabaseHandler.UserFetchedFromId() {
+                        @Override
+                        public void userFetch(User user) {
+                            GeoPoint gp = entrantLocations.get(user.getUserId());
 
-        // Firestore stores entrantLocations as Map<String, GeoPoint>
-        Map<String, GeoPoint> entrantLocations = currentEvent.getEntrantLocations();
-        if (entrantLocations == null || entrantLocations.isEmpty()) {
-            Toast.makeText(this, "No entrant locations to display", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                            double lat = gp.getLatitude();
+                            double lng = gp.getLongitude();
 
-        for (Map.Entry<String, GeoPoint> entry : entrantLocations.entrySet()) {
-            String userId = entry.getKey();
-            GeoPoint gp = entry.getValue();
-            if (gp == null) continue;
+                            LatLng pos = new LatLng(lat, lng);
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(pos)
+                                    .title("Entrant: " + user.getFirstName() + " " + user.getLastName()));  // later you can resolve userId → name
+                        }
 
-            double lat = gp.getLatitude();
-            double lng = gp.getLongitude();
+                        @Override
+                        public void userFetchFailed(Exception e) {
 
-            LatLng pos = new LatLng(lat, lng);
-            if (first == null) first = pos;
+                        }
+                    });
+                }
+            }
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(pos)
-                    .title("Entrant: " + userId));  // later you can resolve userId → name
-        }
+            @Override
+            public void eventFetchFailed(Exception e) {
 
-        if (first != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(first, 10f));
-        } else {
-            Toast.makeText(this, "No valid locations to display", Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
     }
 
 }
