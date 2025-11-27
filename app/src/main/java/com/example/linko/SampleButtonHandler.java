@@ -61,7 +61,7 @@ public class SampleButtonHandler {
 
         db.collection("events").document(event.getEventId()).update("invitedEntrants", invited, "signedUpEntrants", signedUp)
                 .addOnSuccessListener(v -> {
-                    callback.onSuccess(freeSpace, invited, signedUp);
+                    callback.onSuccess(freeSpace, newInvited, invited, signedUp);
                 })
                 .addOnFailureListener(e -> {
                     callback.onFail(e.getMessage());
