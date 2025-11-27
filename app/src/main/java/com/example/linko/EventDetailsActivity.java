@@ -218,6 +218,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
                                                     @Override
                                                     public void userFetch(User user) {
+                                                        if (!user.isNotificationsEnabled()) {
+                                                            return;
+                                                        }
                                                         user.getNotificationList().add(invitedNotifId);
                                                         user.getLocalAndroidNotificationlist().add(invitedNotifId);
                                                         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {

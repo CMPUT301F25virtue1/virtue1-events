@@ -24,6 +24,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/rounded_tops_teal"
+        android:padding="5dp"
         android:text="@string/notifications"
         android:textAlignment="center"
         android:textColor="@color/white"
@@ -32,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_status_bar"
-        app:layout_constraintVertical_bias="0.23000002" />
+        app:layout_constraintVertical_bias="0.32" />
 
     <Button
         android:id="@+id/button_enter_admin"
@@ -58,18 +59,18 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:backgroundTint="@color/darkRed"
-        android:textColor="@color/white"
-        android:text="@string/delete_profile"
+        android:backgroundTint="@color/darkestRed"
         android:elevation="5dp"
         android:stateListAnimator="@null"
+        android:text="@string/delete_profile"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:cornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:strokeColor="@color/darkestRed"
+        app:strokeColor="@color/black"
         app:strokeWidth="4dp" />
 
     <LinearLayout
@@ -90,8 +91,11 @@
             android:id="@+id/all_notifications_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             app:cardBackgroundColor="@color/green"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="10dp"
+            app:cardElevation="5dp"
+            tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -106,6 +110,7 @@
                     android:backgroundTintMode="multiply"
                     android:padding="8dp"
                     android:text="@string/all_notifications"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -116,30 +121,15 @@
                     android:id="@+id/all_notifications_description"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:padding="25dp"
                     android:text="@string/receive_organizer_and_admin_notifications"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/all_notifications_checkbox"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/all_notifications_title" />
-
-                <CheckBox
-                    android:id="@+id/all_notifications_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:buttonTint="@color/white"
-                    android:checked="false"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:button="@drawable/custom_checkbox_selector"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -150,9 +140,10 @@
             android:id="@+id/silence_notifications_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             app:cardBackgroundColor="@color/darkRed"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="10dp"
+            app:cardElevation="5dp"
+            tools:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -167,6 +158,7 @@
                     android:backgroundTintMode="multiply"
                     android:padding="8dp"
                     android:text="@string/silence_notifications"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -177,28 +169,15 @@
                     android:id="@+id/silence_notifications_description"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:padding="25dp"
                     android:text="@string/receive_no_notifications"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/silence_notifications_title" />
-
-                <CheckBox
-                    android:id="@+id/silence_notifications_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="36dp"
-                    android:buttonTint="@color/white"
-                    android:checked="false"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:button="@drawable/custom_checkbox_selector"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

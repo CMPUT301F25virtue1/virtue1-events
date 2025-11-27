@@ -21,6 +21,7 @@ public class User implements Serializable {
     private List<String> notificationList;
     private List<String> localAndroidNotificationlist;
     private boolean isAdmin;
+    private boolean notificationsEnabled;
 
     public User() {
         // empty for firebase
@@ -46,6 +47,7 @@ public class User implements Serializable {
         this.notificationList = new ArrayList<>();
         this.localAndroidNotificationlist = new ArrayList<>();
         this.isAdmin = false;
+        this.notificationsEnabled = false;
     }
 
     public String getUserId() {
@@ -127,6 +129,14 @@ public class User implements Serializable {
 
     public void setLocalAndroidNotificationlist(List<String> localAndroidNotificationlist) {
         this.localAndroidNotificationlist = localAndroidNotificationlist;
+    }
+
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    public void setNotificationsEnabled(boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
     }
 
     @Override

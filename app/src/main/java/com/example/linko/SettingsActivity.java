@@ -44,15 +44,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         CardView allNotificationsCard = findViewById(R.id.all_notifications_card);
         CardView silenceNotificationsCard = findViewById(R.id.silence_notifications_card);
-        allNotificationsCheckbox = findViewById(R.id.all_notifications_checkbox);
-        silenceNotificationsCheckbox = findViewById(R.id.silence_notifications_checkbox);
 
         db = FirebaseFirestore.getInstance();
-
-        allNotificationsCheckbox.setClickable(false);
-        allNotificationsCheckbox.setFocusable(false);
-        silenceNotificationsCheckbox.setClickable(false);
-        silenceNotificationsCheckbox.setFocusable(false);
 
         deleteProfile.setOnClickListener(v -> {
             startActivity(new Intent(SettingsActivity.this, DeleteProfileActivity.class));
@@ -63,13 +56,21 @@ public class SettingsActivity extends AppCompatActivity {
         databaseHandler.getCurrentUser(this, currentUser -> {
             if (currentUser != null) {
                 userRef = db.collection("users").document(currentUser.getUserId());
-                loadNotificationSettings();
 
                 Log.d("Admin", "User loaded: " + currentUser.getUserId() + ", isAdmin: " + currentUser.isAdmin());
                 if (currentUser.isAdmin()) {
                     adminButton.setVisibility(View.VISIBLE);
                 } else {
                     adminButton.setVisibility(View.GONE);
+                }
+
+                if (currentUser.isNotificationsEnabled()) {
+                    allNotificationsCard.setVisibility(View.VISIBLE);
+                    silenceNotificationsCard.setVisibility(View.GONE);
+                }
+                else {
+                    allNotificationsCard.setVisibility(View.GONE);
+                    silenceNotificationsCard.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -80,43 +81,21 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         allNotificationsCard.setOnClickListener(v -> {
-            if (!allNotificationsCheckbox.isChecked()) {
-                updateNotificationSettings(true);
-            }
+            allNotificationsCard.setVisibility(View.GONE);
+            silenceNotificationsCard.setVisibility(View.VISIBLE);
+            updateNotificationSettings(false);
         });
 
         silenceNotificationsCard.setOnClickListener(v -> {
-            if (!silenceNotificationsCheckbox.isChecked()) {
-                updateNotificationSettings(false);
-            }
+            allNotificationsCard.setVisibility(View.VISIBLE);
+            silenceNotificationsCard.setVisibility(View.GONE);
+            updateNotificationSettings(true);
         });
 
         navigationListener(this);
     }
 
-    private void loadNotificationSettings() {
-        if (userRef != null) {
-            userRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists() && documentSnapshot.contains("notificationsEnabled")) {
-                    Boolean notificationsEnabled = documentSnapshot.getBoolean("notificationsEnabled");
-                    if (notificationsEnabled != null) {
-                        updateCheckboxes(notificationsEnabled);
-                    } else {
-                        updateCheckboxes(true);
-                    }
-                } else {
-                    updateNotificationSettings(true);
-                }
-            }).addOnFailureListener(e -> {
-                Log.e("SettingsActivity", "Failed to load notification settings", e);
-                updateCheckboxes(true);
-            });
-        }
-    }
-
     private void updateNotificationSettings(boolean enabled) {
-        updateCheckboxes(enabled);
-
         if (userRef != null) {
             userRef.update("notificationsEnabled", enabled)
                     .addOnSuccessListener(aVoid -> {
@@ -124,13 +103,8 @@ public class SettingsActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> {
                         Log.e("SettingsActivity", "Failed to update notification settings", e);
-                        updateCheckboxes(!enabled);
                     });
         }
     }
 
-    private void updateCheckboxes(boolean allNotificationsEnabled) {
-        allNotificationsCheckbox.setChecked(allNotificationsEnabled);
-        silenceNotificationsCheckbox.setChecked(!allNotificationsEnabled);
-    }
 }
