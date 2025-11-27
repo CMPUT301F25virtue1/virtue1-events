@@ -1,6 +1,5 @@
 package com.example.linko;
 
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +7,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -22,11 +18,11 @@ import java.util.List;
  */
 public class NotificationRecyclerAdapter extends RecyclerView.Adapter<NotificationRecyclerAdapter.NotificationViewHolder> {
 
-    private List<Notification> notificationsList;
+    private List<UserNotification> notificationsList;
     private OnItemClickListener listener;
 
     private boolean fromAdmin;
-    public NotificationRecyclerAdapter(List<Notification> notificationsList) {
+    public NotificationRecyclerAdapter(List<UserNotification> notificationsList) {
         this.notificationsList = notificationsList;
     }
 
@@ -39,7 +35,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
 
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
-        Notification notification = notificationsList.get(position);
+        UserNotification notification = notificationsList.get(position);
         new EventDatabaseHandler().fetchEventById(notification.getEventId(), new EventDatabaseHandler.EventFetched() {
             @Override
             public void eventFetch(Event event) {
@@ -65,10 +61,15 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
             holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkGreen));
             holder.chevron.setVisibility(View.VISIBLE);
         }
-        else {
+        else if (notification.getType().equals("cancelled")){
             holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
             holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
             holder.chevron.setVisibility(View.GONE);
+        }
+        else {
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
+            holder.chevron.setVisibility(View.VISIBLE);
         }
     }
 
@@ -105,7 +106,7 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
             itemView.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && listener != null) {
-                    Notification notif = notificationsList.get(pos);
+                    UserNotification notif = notificationsList.get(pos);
 
                     // cant click cancelled type events
                     if (notif.getType().equals("cancelled")) {

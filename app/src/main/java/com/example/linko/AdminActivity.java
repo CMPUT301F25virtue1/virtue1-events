@@ -55,7 +55,7 @@ public class AdminActivity extends AppCompatActivity {
     private List<Event> originalEventPostersList;
     private List<User> allProfilePicturesList;
     private List<User> originalProfilePicturesList;
-    private List<Notification> notificationsList;
+    private List<UserNotification> notificationsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -620,7 +620,7 @@ public class AdminActivity extends AppCompatActivity {
                 notificationsList.clear();
 
                 for (QueryDocumentSnapshot snapshot : value) {
-                    Notification notificationToAdd = snapshot.toObject(Notification.class);
+                    UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
                     notificationsList.add(notificationToAdd);
                     notificationsRecyclerAdapter.notifyDataSetChanged();
                 }

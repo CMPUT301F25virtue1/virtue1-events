@@ -22,7 +22,6 @@ public class SampleButtonHandler {
             return;
         }
 
-
         List<String> invited = new ArrayList<>(event.getInvitedEntrants());
         List<String> signedUp = new ArrayList<>(event.getSignedUpEntrants());
         List<String> cancelled = new ArrayList<>(event.getCancelledEntrants());
@@ -34,10 +33,9 @@ public class SampleButtonHandler {
             return;
         }
 
-        //Event capacity - num of invited = amount of free space. Debating on which to use
-        //Signed up will stop me from sampling if I max out on signed up users even if they dont accept
-        //Invited will allow me to keep sending out invites if sampled users havent accepted.
-        int freeSpace = event.getEventCapacity() - signedUp.size();
+        //Event capacity - num of invited - num of signed up = amount of free space.
+        // to calc how many more entrants to invite
+        int freeSpace = event.getEventCapacity() - (signedUp.size() + invited.size());
 
         if(freeSpace <= 0){
             callback.onFail("Event full");
@@ -55,7 +53,6 @@ public class SampleButtonHandler {
             callback.onFail("All entrants already invited!");
             return;
         }
-
 
         for(int i = freeSpace; i > 0; i--){
             randomSelector(signedUp, invited, okToAdd);
