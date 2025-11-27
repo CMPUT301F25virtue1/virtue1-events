@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -32,7 +33,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -405,7 +409,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
                 return;
             }
-            exportEntrantsAsCsv(totalEntrantsList);
+            openFileChooser();
         });
 
         // map
@@ -697,7 +701,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     // csv export
-    private void exportEntrantsAsCsv(List<User> entrants) {
+    private String csvBuilder(List<User> entrants) {
         StringBuilder csv = new StringBuilder();
         csv.append("First Name,Last Name,Email,Phone Number\n");
 
@@ -714,32 +718,41 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             csv.append(email).append(",");
             csv.append(phone).append("\n");
         }
-
-        try {
-            File downloadsDir =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-
-            File linkoFolder = new File(downloadsDir, "Linko");
-            if (!linkoFolder.exists()) {
-                linkoFolder.mkdirs();
-            }
-
-            String safeName = eventReceived.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_");
-            String fileName = "entrants_" + safeName + ".csv";
-            File file = new File(linkoFolder, fileName);
-
-            FileWriter writer = new FileWriter(file);
-            writer.write(csv.toString());
-            writer.close();
-
-            Toast.makeText(this, "Exported to Downloads/Linko", Toast.LENGTH_LONG).show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to export CSV", Toast.LENGTH_SHORT).show();
-        }
+        return csv.toString();
     }
 
+    private void openFileChooser() {
+        Intent documentSaveIntent = new Intent(Intent.ACTION_PICK);
+        documentSaveIntent.setType("text/csv");
+        documentSaveIntent.putExtra(Intent.EXTRA_TITLE, "entrants_" + eventReceived.getName() + ".csv");
+        startActivityForResult(documentSaveIntent, 653);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 653 && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                // https://stackoverflow.com/questions/74006079/android-create-file-using-action-create-document-then-write-to-file?utm_source=chatgpt.com
+                Uri csvUri = data.getData();
+                String csv = csvBuilder(totalEntrantsList);
+                try {
+                    OutputStream os = getContentResolver().openOutputStream(csvUri);
+                    Writer writer = new OutputStreamWriter(os);
+
+                    writer.write(csv);
+                    writer.flush();
+                    writer.close();
+
+                    Toast.makeText(this, "Exported successfully!", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to export CSV", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
     private void updateOrganizerEventDetails() {
         eventName.setText(eventReceived.getName());
         Integer eventCapacityNumber = eventReceived.getEventCapacity();
