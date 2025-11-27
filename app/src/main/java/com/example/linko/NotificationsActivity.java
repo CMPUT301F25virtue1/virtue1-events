@@ -57,6 +57,9 @@ public class NotificationsActivity extends AppCompatActivity {
         usersRef = db.collection("users");
 
         usersRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }

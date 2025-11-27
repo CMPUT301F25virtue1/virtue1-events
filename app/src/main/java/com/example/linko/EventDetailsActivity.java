@@ -116,6 +116,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventsRef = db.collection("events");
         // update every event details in real time
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }

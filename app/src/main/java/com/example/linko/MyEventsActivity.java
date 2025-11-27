@@ -72,6 +72,9 @@ public class MyEventsActivity extends AppCompatActivity {
 
         // get registered events list from database
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -115,6 +118,9 @@ public class MyEventsActivity extends AppCompatActivity {
 
         // get organized events list from database
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }

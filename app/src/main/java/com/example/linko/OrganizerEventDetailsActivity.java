@@ -178,6 +178,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         // update every event list in real time
         eventsRef.addSnapshotListener((value, error) -> {
+            // if db updates while this activity is destroyed, glide will crash
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -197,6 +201,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 }
 
                 usersListener = usersRef.addSnapshotListener((queryDocumentSnapshots, error2) -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
                     if (error2 != null) {
                         Log.e("Firestore", error.toString());
                     }
@@ -722,7 +729,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     private void openFileChooser() {
-        Intent documentSaveIntent = new Intent(Intent.ACTION_PICK);
+        Intent documentSaveIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         documentSaveIntent.setType("text/csv");
         documentSaveIntent.putExtra(Intent.EXTRA_TITLE, "entrants_" + eventReceived.getName() + ".csv");
         startActivityForResult(documentSaveIntent, 653);
