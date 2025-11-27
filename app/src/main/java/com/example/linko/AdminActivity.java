@@ -611,6 +611,9 @@ public class AdminActivity extends AppCompatActivity {
         notifsRef = db.collection("notifications");
 
         notifsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }

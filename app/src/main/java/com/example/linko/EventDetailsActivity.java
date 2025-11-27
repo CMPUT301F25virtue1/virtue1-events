@@ -1,8 +1,13 @@
 package com.example.linko;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.location.Location;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,10 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,6 +35,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import com.google.firebase.firestore.GeoPoint;
+import java.util.HashMap;
+
 
 /**
  * Our class for managing the UI interactive logic for event details.
@@ -56,6 +70,9 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Date start;
     private Date end;
 
+    // https://developer.android.com/develop/sensors-and-location/location/retrieve-current
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +103,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         acceptedInvite = findViewById(R.id.text_accepted_invitation);
         eventClosed = findViewById(R.id.text_closed_event);
 
-        eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
-        if (eventReceived == null) {
+        String eventIdReceived = getIntent().getStringExtra("eventId");
+
+        if (eventIdReceived == null) {
             Log.e("Event", "The event clicked was null.");
             finish();
             return;
@@ -98,6 +116,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventsRef = db.collection("events");
         // update every event details in real time
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -105,7 +126,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 Log.d("firebase", "checking documents");
                 // update the event received lists so the entrants are updated in real time
                 for (QueryDocumentSnapshot doc : value) {
-                    if (doc.getId().equals(eventReceived.getEventId())) {
+                    if (doc.getId().equals(eventIdReceived)) {
                         eventReceived = doc.toObject(Event.class);
                         updateEventDetails();
                         checkUserRegistered();
@@ -113,9 +134,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             }
         });
-
-        updateEventDetails();
-        checkUserRegistered();
 
         joinWaitlist.setOnClickListener(v -> {
             Date now = new Date();
@@ -137,8 +155,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             }
 
-            joinWaitlist.setVisibility(View.INVISIBLE);
-            leaveWaitlist.setVisibility(View.VISIBLE);
             changeUserWaitlist();
         });
 
@@ -159,8 +175,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 return;
             }
 
-            joinWaitlist.setVisibility(View.VISIBLE);
-            leaveWaitlist.setVisibility(View.INVISIBLE);
             changeUserWaitlist();
         });
 
@@ -193,6 +207,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // remove any mention of the user in the event lists
                     eventReceived.getEntrants().remove(user.getUserId());
                     eventReceived.getInvitedEntrants().remove(user.getUserId());
+                    eventReceived.getEntrantLocations().remove(user.getUserId());
+
                     new EventDatabaseHandler().update(eventReceived, new EventDatabaseHandler.EventUpdated() {
                         @Override
                         public void eventUpdate() {
@@ -323,29 +339,88 @@ public class EventDetailsActivity extends AppCompatActivity {
             Log.d("eventReceived", "event received" + eventReceived.getEntrants().toString());
 
             if (eventReceived.getEntrants().contains(currentUser.getUserId())) {
+                // user leaves waitlist
                 Log.d("eventReceived", "removing entrant from waitlist");
 
                 eventReceived.getEntrants().remove(currentUser.getUserId());
+
+                EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+                eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                    @Override
+                    public void eventUpdate() {
+                        Log.d("eventReceived", eventReceived.getEntrants().toString());
+                        checkUserRegistered();
+                    }
+
+                    @Override
+                    public void eventUpdateFailed(Exception e) {
+                        Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
             else {
-                eventReceived.getEntrants().add(currentUser.getUserId());
-                if (!userEventHistory.contains(eventReceived.getEventId())) {
-                    userEventHistory.add(eventReceived.getEventId());
+                // if event has geolocation, then get the location and store it (ask for permission if it is the user's first time joining an event with geolocation on)
+                if (eventReceived.isGeolocationRequired()) {
+                    // https://developer.android.com/develop/sensors-and-location/location/retrieve-current
+                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                    if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED)) {
+                        fusedLocationClient.getLastLocation()
+                                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                                    @Override
+                                    public void onSuccess(Location location) {
+                                        if (location != null) {
+                                            eventReceived.getEntrantLocations().put(currentUser.getUserId(), new GeoPoint(location.getLatitude(), location.getLongitude()));
+                                            // user joins waitlist
+                                            eventReceived.getEntrants().add(currentUser.getUserId());
+
+                                            if (!userEventHistory.contains(eventReceived.getEventId())) {
+                                                userEventHistory.add(eventReceived.getEventId());
+                                            }
+
+                                            EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+                                            eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                                                @Override
+                                                public void eventUpdate() {
+                                                    Log.d("eventReceived", eventReceived.getEntrants().toString());
+                                                    checkUserRegistered();
+                                                }
+
+                                                @Override
+                                                public void eventUpdateFailed(Exception e) {
+                                                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                    } else {
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 124);
+                    }
+                }
+                // else geolocation not enabled, just add the user to the event list with no location permission requests
+                else {
+                    // user joins waitlist
+                    eventReceived.getEntrants().add(currentUser.getUserId());
+
+                    if (!userEventHistory.contains(eventReceived.getEventId())) {
+                        userEventHistory.add(eventReceived.getEventId());
+                    }
+
+                    EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+                    eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                        @Override
+                        public void eventUpdate() {
+                            Log.d("eventReceived", eventReceived.getEntrants().toString());
+                            checkUserRegistered();
+                        }
+
+                        @Override
+                        public void eventUpdateFailed(Exception e) {
+                            Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
-
-            EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
-            eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
-                @Override
-                public void eventUpdate() {
-                    Log.d("eventReceived", eventReceived.getEntrants().toString());
-                }
-
-                @Override
-                public void eventUpdateFailed(Exception e) {
-                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
         });
     }
 
@@ -430,5 +505,55 @@ public class EventDetailsActivity extends AppCompatActivity {
         registrationEnd.setText(sdf.format(end));
         eventDescription.setText(eventReceived.getDescription());
         eventGuidelines.setText(eventReceived.getGuidelines());
+    }
+
+    @SuppressLint("MissingPermission") // suppress because fusedLocationClient will only run if the permission is granted
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 124:
+                if (grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+                    // if user granted one of the permissions get their last location
+                    new UserDatabaseHandler().getCurrentUser(EventDetailsActivity.this, currentUser ->  {
+                        List<String> userEventHistory = currentUser.getEventHistory();
+
+                        fusedLocationClient.getLastLocation()
+                                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                                    @Override
+                                    public void onSuccess(Location location) {
+                                        if (location != null) {
+                                            eventReceived.getEntrantLocations().put(currentUser.getUserId(), new GeoPoint(location.getLatitude(), location.getLongitude()));
+                                            // user joins waitlist
+                                            eventReceived.getEntrants().add(currentUser.getUserId());
+
+                                            if (!userEventHistory.contains(eventReceived.getEventId())) {
+                                                userEventHistory.add(eventReceived.getEventId());
+                                            }
+
+                                            EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+                                            eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                                                @Override
+                                                public void eventUpdate() {
+                                                    Log.d("eventReceived", eventReceived.getEntrants().toString());
+                                                    checkUserRegistered();
+                                                }
+
+                                                @Override
+                                                public void eventUpdateFailed(Exception e) {
+                                                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                    });
+
+                }  else {
+                    // user didn't grant a permission, do nothing
+                    Toast.makeText(EventDetailsActivity.this, "Event has geolocation required. Location permission must be granted.", Toast.LENGTH_LONG);
+                }
+
+        }
     }
 }

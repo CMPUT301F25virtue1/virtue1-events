@@ -72,6 +72,9 @@ public class MyEventsActivity extends AppCompatActivity {
 
         // get registered events list from database
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -115,6 +118,9 @@ public class MyEventsActivity extends AppCompatActivity {
 
         // get organized events list from database
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -183,7 +189,7 @@ public class MyEventsActivity extends AppCompatActivity {
         organizedEventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = organizedEventsList.get(position);
             Intent intent = new Intent(this, OrganizerEventDetailsActivity.class);
-            intent.putExtra("clickedEvent", clickedEvent);
+            intent.putExtra("eventId", clickedEvent.getEventId());
             startActivity(intent);
             finish();
         });
@@ -191,7 +197,7 @@ public class MyEventsActivity extends AppCompatActivity {
         registeredEventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = registeredEventsList.get(position);
             Intent intent = new Intent(this, EventDetailsActivity.class);
-            intent.putExtra("clickedEvent", clickedEvent);
+            intent.putExtra("eventId", clickedEvent.getEventId());
             intent.putExtra("activity", "myEvents");
             startActivity(intent);
             finish();

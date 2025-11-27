@@ -16,13 +16,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
@@ -33,7 +33,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,14 +53,17 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private List<User> invitedEntrantsList;
     private List<User> signedUpEntrantsList;
     private List<User> cancelledEntrantsList;
+
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private CollectionReference eventsRef;
     private CollectionReference notifsRef;
+
     private UserRecyclerAdapter entrantsUserRecyclerAdapter;
     private UserRecyclerAdapter invitedEntrantsUserRecyclerAdapter;
     private UserRecyclerAdapter signedUpEntrantsUserRecyclerAdapter;
     private UserRecyclerAdapter cancelledEntrantsUserRecyclerAdapter;
+
     private Event eventReceived;
     private TextView eventName;
     private TextView eventCapacity;
@@ -113,6 +119,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         TextView noEntrants = findViewById(R.id.text_no_entrants);
         Button sendNotificationAll = findViewById(R.id.button_send_notification);
         Button exportCsvButton = findViewById(R.id.button_export_csv);
+        ImageView entrantLocationButton = findViewById(R.id.button_entrant_location);
 
         // system tab ui
         ConstraintLayout systemContainer = findViewById(R.id.system_container);
@@ -136,12 +143,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         RecyclerView invitedEntrantsRecyclerView = findViewById(R.id.recycler_invited_entrants);
         RecyclerView signedUpEntrantsRecyclerView = findViewById(R.id.recycler_signed_up_entrants);
         RecyclerView cancelledEntrantsRecyclerView = findViewById(R.id.recycler_cancelled_entrants);
+
         invitedEntrantsList = new ArrayList<>();
         signedUpEntrantsList = new ArrayList<>();
         cancelledEntrantsList = new ArrayList<>();
+
         invitedEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(invitedEntrantsList, true);
         signedUpEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(signedUpEntrantsList, true);
         cancelledEntrantsUserRecyclerAdapter = new UserRecyclerAdapter(cancelledEntrantsList, true);
+
         invitedEntrantsRecyclerView.setAdapter(invitedEntrantsUserRecyclerAdapter);
         signedUpEntrantsRecyclerView.setAdapter(signedUpEntrantsUserRecyclerAdapter);
         cancelledEntrantsRecyclerView.setAdapter(cancelledEntrantsUserRecyclerAdapter);
@@ -153,8 +163,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         signedUpEntrantsRecyclerView.setLayoutManager(signedUpEntrantsLayoutManager);
         cancelledEntrantsRecyclerView.setLayoutManager(cancelledEntrantsLayoutManager);
 
-        eventReceived = (Event) getIntent().getSerializableExtra("clickedEvent");
-        if (eventReceived == null) {
+        // get event
+        String eventIdReceived = getIntent().getStringExtra("eventId");
+        if (eventIdReceived == null) {
             Log.e("Event", "The event clicked was null.");
             finish();
             return;
@@ -167,6 +178,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         // update every event list in real time
         eventsRef.addSnapshotListener((value, error) -> {
+            // if db updates while this activity is destroyed, glide will crash
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -174,7 +189,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 Log.d("firebase", "checking documents");
                 // update the event received lists so the entrants are updated in real time
                 for (QueryDocumentSnapshot doc : value) {
-                    if (doc.getId().equals(eventReceived.getEventId())) {
+                    if (doc.getId().equals(eventIdReceived)) {
                         eventReceived = doc.toObject(Event.class);
                         updateOrganizerEventDetails();
                     }
@@ -186,6 +201,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 }
 
                 usersListener = usersRef.addSnapshotListener((queryDocumentSnapshots, error2) -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
                     if (error2 != null) {
                         Log.e("Firestore", error.toString());
                     }
@@ -211,17 +229,29 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                                 totalEntrantsList.add(userToAdd);
                             }
                         }
+
+                        if (eventReceived.isGeolocationRequired()) {
+                            entrantLocationButton.setAlpha(1f);
+                        }
+                        else {
+                            entrantLocationButton.setAlpha(0.5f);
+                        }
+
                         // update entrants tab
                         if (totalEntrantsList.isEmpty()) {
                             noEntrants.setVisibility(View.VISIBLE);
                             entrantsRecyclerView.setVisibility(View.GONE);
                             exportCsvButton.setAlpha(0.5f);
                             sendNotificationAll.setAlpha(0.5f);
+                            entrantLocationButton.setAlpha(0.5f);
+
                         } else {
                             noEntrants.setVisibility(View.GONE);
                             entrantsRecyclerView.setVisibility(View.VISIBLE);
                             exportCsvButton.setAlpha(1f);
                             sendNotificationAll.setAlpha(1f);
+                            entrantLocationButton.setAlpha(1f);
+
                         }
 
                         // update systems tab
@@ -253,8 +283,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 });
             }
         });
-
-        updateOrganizerEventDetails();
 
         descriptionButton.setOnClickListener(v -> {
             eventDescription.setVisibility(View.VISIBLE);
@@ -388,9 +416,23 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
                 return;
             }
-            exportEntrantsAsCsv(totalEntrantsList);
+            openFileChooser();
         });
 
+        // map
+        entrantLocationButton.setOnClickListener(v -> {
+            if (!eventReceived.isGeolocationRequired()) {
+                Toast.makeText(this, "Your event does not have geolocation required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (eventReceived.getEntrants().isEmpty()) {
+                Toast.makeText(this, "No entrants to show", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(OrganizerEventDetailsActivity.this, EntrantsMapActivity.class);
+            intent.putExtra("eventId", eventReceived.getEventId());
+            startActivity(intent);
+        });
         sampleButton.setOnClickListener(v -> {
 
             // if sampling related lists are filled with at least one entrant, that means sampling is done.
@@ -548,7 +590,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "QRCodeDialog");
         });
 
-        //Move this where it needs to go.
         //Swipe to delete invited users
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -567,6 +608,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 eventReceived.getInvitedEntrants().remove(user.getUserId());
                 eventReceived.getEntrants().remove(user.getUserId());
                 eventReceived.getCancelledEntrants().add(user.getUserId());
+                eventReceived.getEntrantLocations().remove(user.getUserId());
+
                 FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "entrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants());
 
                 Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
@@ -665,7 +708,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     // csv export
-    private void exportEntrantsAsCsv(List<User> entrants) {
+    private String csvBuilder(List<User> entrants) {
         StringBuilder csv = new StringBuilder();
         csv.append("First Name,Last Name,Email,Phone Number\n");
 
@@ -682,35 +725,41 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             csv.append(email).append(",");
             csv.append(phone).append("\n");
         }
-
-        try {
-            // Public downloads directory
-            File downloadsDir =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-
-            // "Linko" folder
-            File linkoFolder = new File(downloadsDir, "Linko");
-            if (!linkoFolder.exists()) {
-                linkoFolder.mkdirs();
-            }
-
-            // Safe filename (avoid illegal characters)
-            String safeName = eventReceived.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_");
-            String fileName = "entrants_" + safeName + ".csv";
-            File file = new File(linkoFolder, fileName);
-
-            FileWriter writer = new FileWriter(file);
-            writer.write(csv.toString());
-            writer.close();
-
-            Toast.makeText(this, "Exported to Downloads/Linko", Toast.LENGTH_LONG).show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to export CSV", Toast.LENGTH_SHORT).show();
-        }
+        return csv.toString();
     }
 
+    private void openFileChooser() {
+        Intent documentSaveIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        documentSaveIntent.setType("text/csv");
+        documentSaveIntent.putExtra(Intent.EXTRA_TITLE, "entrants_" + eventReceived.getName() + ".csv");
+        startActivityForResult(documentSaveIntent, 653);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 653 && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                // https://stackoverflow.com/questions/74006079/android-create-file-using-action-create-document-then-write-to-file?utm_source=chatgpt.com
+                Uri csvUri = data.getData();
+                String csv = csvBuilder(totalEntrantsList);
+                try {
+                    OutputStream os = getContentResolver().openOutputStream(csvUri);
+                    Writer writer = new OutputStreamWriter(os);
+
+                    writer.write(csv);
+                    writer.flush();
+                    writer.close();
+
+                    Toast.makeText(this, "Exported successfully!", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to export CSV", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
     private void updateOrganizerEventDetails() {
         eventName.setText(eventReceived.getName());
         Integer eventCapacityNumber = eventReceived.getEventCapacity();

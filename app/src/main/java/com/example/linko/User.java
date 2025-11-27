@@ -114,7 +114,6 @@ public class User implements Serializable {
         this.notificationList = notificationList;
     }
 
-
     public boolean isAdmin() {
         return isAdmin;
     }

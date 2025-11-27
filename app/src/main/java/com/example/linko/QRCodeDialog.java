@@ -54,7 +54,7 @@ public class QRCodeDialog extends DialogFragment {
             dismiss();
             return view;
         }
-
+        // https://github.com/journeyapps/zxing-android-embedded
         try {
             BarcodeEncoder encoder = new BarcodeEncoder();
             qrBitmap = encoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 800, 800);

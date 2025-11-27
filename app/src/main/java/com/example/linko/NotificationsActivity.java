@@ -57,6 +57,9 @@ public class NotificationsActivity extends AppCompatActivity {
         usersRef = db.collection("users");
 
         usersRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -96,7 +99,7 @@ public class NotificationsActivity extends AppCompatActivity {
                 @Override
                 public void eventFetch(Event event) {
                     Intent intent = new Intent(NotificationsActivity.this, EventDetailsActivity.class);
-                    intent.putExtra("clickedEvent", event);
+                    intent.putExtra("eventId", event.getEventId());
                     intent.putExtra("activity", "notifications");
                     startActivity(intent);
                     finish();
