@@ -12,7 +12,7 @@ public class SampleButtonHandler {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public interface SampleCallback {
-        void onSuccess(int freeSpace, List<String> invited, List<String> signedUp);
+        void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp);
         void onFail(String error);
     }
 
@@ -26,6 +26,7 @@ public class SampleButtonHandler {
         List<String> signedUp = new ArrayList<>(event.getSignedUpEntrants());
         List<String> cancelled = new ArrayList<>(event.getCancelledEntrants());
         List<String> entrants = new ArrayList<>(event.getEntrants());
+        List<String> newInvited = new ArrayList<>();
 
         //If statement for if event has no one signed up
         if (entrants.isEmpty()){
@@ -55,7 +56,7 @@ public class SampleButtonHandler {
         }
 
         for(int i = freeSpace; i > 0; i--){
-            randomSelector(signedUp, invited, okToAdd);
+            randomSelector(signedUp, newInvited, invited, okToAdd);
         }
 
         db.collection("events").document(event.getEventId()).update("invitedEntrants", invited, "signedUpEntrants", signedUp)
@@ -69,11 +70,12 @@ public class SampleButtonHandler {
     }
 
     //Random Selector
-    public void randomSelector(List<String> signedUp, List<String> invited, List<String> okToAdd){
+    public void randomSelector(List<String> signedUp, List<String> newInvited, List<String> invited, List<String> okToAdd){
         Random rand = new Random();
 
         if(!okToAdd.isEmpty()) {
             String temp = okToAdd.get(rand.nextInt(okToAdd.size()));
+            newInvited.add(temp);
             invited.add(temp);
             okToAdd.remove(temp);
         }

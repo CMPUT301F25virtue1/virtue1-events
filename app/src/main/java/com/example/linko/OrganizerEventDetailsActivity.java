@@ -408,7 +408,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
                 @Override
-                public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
                     eventReceived.setInvitedEntrants(invited);
 
                     Toast.makeText(OrganizerEventDetailsActivity.this, "Sampling complete! " + invited.size() + "entrants invited!", Toast.LENGTH_SHORT).show();
@@ -596,7 +596,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
                 handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
                     @Override
-                    public void onSuccess(int freeSpace, List<String> invited, List<String> signedUp) {
+                    public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
                         // sampling handler handles the event sampling updates itself
 
                         // now just send the invitation to the person that just got sampled
@@ -607,7 +607,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // add notif to the users of the list received
-                                for (String user : invited) {
+                                for (String user : newInvited) {
                                     new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
                                         @Override
                                         public void userFetch(User user) {
