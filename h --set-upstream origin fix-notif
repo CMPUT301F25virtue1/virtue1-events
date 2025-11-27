@@ -1,0 +1,318 @@
+[33mcommit b70e6950d3606f8446037cacf55ef38ba2e84b34[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnotification-opt-out[m[33m, [m[1;31morigin/notification-opt-out[m[33m)[m
+Author: dchandr1 <dchandr1@ualberta.ca>
+Date:   Wed Nov 26 14:11:17 2025 -0700
+
+    Added notification opt-out feature
+
+[1mdiff --git a/app/src/main/java/com/example/linko/SettingsActivity.java b/app/src/main/java/com/example/linko/SettingsActivity.java[m
+[1mindex 8e079d3..24bb54a 100644[m
+[1m--- a/app/src/main/java/com/example/linko/SettingsActivity.java[m
+[1m+++ b/app/src/main/java/com/example/linko/SettingsActivity.java[m
+[36m@@ -9,16 +9,13 @@[m [mimport android.service.autofill.UserData;[m
+ import android.util.Log;[m
+ import android.view.View;[m
+ import android.widget.Button;[m
+[31m-import android.widget.ImageView;[m
+[32m+[m[32mimport android.widget.CheckBox;[m
+ [m
+ import androidx.activity.EdgeToEdge;[m
+ import androidx.appcompat.app.AppCompatActivity;[m
+[31m-import androidx.core.graphics.Insets;[m
+[31m-import androidx.core.view.ViewCompat;[m
+[31m-import androidx.core.view.WindowInsetsCompat;[m
+[32m+[m[32mimport androidx.cardview.widget.CardView;[m
+ [m
+[31m-import com.bumptech.glide.Glide;[m
+[31m-import com.google.firebase.firestore.CollectionReference;[m
+[32m+[m[32mimport com.google.firebase.firestore.DocumentReference;[m
+ import com.google.firebase.firestore.FirebaseFirestore;[m
+ import com.google.firebase.firestore.QueryDocumentSnapshot;[m
+ [m
+[36m@@ -28,15 +25,35 @@[m [mimport com.google.firebase.firestore.QueryDocumentSnapshot;[m
+  * @see DeleteProfileActivity[m
+  */[m
+ public class SettingsActivity extends AppCompatActivity {[m
+[32m+[m
+[32m+[m[32m    private FirebaseFirestore db;[m
+[32m+[m[32m    private DocumentReference userRef;[m
+[32m+[m
+[32m+[m[32m    private CheckBox allNotificationsCheckbox;[m
+[32m+[m[32m    private CheckBox silenceNotificationsCheckbox;[m
+[32m+[m
+     @Override[m
+     protected void onCreate(Bundle savedInstanceState) {[m
+         super.onCreate(savedInstanceState);[m
+         setContentView(R.layout.activity_settings);[m
+         EdgeToEdge.enable(this);[m
+[32m+[m[32m        setContentView(R.layout.activity_settings);[m
+ [m
+         Button deleteProfile = findViewById(R.id.button_delete_profile);[m
+         Button adminButton = findViewById(R.id.button_enter_admin);[m
+ [m
+[32m+[m[32m        CardView allNotificationsCard = findViewById(R.id.all_notifications_card);[m
+[32m+[m[32m        CardView silenceNotificationsCard = findViewById(R.id.silence_notifications_card);[m
+[32m+[m[32m        allNotificationsCheckbox = findViewById(R.id.all_notifications_checkbox);[m
+[32m+[m[32m        silenceNotificationsCheckbox = findViewById(R.id.silence_notifications_checkbox);[m
+[32m+[m
+[32m+[m[32m        db = FirebaseFirestore.getInstance();[m
+[32m+[m
+[32m+[m[32m        allNotificationsCheckbox.setClickable(false);[m
+[32m+[m[32m        allNotificationsCheckbox.setFocusable(false);[m
+[32m+[m[32m        silenceNotificationsCheckbox.setClickable(false);[m
+[32m+[m[32m        silenceNotificationsCheckbox.setFocusable(false);[m
+[32m+[m
+         deleteProfile.setOnClickListener(v -> {[m
+             startActivity(new Intent(SettingsActivity.this, DeleteProfileActivity.class));[m
+             finish();[m
+[36m@@ -44,12 +61,16 @@[m [mpublic class SettingsActivity extends AppCompatActivity {[m
+ [m
+         UserDatabaseHandler databaseHandler = new UserDatabaseHandler();[m
+         databaseHandler.getCurrentUser(this, currentUser -> {[m
+[31m-            Log.d("Admin", "User loaded: " + currentUser.getUserId() + ", isAdmin: " + currentUser.isAdmin());[m
+[31m-            if (currentUser.isAdmin()) {[m
+[31m-                adminButton.setVisibility(View.VISIBLE);[m
+[31m-            }[m
+[31m-            else {[m
+[31m-                adminButton.setVisibility(View.GONE);[m
+[32m+[m[32m            if (currentUser != null) {[m
+[32m+[m[32m                userRef = db.collection("users").document(currentUser.getUserId());[m
+[32m+[m[32m                loadNotificationSettings();[m
+[32m+[m
+[32m+[m[32m                Log.d("Admin", "User loaded: " + currentUser.getUserId() + ", isAdmin: " + currentUser.isAdmin());[m
+[32m+[m[32m                if (currentUser.isAdmin()) {[m
+[32m+[m[32m                    adminButton.setVisibility(View.VISIBLE);[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    adminButton.setVisibility(View.GONE);[m
+[32m+[m[32m                }[m
+             }[m
+         });[m
+ [m
+[36m@@ -58,6 +79,58 @@[m [mpublic class SettingsActivity extends AppCompatActivity {[m
+             finish();[m
+         });[m
+ [m
+[32m+[m[32m        allNotificationsCard.setOnClickListener(v -> {[m
+[32m+[m[32m            if (!allNotificationsCheckbox.isChecked()) {[m
+[32m+[m[32m                updateNotificationSettings(true);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        silenceNotificationsCard.setOnClickListener(v -> {[m
+[32m+[m[32m            if (!silenceNotificationsCheckbox.isChecked()) {[m
+[32m+[m[32m                updateNotificationSettings(false);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        });[m
+[32m+[m
+         navigationListener(this);[m
+     }[m
+[32m+[m
+[32m+[m[32m    private void loadNotificationSettings() {[m
+[32m+[m[32m        if (userRef != null) {[m
+[32m+[m[32m            userRef.get().addOnSuccessListener(documentSnapshot -> {[m
+[32m+[m[32m                if (documentSnapshot.exists() && documentSnapshot.contains("notificationsEnabled")) {[m
+[32m+[m[32m                    Boolean notificationsEnabled = documentSnapshot.getBoolean("notificationsEnabled");[m
+[32m+[m[32m                    if (notificationsEnabled != null) {[m
+[32m+[m[32m                        updateCheckboxes(notificationsEnabled);[m
+[32m+[m[32m                    } else {[m
+[32m+[m[32m                        updateCheckboxes(true);[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    updateNotificationSettings(true);[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }).addOnFailureListener(e -> {[m
+[32m+[m[32m                Log.e("SettingsActivity", "Failed to load notification settings", e);[m
+[32m+[m[32m                updateCheckboxes(true);[m
+[32m+[m[32m            });[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void updateNotificationSettings(boolean enabled) {[m
+[32m+[m[32m        updateCheckboxes(enabled);[m
+[32m+[m
+[32m+[m[32m        if (userRef != null) {[m
+[32m+[m[32m            userRef.update("notificationsEnabled", enabled)[m
+[32m+[m[32m                    .addOnSuccessListener(aVoid -> {[m
+[32m+[m[32m                        Log.d("SettingsActivity", "Notification settings saved: " + enabled);[m
+[32m+[m[32m                    })[m
+[32m+[m[32m                    .addOnFailureListener(e -> {[m
+[32m+[m[32m                        Log.e("SettingsActivity", "Failed to update notification settings", e);[m
+[32m+[m[32m                        updateCheckboxes(!enabled);[m
+[32m+[m[32m                    });[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void updateCheckboxes(boolean allNotificationsEnabled) {[m
+[32m+[m[32m        allNotificationsCheckbox.setChecked(allNotificationsEnabled);[m
+[32m+[m[32m        silenceNotificationsCheckbox.setChecked(!allNotificationsEnabled);[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/app/src/main/res/drawable/baseline_check_24.xml b/app/src/main/res/drawable/baseline_check_24.xml[m
+[1mindex 562b621..87968b4 100644[m
+[1m--- a/app/src/main/res/drawable/baseline_check_24.xml[m
+[1m+++ b/app/src/main/res/drawable/baseline_check_24.xml[m
+[36m@@ -1,5 +1,10 @@[m
+[31m-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">[m
+[31m-      [m
+[31m-    <path android:fillColor="@android:color/white" android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z"/>[m
+[31m-    [m
+[31m-</vector>[m
+[32m+[m[32m<?xml version="1.0" encoding="utf-8"?>[m
+[32m+[m[32m<vector xmlns:android="http://schemas.android.com/apk/res/android"[m
+[32m+[m[32m    android:width="18dp"[m
+[32m+[m[32m    android:height="18dp"[m
+[32m+[m[32m    android:viewportWidth="24"[m
+[32m+[m[32m    android:viewportHeight="24">[m
+[32m+[m[32m    <path[m
+[32m+[m[32m        android:fillColor="@android:color/black"[m
+[32m+[m[32m        android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z"/>[m
+[32m+[m[32m</vector>[m
+\ No newline at end of file[m
+[1mdiff --git a/app/src/main/res/drawable/custom_checkbox_selector.xml b/app/src/main/res/drawable/custom_checkbox_selector.xml[m
+[1mnew file mode 100644[m
+[1mindex 0000000..daa8670[m
+[1m--- /dev/null[m
+[1m+++ b/app/src/main/res/drawable/custom_checkbox_selector.xml[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32m<?xml version="1.0" encoding="utf-8"?>[m
+[32m+[m[32m<selector xmlns:android="http://schemas.android.com/apk/res/android">[m
+[32m+[m[32m    <item android:state_checked="true">[m
+[32m+[m[32m        <layer-list>[m
+[32m+[m[32m            <item>[m
+[32m+[m[32m                <shape android:shape="rectangle">[m
+[32m+[m[32m                    <stroke android:width="2dp" android:color="@android:color/white" />[m
+[32m+[m[32m                    <solid android:color="@android:color/transparent" />[m
+[32m+[m[32m                    <size android:height="24dp" android:width="24dp" />[m
+[32m+[m[32m                </shape>[m
+[32m+[m[32m            </item>[m
+[32m+[m[32m            <item android:drawable="@drawable/baseline_check_24"[m
+[32m+[m[32m                android:gravity="center" />[m
+[32m+[m[32m        </layer-list>[m
+[32m+[m[32m    </item>[m
+[32m+[m[32m    <item android:state_checked="false">[m
+[32m+[m[32m        <shape android:shape="rectangle">[m
+[32m+[m[32m            <stroke android:width="2dp" android:color="@android:color/white" />[m
+[32m+[m[32m            <solid android:color="@android:color/transparent" />[m
+[32m+[m[32m            <size android:height="24dp" android:width="24dp" />[m
+[32m+[m[32m        </shape>[m
+[32m+[m[32m    </item>[m
+[32m+[m[32m</selector>[m
+[1mdiff --git a/app/src/main/res/layout/activity_settings.xml b/app/src/main/res/layout/activity_settings.xml[m
+[1mindex c8aef85..f681db6 100644[m
+[1m--- a/app/src/main/res/layout/activity_settings.xml[m
+[1m+++ b/app/src/main/res/layout/activity_settings.xml[m
+[36m@@ -87,7 +87,7 @@[m
+         app:layout_constraintTop_toBottomOf="@+id/textView">[m
+ [m
+         <androidx.cardview.widget.CardView[m
+[31m-            android:id="@+id/cardView"[m
+[32m+[m[32m            android:id="@+id/all_notifications_card"[m
+             android:layout_width="match_parent"[m
+             android:layout_height="wrap_content"[m
+             app:cardBackgroundColor="@color/green"[m
+[36m@@ -98,8 +98,8 @@[m
+                 android:layout_height="match_parent">[m
+ [m
+                 <TextView[m
+[31m-                    android:id="@+id/textView4"[m
+[31m-                    android:layout_width="match_parent"[m
+[32m+[m[32m                    android:id="@+id/all_notifications_title"[m
+[32m+[m[32m                    android:layout_width="0dp"[m
+                     android:layout_height="wrap_content"[m
+                     android:background="@color/green"[m
+                     android:backgroundTint="#36000000"[m
+[36m@@ -113,7 +113,7 @@[m
+                     app:layout_constraintTop_toTopOf="parent" />[m
+ [m
+                 <TextView[m
+[31m-                    android:id="@+id/textView5"[m
+[32m+[m[32m                    android:id="@+id/all_notifications_description"[m
+                     android:layout_width="0dp"[m
+                     android:layout_height="wrap_content"[m
+                     android:padding="10dp"[m
+[36m@@ -121,14 +121,33 @@[m
+                     android:textColor="@color/white"[m
+                     android:textSize="16sp"[m
+                     app:layout_constraintBottom_toBottomOf="parent"[m
+[31m-                    app:layout_constraintEnd_toEndOf="parent"[m
+[32m+[m[32m                    app:layout_constraintEnd_toStartOf="@+id/all_notifications_checkbox"[m
+                     app:layout_constraintStart_toStartOf="parent"[m
+[31m-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />[m
+[32m+[m[32m                    app:layout_constraintTop_toBottomOf="@+id/all_notifications_title" />[m
+[32m+[m
+[32m+[m[32m                <CheckBox[m
+[32m+[m[32m                    android:id="@+id/all_notifications_checkbox"[m
+[32m+[m[32m                    android:layout_width="wrap_content"[m
+[32m+[m[32m                    android:layout_height="wrap_content"[m
+[32m+[m[32m                    android:layout_marginEnd="16dp"[m
+[32m+[m[32m                    android:buttonTint="@color/white"[m
+[32m+[m[32m                    android:checked="false"[m
+[32m+[m[32m                    android:clickable="false"[m
+[32m+[m[32m                    android:focusable="false"[m
+[32m+[m[32m                    android:button="@drawable/custom_checkbox_selector"[m
+[32m+[m[32m                    android:background="@android:color/transparent"[m
+[32m+[m[32m                    app:layout_constraintBottom_toBottomOf="parent"[m
+[32m+[m[32m                    app:layout_constraintEnd_toEndOf="parent"[m
+[32m+[m[32m                    app:layout_constraintTop_toTopOf="parent"[m
+[32m+[m[32m                    app:layout_constraintVertical_bias="0.0" />[m
+[32m+[m
+[32m+[m
+             </androidx.constraintlayout.widget.ConstraintLayout>[m
+ [m
+         </androidx.cardview.widget.CardView>[m
+ [m
+         <androidx.cardview.widget.CardView[m
+[32m+[m[32m            android:id="@+id/silence_notifications_card"[m
+             android:layout_width="match_parent"[m
+             android:layout_height="wrap_content"[m
+             android:layout_marginTop="16dp"[m
+[36m@@ -140,10 +159,10 @@[m
+                 android:layout_height="match_parent">[m
+ [m
+                 <TextView[m
+[31m-                    android:id="@+id/textView6"[m
+[31m-                    android:layout_width="match_parent"[m
+[32m+[m[32m                    android:id="@+id/silence_notifications_title"[m
+[32m+[m[32m                    android:layout_width="0dp"[m
+                     android:layout_height="wrap_content"[m
+[31m-                    android:background="@color/green"[m
+[32m+[m[32m                    android:background="@color/darkRed"[m
+                     android:backgroundTint="#36000000"[m
+                     android:backgroundTintMode="multiply"[m
+                     android:padding="8dp"[m
+[36m@@ -155,7 +174,7 @@[m
+                     app:layout_constraintTop_toTopOf="parent" />[m
+ [m
+                 <TextView[m
+[31m-                    android:id="@+id/textView7"[m
+[32m+[m[32m                    android:id="@+id/silence_notifications_description"[m
+                     android:layout_width="0dp"[m
+                     android:layout_height="wrap_content"[m
+                     android:padding="10dp"[m
+[36m@@ -163,9 +182,24 @@[m
+                     android:textColor="@color/white"[m
+                     android:textSize="16sp"[m
+                     app:layout_constraintBottom_toBottomOf="parent"[m
+[31m-                    app:layout_constraintEnd_toEndOf="parent"[m
+                     app:layout_constraintStart_toStartOf="parent"[m
+[31m-                    app:layout_constraintTop_toBottomOf="@+id/textView6" />[m
+[32m+[m[32m                    app:layout_constraintTop_toBottomOf="@+id/silence_notifications_title" />[m
+[32m+[m
+[32m+[m[32m                <CheckBox[m
+[32m+[m[32m                    android:id="@+id/silence_notifications_checkbox"[m
+[32m+[m[32m                    android:layout_width="wrap_content"[m
+[32m+[m[32m                    android:layout_height="wrap_content"[m
+[32m+[m[32m                    android:layout_marginEnd="16dp"[m
+[32m+[m[32m                    android:layout_marginBottom="36dp"[m
+[32m+[m[32m                    android:buttonTint="@color/white"[m
+[32m+[m[32m                    android:checked="false"[m
+[32m+[m[32m                    android:clickable="false"[m
+[32m+[m[32m                    android:focusable="false"[m
+[32m+[m[32m                    android:button="@drawable/custom_checkbox_selector"[m
+[32m+[m[32m                    android:background="@android:color/transparent"[m
+[32m+[m[32m                    app:layout_constraintBottom_toBottomOf="parent"[m
+[32m+[m[32m                    app:layout_constraintEnd_toEndOf="parent" />[m
+[32m+[m
+             </androidx.constraintlayout.widget.ConstraintLayout>[m
+ [m
+         </androidx.cardview.widget.CardView>[m

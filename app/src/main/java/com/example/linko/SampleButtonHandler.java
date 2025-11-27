@@ -12,7 +12,7 @@ public class SampleButtonHandler {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public interface SampleCallback {
-        void onSuccess(int freeSpace, List<String> invited, List<String> signedUp);
+        void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp);
         void onFail(String error);
     }
 
@@ -22,11 +22,11 @@ public class SampleButtonHandler {
             return;
         }
 
-
         List<String> invited = new ArrayList<>(event.getInvitedEntrants());
         List<String> signedUp = new ArrayList<>(event.getSignedUpEntrants());
         List<String> cancelled = new ArrayList<>(event.getCancelledEntrants());
         List<String> entrants = new ArrayList<>(event.getEntrants());
+        List<String> newInvited = new ArrayList<>();
 
         //If statement for if event has no one signed up
         if (entrants.isEmpty()){
@@ -34,10 +34,9 @@ public class SampleButtonHandler {
             return;
         }
 
-        //Event capacity - num of invited = amount of free space. Debating on which to use
-        //Signed up will stop me from sampling if I max out on signed up users even if they dont accept
-        //Invited will allow me to keep sending out invites if sampled users havent accepted.
-        int freeSpace = event.getEventCapacity() - signedUp.size();
+        //Event capacity - num of invited - num of signed up = amount of free space.
+        // to calc how many more entrants to invite
+        int freeSpace = event.getEventCapacity() - (signedUp.size() + invited.size());
 
         if(freeSpace <= 0){
             callback.onFail("Event full");
@@ -56,14 +55,13 @@ public class SampleButtonHandler {
             return;
         }
 
-
         for(int i = freeSpace; i > 0; i--){
-            randomSelector(signedUp, invited, okToAdd);
+            randomSelector(signedUp, newInvited, invited, okToAdd);
         }
 
         db.collection("events").document(event.getEventId()).update("invitedEntrants", invited, "signedUpEntrants", signedUp)
                 .addOnSuccessListener(v -> {
-                    callback.onSuccess(freeSpace, invited, signedUp);
+                    callback.onSuccess(freeSpace, newInvited, invited, signedUp);
                 })
                 .addOnFailureListener(e -> {
                     callback.onFail(e.getMessage());
@@ -72,11 +70,12 @@ public class SampleButtonHandler {
     }
 
     //Random Selector
-    public void randomSelector(List<String> signedUp, List<String> invited, List<String> okToAdd){
+    public void randomSelector(List<String> signedUp, List<String> newInvited, List<String> invited, List<String> okToAdd){
         Random rand = new Random();
 
         if(!okToAdd.isEmpty()) {
             String temp = okToAdd.get(rand.nextInt(okToAdd.size()));
+            newInvited.add(temp);
             invited.add(temp);
             okToAdd.remove(temp);
         }

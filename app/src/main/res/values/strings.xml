@@ -18,11 +18,11 @@
     <string name="phone_number">Phone Number</string>
     <string name="email">Email</string>
     <string name="name">Name</string>
-    <string name="receive_no_notifications">Receive no notifications</string>
-    <string name="silence_notifications">Silence Notifications</string>
-    <string name="receive_organizer_and_admin_notifications">Receive organizer and admin notifications</string>
-    <string name="all_notifications">All Notifications</string>
+    <string name="receive_no_notifications">You will not receive any notifications</string>
+    <string name="silence_notifications">Notifications Silenced</string>
+    <string name="receive_organizer_and_admin_notifications">You will receive organizer notifications</string>
+    <string name="all_notifications">Notifications Enabled</string>
     <string name="delete_profile">Delete Profile</string>
     <string name="lottery_system_guidelines">Lottery System Guidelines</string>
-    <string name="notifications">Notifications</string>
+    <string name="notifications">Toggle Notifications</string>
 </resources>
