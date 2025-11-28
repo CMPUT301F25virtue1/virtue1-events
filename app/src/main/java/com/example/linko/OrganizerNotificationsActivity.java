@@ -30,14 +30,14 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
         EditText customMessage = findViewById(R.id.input_custom_message);
 
         List<User> listToNotify = (List<User>) getIntent().getSerializableExtra("listToNotify");
-        Event eventReceived = (Event) getIntent().getSerializableExtra("event");
+        String eventIdReceived = getIntent().getStringExtra("eventId");
         sendNotification.setOnClickListener(v -> {
             db = FirebaseFirestore.getInstance();
             notifsRef = db.collection("notifications");
             DocumentReference docRef = notifsRef.document();
             String notifId = docRef.getId();
             String message = customMessage.getText().toString().trim();
-            UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), message, "custom");
+            UserNotification notificationToSend = new UserNotification(notifId, eventIdReceived, message, "custom");
             // add notif to db
             docRef.set(notificationToSend).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

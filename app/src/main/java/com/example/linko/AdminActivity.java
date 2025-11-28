@@ -118,6 +118,16 @@ public class AdminActivity extends AppCompatActivity {
         LinearLayoutManager organizerLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         organizersRecyclerView.setLayoutManager(organizerLayoutManager);
 
+        // notif recycler view setup
+        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
+        notificationLogsRecyclerView.setAdapter(notificationsRecyclerAdapter);
+
+        LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        notificationLogsRecyclerView.setLayoutManager(notificationsLayoutManager);
+
+        db = FirebaseFirestore.getInstance();
+        notifsRef = db.collection("notifications");
+
         // swipe to delete events
         ItemTouchHelper.SimpleCallback swipeToDeleteEvent = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -140,6 +150,9 @@ public class AdminActivity extends AppCompatActivity {
                         originalEventsList.remove(eventToDelete);
                         allEventPostersList.remove(eventToDelete);
                         originalEventPostersList.remove(eventToDelete);
+
+                        notificationsList.removeIf(notif -> notif.getEventId().equals(eventToDelete.getEventId()));
+                        notificationsRecyclerAdapter.notifyDataSetChanged();
                         eventPostersRecyclerAdapter.notifyDataSetChanged();
                         eventRecyclerAdapter.notifyDataSetChanged();
                     }
@@ -172,7 +185,6 @@ public class AdminActivity extends AppCompatActivity {
                 EventDatabaseHandler deleteHelper = new EventDatabaseHandler();
 
                 // delete all events that have the organizer's id as their owner
-                db = FirebaseFirestore.getInstance();
                 eventsRef = db.collection("events");
                 eventsRef.get().addOnSuccessListener(query -> {
                     for (QueryDocumentSnapshot snapshot : query) {
@@ -186,6 +198,9 @@ public class AdminActivity extends AppCompatActivity {
                                     originalEventsList.remove(eventToDelete);
                                     allEventPostersList.remove(eventToDelete);
                                     originalEventPostersList.remove(eventToDelete);
+
+                                    notificationsList.removeIf(notif -> notif.getEventId().equals(eventToDelete.getEventId()));
+                                    notificationsRecyclerAdapter.notifyDataSetChanged();
                                     eventPostersRecyclerAdapter.notifyDataSetChanged();
                                     eventRecyclerAdapter.notifyDataSetChanged();
                                 }
@@ -360,6 +375,9 @@ public class AdminActivity extends AppCompatActivity {
                                     originalEventsList.remove(eventToDelete);
                                     allEventPostersList.remove(eventToDelete);
                                     originalEventPostersList.remove(eventToDelete);
+                                    notificationsList.removeIf(notif -> notif.getEventId().equals(eventToDelete.getEventId()));
+                                    notificationsRecyclerAdapter.notifyDataSetChanged();
+
                                     eventPostersRecyclerAdapter.notifyDataSetChanged();
                                     eventRecyclerAdapter.notifyDataSetChanged();
                                 }
@@ -602,31 +620,12 @@ public class AdminActivity extends AppCompatActivity {
         });
 
         // notification logs setup
-        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
-        notificationLogsRecyclerView.setAdapter(notificationsRecyclerAdapter);
-
-        LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        notificationLogsRecyclerView.setLayoutManager(notificationsLayoutManager);
-
-        notifsRef = db.collection("notifications");
-
-        notifsRef.addSnapshotListener((value, error) -> {
-            if (isFinishing() || isDestroyed()) {
-                return;
-            }
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
-            if (value != null && !value.isEmpty()) {
-                Log.d("firebase", "checking documents");
-
-                notificationsList.clear();
-
-                for (QueryDocumentSnapshot snapshot : value) {
-                    UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
-                    notificationsList.add(notificationToAdd);
-                    notificationsRecyclerAdapter.notifyDataSetChanged();
-                }
+        notifsRef.get().addOnSuccessListener(query -> {
+            notificationsList.clear();
+            for (QueryDocumentSnapshot snapshot : query) {
+                UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
+                notificationsList.add(notificationToAdd);
+                notificationsRecyclerAdapter.notifyDataSetChanged();
             }
         });
 

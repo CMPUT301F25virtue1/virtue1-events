@@ -381,7 +381,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
             Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerNotificationsActivity.class);
             intent.putExtra("listToNotify", (Serializable) totalEntrantsList);
-            intent.putExtra("event", eventReceived);
+            intent.putExtra("eventId", eventIdReceived);
             startActivity(intent);
         });
 
@@ -392,7 +392,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
 
             Intent intent = new Intent(OrganizerEventDetailsActivity.this, OrganizerNotificationsActivity.class);
-            intent.putExtra("event", eventReceived);
+            intent.putExtra("eventId", eventIdReceived);
 
             if (currentClicked == 0) {
                 intent.putExtra("listToNotify", (Serializable) invitedEntrantsList);
