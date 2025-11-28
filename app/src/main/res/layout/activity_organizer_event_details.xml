@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_event"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
 
         <TextView
@@ -312,7 +312,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/rounded_bottom_light_blue_input_shape"
-                android:padding="5dp"
+                android:padding="8dp"
                 android:text="You have no event description."
                 android:textColor="@color/darkestBlue"
                 android:textSize="16sp" />
@@ -321,8 +321,9 @@
                 android:id="@+id/image_event_poster"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/rounded_bottom_white"
-                android:visibility="gone" />
+                android:background="@drawable/rounded_bottom_light_blue_input_shape"
+                android:visibility="gone"
+                tools:visibility="gone" />
 
             <TextView
                 android:id="@+id/text_event_guidelines"
@@ -330,7 +331,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_bottom_light_blue_input_shape"
-                android:padding="5dp"
+                android:padding="8dp"
                 android:text="You have no event guidelines."
                 android:textColor="@color/darkestBlue"
                 android:textSize="16sp"
@@ -382,7 +383,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <Button
             android:id="@+id/button_send_notification"
