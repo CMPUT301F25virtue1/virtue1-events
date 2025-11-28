@@ -502,6 +502,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         });
 
                         // NOTIFICATIONS FOR THOSE NOT INVITED
+                        if(usersNotInvited.isEmpty()) {
+                            return;
+                        }
                         DocumentReference notInvitedDocRef = notifsRef.document();
                         String notInvitedNotifId = notInvitedDocRef.getId();
                         UserNotification notInvitedNotificationToSend = new UserNotification(notInvitedNotifId, eventReceived.getEventId(), "You have not received an invitation.", "not_invited");
