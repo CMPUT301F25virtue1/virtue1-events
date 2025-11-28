@@ -312,7 +312,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         });
 
         backButton.setOnClickListener(v -> {
-            startActivity(new Intent(OrganizerEventDetailsActivity.this, MyEventsActivity.class));
             finish();
         });
 
@@ -620,7 +619,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
                 DocumentReference docRef = notifsRef.document();
                 String notifId = docRef.getId();
-                UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), "Your invitation has been cancelled", "cancelled");
+                UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), "Your invitation has been cancelled.", "cancelled");
                 // add cancelled notif to db
                 docRef.set(notificationToSend).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

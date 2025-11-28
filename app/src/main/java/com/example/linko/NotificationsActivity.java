@@ -100,9 +100,7 @@ public class NotificationsActivity extends AppCompatActivity {
                 public void eventFetch(Event event) {
                     Intent intent = new Intent(NotificationsActivity.this, EventDetailsActivity.class);
                     intent.putExtra("eventId", event.getEventId());
-                    intent.putExtra("activity", "notifications");
                     startActivity(intent);
-                    finish();
                 }
 
                 @Override

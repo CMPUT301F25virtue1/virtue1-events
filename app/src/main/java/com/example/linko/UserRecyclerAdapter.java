@@ -1,6 +1,8 @@
 package com.example.linko;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,9 +57,17 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
             holder.userEmail.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.white)));
             holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue));
             holder.card.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerBlue)));
+
+            // https://stackoverflow.com/questions/38182765/how-to-change-card-viewcardcornerradius-programmatically
+            float px = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    5f,
+                    holder.itemView.getContext().getResources().getDisplayMetrics()
+            );
+            holder.card.setRadius(px);
         }
         else {
-            Glide.with(holder.itemView.getContext()).load(user.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_24).into(holder.userProfilePicture);
+            Glide.with(holder.itemView.getContext()).load(user.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_black_24).into(holder.userProfilePicture);
             holder.userProfilePicture.setBackgroundResource(R.drawable.circular_profile);
             holder.userName.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestBlue)));
             holder.userPhoneNumber.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestBlue)));

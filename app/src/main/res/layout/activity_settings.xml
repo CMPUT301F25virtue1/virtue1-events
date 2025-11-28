@@ -137,6 +137,7 @@
             android:id="@+id/silence_notifications_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:cardBackgroundColor="@color/darkRed"
             app:cardCornerRadius="10dp"
             tools:visibility="gone">

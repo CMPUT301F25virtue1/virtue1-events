@@ -86,9 +86,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
 
                             Intent intent = new Intent(ExploreEventsActivity.this, EventDetailsActivity.class);
                             intent.putExtra("eventId", event.getEventId());
-                            intent.putExtra("activity", "exploreEvents");
                             startActivity(intent);
-                            finish();
                         }
 
                         @Override
@@ -175,9 +173,7 @@ public class ExploreEventsActivity extends AppCompatActivity {
             }
             Intent intent = new Intent(this, EventDetailsActivity.class);
             intent.putExtra("eventId", clickedEvent.getEventId());
-            intent.putExtra("activity", "exploreEvents");
             startActivity(intent);
-            finish();
         });
 
         ImageView qrScanButton = findViewById(R.id.button_qr_scanner);

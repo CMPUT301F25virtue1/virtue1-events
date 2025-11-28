@@ -69,7 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
             if (data != null && data.getData() != null) {
                 imageUri = data.getData();
-                Glide.with(SignUpActivity.this).load(imageUri).circleCrop().into(imageProfile);
+                Glide.with(SignUpActivity.this).load(imageUri).circleCrop().placeholder(R.drawable.outline_person_black_24).into(imageProfile);
             }
         }
     }

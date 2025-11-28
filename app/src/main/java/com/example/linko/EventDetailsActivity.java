@@ -169,7 +169,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             // if registration has ended, but event start time has not, still let the user leave waitlist
             if (eventReceived.getRegistrationEnd().before(now) && eventReceived.getEventTime().after(now)) {
                 changeUserWaitlist();
-                startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
                 finish();
                 Toast.makeText(EventDetailsActivity.this, "You have left the waitlist after the registration deadline. You cannot rejoin.", Toast.LENGTH_LONG).show();
                 return;
@@ -312,16 +311,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         backButton.setOnClickListener(v -> {
-            String activityFrom = getIntent().getStringExtra("activity");
-            if (activityFrom.equals("exploreEvents")) {
-                startActivity(new Intent(EventDetailsActivity.this, ExploreEventsActivity.class));
-            }
-            else if (activityFrom.equals("myEvents")) {
-                startActivity(new Intent(EventDetailsActivity.this, MyEventsActivity.class));
-            }
-            else if (activityFrom.equals("notifications")) {
-                startActivity(new Intent(EventDetailsActivity.this, NotificationsActivity.class));
-            }
             finish();
         });
     }

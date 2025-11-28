@@ -71,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
             userName.setText(name);
             userEmail.setText(email);
             userPhoneNumber.setText(number);
-            Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_24).into(userProfile);
+            Glide.with(ProfileActivity.this).load(currentUser.getProfileUrl()).circleCrop().placeholder(R.drawable.outline_person_black_24).into(userProfile);
 
             // get events from db
             FirebaseFirestore db = FirebaseFirestore.getInstance();

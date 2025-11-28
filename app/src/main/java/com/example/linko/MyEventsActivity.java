@@ -181,16 +181,13 @@ public class MyEventsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, OrganizerEventDetailsActivity.class);
             intent.putExtra("eventId", clickedEvent.getEventId());
             startActivity(intent);
-            finish();
         });
 
         registeredEventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = registeredEventsList.get(position);
             Intent intent = new Intent(this, EventDetailsActivity.class);
             intent.putExtra("eventId", clickedEvent.getEventId());
-            intent.putExtra("activity", "myEvents");
             startActivity(intent);
-            finish();
         });
         navigationListener(this);
 
