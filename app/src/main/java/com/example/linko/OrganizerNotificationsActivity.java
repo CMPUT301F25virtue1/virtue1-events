@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -65,7 +66,7 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
                     Log.e("notification", "Error adding notification to database", task.getException());
                 }
             });
-
+            Toast.makeText(OrganizerNotificationsActivity.this, "Successfully sent notifications!", Toast.LENGTH_SHORT).show();
             finish();
         });
 
