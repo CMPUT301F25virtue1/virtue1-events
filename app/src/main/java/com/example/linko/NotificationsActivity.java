@@ -46,7 +46,7 @@ public class NotificationsActivity extends AppCompatActivity {
         TextView noNotifications = findViewById(R.id.text_no_notifications);
 
         notificationsList = new ArrayList<>();
-        notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
+        notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList, false);
         notificationsRecyclerView.setAdapter(notificationsRecyclerAdapter);
 
         LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -115,9 +115,6 @@ public class NotificationsActivity extends AppCompatActivity {
         // https://developer.android.com/training/permissions/requesting
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             // when the user is in the app, start sending out notifs if they have any (this also listens if a notif is sent out while the user is already in the app)
-            Intent serviceIntent = new Intent(this, NotificationListenerService.class);
-            ContextCompat.startForegroundService(this, serviceIntent);
-
             // update the notification boolean in the database if the user enabled it OUT of the app
             new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
                 @Override
@@ -186,9 +183,7 @@ public class NotificationsActivity extends AppCompatActivity {
                             new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
                                 @Override
                                 public void userAdd() {
-                                    // start the notification listener, which sends the local notifications
-                                    Intent serviceIntent = new Intent(NotificationsActivity.this, NotificationListenerService.class);
-                                    ContextCompat.startForegroundService(NotificationsActivity.this, serviceIntent);
+
                                 }
 
                                 @Override

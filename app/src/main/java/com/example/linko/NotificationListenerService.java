@@ -55,6 +55,9 @@ public class NotificationListenerService extends Service {
                 new UserDatabaseHandler().getCurrentUser(NotificationListenerService.this, new UserDatabaseHandler.UserFetched() {
                     @Override
                     public void userLoaded(User user) {
+                        if (user == null) {
+                            return;
+                        }
                         Log.d("notiftest", "loaded user!");
 
                         notifsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -144,7 +147,7 @@ public class NotificationListenerService extends Service {
                 .setContentText(message)
                 .setSmallIcon(R.drawable.outline_notifications_24)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build();
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

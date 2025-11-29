@@ -119,7 +119,7 @@ public class AdminActivity extends AppCompatActivity {
         organizersRecyclerView.setLayoutManager(organizerLayoutManager);
 
         // notif recycler view setup
-        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
+        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList, true);
         notificationLogsRecyclerView.setAdapter(notificationsRecyclerAdapter);
 
         LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
