@@ -332,7 +332,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 Log.d("eventReceived", "removing entrant from waitlist");
 
                 eventReceived.getEntrants().remove(currentUser.getUserId());
-
+                eventReceived.getEntrantLocations().remove(currentUser.getUserId());
                 EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
                 eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
                     @Override
@@ -367,18 +367,30 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 userEventHistory.add(eventReceived.getEventId());
                                             }
 
-                                            EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
-                                            eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                                            // update user event list
+                                            new UserDatabaseHandler().addUser(currentUser, new UserDatabaseHandler.UserAdded() {
                                                 @Override
-                                                public void eventUpdate() {
-                                                    Log.d("eventReceived", eventReceived.getEntrants().toString());
-                                                    Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
-                                                    checkUserRegistered();
+                                                public void userAdd() {
+                                                    // update event
+                                                    EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+                                                    eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                                                        @Override
+                                                        public void eventUpdate() {
+                                                            Log.d("eventReceived", eventReceived.getEntrants().toString());
+                                                            Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
+                                                            checkUserRegistered();
+                                                        }
+
+                                                        @Override
+                                                        public void eventUpdateFailed(Exception e) {
+                                                            Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
                                                 }
 
                                                 @Override
-                                                public void eventUpdateFailed(Exception e) {
-                                                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                public void userFailedToAdd(Exception e) {
+
                                                 }
                                             });
                                         }
@@ -397,18 +409,30 @@ public class EventDetailsActivity extends AppCompatActivity {
                         userEventHistory.add(eventReceived.getEventId());
                     }
 
-                    EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
-                    eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                    // update user event list
+                    new UserDatabaseHandler().addUser(currentUser, new UserDatabaseHandler.UserAdded() {
                         @Override
-                        public void eventUpdate() {
-                            Log.d("eventReceived", eventReceived.getEntrants().toString());
-                            Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
-                            checkUserRegistered();
+                        public void userAdd() {
+                            // update event
+                            EventDatabaseHandler eventDatabaseHandler = new EventDatabaseHandler();
+                            eventDatabaseHandler.update(eventReceived, new EventDatabaseHandler.EventUpdated() {
+                                @Override
+                                public void eventUpdate() {
+                                    Log.d("eventReceived", eventReceived.getEntrants().toString());
+                                    Toast.makeText(EventDetailsActivity.this, "Successfully joined the waitlist!", Toast.LENGTH_SHORT).show();
+                                    checkUserRegistered();
+                                }
+
+                                @Override
+                                public void eventUpdateFailed(Exception e) {
+                                    Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
 
                         @Override
-                        public void eventUpdateFailed(Exception e) {
-                            Toast.makeText(EventDetailsActivity.this, "Error updating waitlist: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        public void userFailedToAdd(Exception e) {
+
                         }
                     });
                 }
