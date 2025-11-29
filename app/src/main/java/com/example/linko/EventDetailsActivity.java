@@ -150,7 +150,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             Integer eventEntrantLimit = eventReceived.getEntrantLimit();
             if (eventEntrantLimit != null) {
                 if (eventReceived.getEntrants().size() >= eventEntrantLimit) {
-                    Toast.makeText(EventDetailsActivity.this, "This event's entrant limit has been reached.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventDetailsActivity.this, "This event's entrant limit has been reached.", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }

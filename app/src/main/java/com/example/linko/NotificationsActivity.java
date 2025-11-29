@@ -173,7 +173,7 @@ public class NotificationsActivity extends AppCompatActivity {
                         }
                     });
                 }  else {
-                    Toast.makeText(NotificationsActivity.this, "You will not receive any notifications.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(NotificationsActivity.this, "You will not receive any notifications.", Toast.LENGTH_SHORT).show();
 
                     // update the notification boolean in the database
                     new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
