@@ -214,7 +214,7 @@ public class AdminActivity extends AppCompatActivity {
                     // remove organizer
                     allOrganizerList.remove(organizerToDelete);
                     organizerRecyclerAdapter.notifyDataSetChanged();
-                    Toast.makeText(AdminActivity.this, "Organizer's events deleted!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdminActivity.this, "Organizer's events successfully deleted!", Toast.LENGTH_SHORT).show();
 
                 }).addOnFailureListener(e -> {
                     Log.e("Firestore", "Error fetching events", e);
@@ -494,7 +494,7 @@ public class AdminActivity extends AppCompatActivity {
                     Log.e("Admin", "event update failed");
                 }
             });
-            Toast.makeText(AdminActivity.this, "Event poster deleted!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AdminActivity.this, "Event poster successfully deleted!", Toast.LENGTH_SHORT).show();
 
             allEventsList.set(allEventsList.indexOf(clickedEvent), clickedEvent);
             originalEventsList.set(originalEventsList.indexOf(clickedEvent), clickedEvent);
@@ -535,7 +535,7 @@ public class AdminActivity extends AppCompatActivity {
 
                 }
             });
-            Toast.makeText(AdminActivity.this, "User profile picture deleted!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AdminActivity.this, "Profile picture successfully deleted!", Toast.LENGTH_SHORT).show();
 
             allProfilesList.set(allProfilesList.indexOf(clickedUser), clickedUser);
             originalProfilesList.set(originalProfilesList.indexOf(clickedUser), clickedUser);
