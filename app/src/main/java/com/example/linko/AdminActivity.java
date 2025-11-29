@@ -145,7 +145,7 @@ public class AdminActivity extends AppCompatActivity {
                 deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
                     @Override
                     public void eventDelete() {
-                        Toast.makeText(AdminActivity.this, "Events successfully deleted!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminActivity.this, "Event successfully deleted!", Toast.LENGTH_SHORT).show();
                         allEventsList.remove(eventToDelete);
                         originalEventsList.remove(eventToDelete);
                         allEventPostersList.remove(eventToDelete);
@@ -214,7 +214,7 @@ public class AdminActivity extends AppCompatActivity {
                     // remove organizer
                     allOrganizerList.remove(organizerToDelete);
                     organizerRecyclerAdapter.notifyDataSetChanged();
-                    Toast.makeText(AdminActivity.this, "Organizer deleted!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdminActivity.this, "Organizer's events deleted!", Toast.LENGTH_SHORT).show();
 
                 }).addOnFailureListener(e -> {
                     Log.e("Firestore", "Error fetching events", e);
