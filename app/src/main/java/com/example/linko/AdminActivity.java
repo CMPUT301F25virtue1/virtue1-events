@@ -137,13 +137,14 @@ public class AdminActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getBindingAdapterPosition();
+
                 ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("event");
                 confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
                     if (!deleteConfirmed) {
                         eventRecyclerAdapter.notifyDataSetChanged();
                         return;
                     }
-                    int position = viewHolder.getBindingAdapterPosition();
 
                     Event eventToDelete = allEventsList.get(position);
                     EventDatabaseHandler deleteHelper = new EventDatabaseHandler();
@@ -185,13 +186,14 @@ public class AdminActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getBindingAdapterPosition();
+
                 ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("organizer");
                 confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
                     if (!deleteConfirmed) {
                         organizerRecyclerAdapter.notifyDataSetChanged();
                         return;
                     }
-                    int position = viewHolder.getBindingAdapterPosition();
 
                     User organizerToDelete = allOrganizerList.get(position);
                     String organizerId = organizerToDelete.getUserId();

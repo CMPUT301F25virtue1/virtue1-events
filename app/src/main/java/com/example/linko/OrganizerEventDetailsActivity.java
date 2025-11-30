@@ -617,13 +617,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int pos = viewHolder.getBindingAdapterPosition();
+
                 ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("cancelEntrant");
                 confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
                     if (!deleteConfirmed) {
                         invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
                         return;
                     }
-                    int pos = viewHolder.getAbsoluteAdapterPosition();
                     User user = invitedEntrantsList.get(pos);
 
                     invitedEntrantsList.remove(user);
@@ -634,7 +635,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     eventReceived.getCancelledEntrants().add(user.getUserId());
                     eventReceived.getEntrantLocations().remove(user.getUserId());
 
-                    FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "entrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants());
+                    FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "entrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants(), "entrantLocations", eventReceived.getEntrantLocations());
 
                     Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
 
