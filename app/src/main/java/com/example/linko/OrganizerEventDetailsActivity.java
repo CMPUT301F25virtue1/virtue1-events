@@ -241,7 +241,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         if (totalEntrantsList.isEmpty()) {
                             noEntrants.setVisibility(View.VISIBLE);
                             entrantsRecyclerView.setVisibility(View.GONE);
-                            exportCsvButton.setAlpha(0.5f);
                             sendNotificationAll.setAlpha(0.5f);
                             entrantLocationButton.setAlpha(0.5f);
 
@@ -275,6 +274,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         } else {
                             sendNotificationSystem.setAlpha(1f);
                         }
+
+                        if (signedUpEntrantsList.isEmpty()) {
+                            exportCsvButton.setAlpha(0.5f);
+                        }
+                        else {
+                            exportCsvButton.setAlpha(1f);
+                        }
+
                         entrantsUserRecyclerAdapter.notifyDataSetChanged();
                         invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
                         signedUpEntrantsUserRecyclerAdapter.notifyDataSetChanged();
@@ -330,7 +337,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invitedEntrantsRecyclerView.setVisibility(View.VISIBLE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.GONE);
-
+            exportCsvButton.setVisibility(View.GONE);
             if ((currentClicked == 0 && invitedEntrantsList.isEmpty()) || (currentClicked == 1 && signedUpEntrantsList.isEmpty()) || (currentClicked == 2 && cancelledEntrantsList.isEmpty())) {
                 sendNotificationSystem.setAlpha(0.5f);
             }
@@ -347,12 +354,20 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.VISIBLE);
             cancelledEntrantsRecyclerView.setVisibility(View.GONE);
+            exportCsvButton.setVisibility(View.VISIBLE);
 
             if ((currentClicked == 0 && invitedEntrantsList.isEmpty()) || (currentClicked == 1 && signedUpEntrantsList.isEmpty()) || (currentClicked == 2 && cancelledEntrantsList.isEmpty())) {
                 sendNotificationSystem.setAlpha(0.5f);
             }
             else {
                 sendNotificationSystem.setAlpha(1f);
+            }
+
+            if (signedUpEntrantsList.isEmpty()) {
+                exportCsvButton.setAlpha(0.5f);
+            }
+            else {
+                exportCsvButton.setAlpha(1f);
             }
         });
 
@@ -364,6 +379,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             invitedEntrantsRecyclerView.setVisibility(View.GONE);
             signedUpEntrantsRecyclerView.setVisibility(View.GONE);
             cancelledEntrantsRecyclerView.setVisibility(View.VISIBLE);
+            exportCsvButton.setVisibility(View.GONE);
 
             if ((currentClicked == 0 && invitedEntrantsList.isEmpty()) || (currentClicked == 1 && signedUpEntrantsList.isEmpty()) || (currentClicked == 2 && cancelledEntrantsList.isEmpty())) {
                 sendNotificationSystem.setAlpha(0.5f);
@@ -411,7 +427,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         // export csv button
         exportCsvButton.setOnClickListener(v -> {
-            if (totalEntrantsList.isEmpty()) {
+            if (signedUpEntrantsList.isEmpty()) {
                 Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -601,109 +617,115 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int pos = viewHolder.getAbsoluteAdapterPosition();
-                User user = invitedEntrantsList.get(pos);
-
-                invitedEntrantsList.remove(user);
-                invitedEntrantsUserRecyclerAdapter.notifyItemRemoved(pos);
-
-                eventReceived.getInvitedEntrants().remove(user.getUserId());
-                eventReceived.getEntrants().remove(user.getUserId());
-                eventReceived.getCancelledEntrants().add(user.getUserId());
-                eventReceived.getEntrantLocations().remove(user.getUserId());
-
-                FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "entrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants());
-
-                Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
-
-                if (!user.isNotificationsEnabled()) {
-                    return;
-                }
-
-                DocumentReference docRef = notifsRef.document();
-                String notifId = docRef.getId();
-                UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), "Your invitation has been cancelled.", "cancelled");
-                // add cancelled notif to db
-                docRef.set(notificationToSend).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // add notif to the users of the list received
-
-                        user.getNotificationList().add(notifId);
-                        user.getLocalAndroidNotificationlist().add(notifId);
-                        new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
-                            @Override
-                            public void userAdd() {
-                                Log.d("notification", "successfully added to user list in database");
-                            }
-
-                            @Override
-                            public void userFailedToAdd(Exception e) {
-                                Log.e("notification", "error adding notif to user list in database");
-                            }
-                        });
+                ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("cancelEntrant");
+                confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
+                    if (!deleteConfirmed) {
+                        invitedEntrantsUserRecyclerAdapter.notifyDataSetChanged();
+                        return;
                     }
-                    else {
-                        Log.e("notification", "Error adding notification to database", task.getException());
+                    int pos = viewHolder.getAbsoluteAdapterPosition();
+                    User user = invitedEntrantsList.get(pos);
+
+                    invitedEntrantsList.remove(user);
+                    invitedEntrantsUserRecyclerAdapter.notifyItemRemoved(pos);
+
+                    eventReceived.getInvitedEntrants().remove(user.getUserId());
+                    eventReceived.getEntrants().remove(user.getUserId());
+                    eventReceived.getCancelledEntrants().add(user.getUserId());
+                    eventReceived.getEntrantLocations().remove(user.getUserId());
+
+                    FirebaseFirestore.getInstance().collection("events").document(eventReceived.getEventId()).update("invitedEntrants", eventReceived.getInvitedEntrants(), "entrants", eventReceived.getEntrants(), "cancelledEntrants", eventReceived.getCancelledEntrants());
+
+                    Toast.makeText(OrganizerEventDetailsActivity.this, "Removed user " + user.getFirstName() + " " + user.getLastName() + " from invited entrants.", Toast.LENGTH_SHORT).show();
+
+                    if (!user.isNotificationsEnabled()) {
+                        return;
                     }
-                });
 
-                // now sample a new entrant and send the new invite
-                SampleButtonHandler handler = new SampleButtonHandler();
+                    DocumentReference docRef = notifsRef.document();
+                    String notifId = docRef.getId();
+                    UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), "Your invitation has been cancelled.", "cancelled");
+                    // add cancelled notif to db
+                    docRef.set(notificationToSend).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // add notif to the users of the list received
 
-                handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
-                    @Override
-                    public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
-                        // sampling handler handles the event sampling updates itself
-
-                        // now just send the invitation to the person that just got sampled
-                        DocumentReference invitedDocRef = notifsRef.document();
-                        String invitedNotifId = invitedDocRef.getId();
-                        UserNotification invitedNotificationToSend = new UserNotification(invitedNotifId, eventReceived.getEventId(), "You have received an invitation!", "invited");
-                        // add notif to db
-                        invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                // add notif to the users of the list received
-                                for (String user : newInvited) {
-                                    new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
-                                        @Override
-                                        public void userFetch(User user) {
-                                            if (!user.isNotificationsEnabled()) {
-                                                return;
-                                            }
-                                            user.getNotificationList().add(invitedNotifId);
-                                            user.getLocalAndroidNotificationlist().add(invitedNotifId);
-                                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
-                                                @Override
-                                                public void userAdd() {
-                                                    Log.d("notification", "successfully added to user list in database");
-                                                }
-
-                                                @Override
-                                                public void userFailedToAdd(Exception e) {
-                                                    Log.e("notification", "error adding notif to user list in database");
-                                                }
-                                            });
-                                        }
-
-                                        @Override
-                                        public void userFetchFailed(Exception e) {
-
-                                        }
-                                    });
-
+                            user.getNotificationList().add(notifId);
+                            user.getLocalAndroidNotificationlist().add(notifId);
+                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                @Override
+                                public void userAdd() {
+                                    Log.d("notification", "successfully added to user list in database");
                                 }
-                            }
-                            else {
-                                Log.e("notification", "Error adding notification to database", task.getException());
-                            }
-                        });
-                    }
 
-                    @Override
-                    public void onFail(String error) {
+                                @Override
+                                public void userFailedToAdd(Exception e) {
+                                    Log.e("notification", "error adding notif to user list in database");
+                                }
+                            });
+                        } else {
+                            Log.e("notification", "Error adding notification to database", task.getException());
+                        }
+                    });
 
-                    }
+                    // now sample a new entrant and send the new invite
+                    SampleButtonHandler handler = new SampleButtonHandler();
+
+                    handler.sampling(eventReceived, new SampleButtonHandler.SampleCallback() {
+                        @Override
+                        public void onSuccess(int freeSpace, List<String> newInvited, List<String> invited, List<String> signedUp) {
+                            // sampling handler handles the event sampling updates itself
+
+                            // now just send the invitation to the person that just got sampled
+                            DocumentReference invitedDocRef = notifsRef.document();
+                            String invitedNotifId = invitedDocRef.getId();
+                            UserNotification invitedNotificationToSend = new UserNotification(invitedNotifId, eventReceived.getEventId(), "You have received an invitation!", "invited");
+                            // add notif to db
+                            invitedDocRef.set(invitedNotificationToSend).addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    // add notif to the users of the list received
+                                    for (String user : newInvited) {
+                                        new UserDatabaseHandler().fetchUserById(user, new UserDatabaseHandler.UserFetchedFromId() {
+                                            @Override
+                                            public void userFetch(User user) {
+                                                if (!user.isNotificationsEnabled()) {
+                                                    return;
+                                                }
+                                                user.getNotificationList().add(invitedNotifId);
+                                                user.getLocalAndroidNotificationlist().add(invitedNotifId);
+                                                new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                                    @Override
+                                                    public void userAdd() {
+                                                        Log.d("notification", "successfully added to user list in database");
+                                                    }
+
+                                                    @Override
+                                                    public void userFailedToAdd(Exception e) {
+                                                        Log.e("notification", "error adding notif to user list in database");
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void userFetchFailed(Exception e) {
+
+                                            }
+                                        });
+
+                                    }
+                                } else {
+                                    Log.e("notification", "Error adding notification to database", task.getException());
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFail(String error) {
+
+                        }
+                    });
                 });
+                confirmationDialog.show(getSupportFragmentManager(), "confirmationDialog");
             }
         };
         new ItemTouchHelper(simpleCallback).attachToRecyclerView(invitedEntrantsRecyclerView);
@@ -745,7 +767,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             if (data != null && data.getData() != null) {
                 // https://stackoverflow.com/questions/74006079/android-create-file-using-action-create-document-then-write-to-file?utm_source=chatgpt.com
                 Uri csvUri = data.getData();
-                String csv = csvBuilder(totalEntrantsList);
+                String csv = csvBuilder(signedUpEntrantsList);
                 try {
                     OutputStream os = getContentResolver().openOutputStream(csvUri);
                     Writer writer = new OutputStreamWriter(os);
