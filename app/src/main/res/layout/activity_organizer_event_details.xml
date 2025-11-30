@@ -452,40 +452,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
         tools:visibility="visible">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_invited_entrants"
+        <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/rounded_bottom_light_blue_input_shape"
-            android:paddingTop="5dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited"
-            tools:visibility="visible" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_signed_up_entrants"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/rounded_bottom_light_blue_input_shape"
-            android:paddingTop="5dp"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_invited" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_invited_entrants"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:paddingTop="5dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/button_send_notification_system"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"
+            tools:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_signed_up_entrants"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:paddingTop="5dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/button_export_csv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_cancelled_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_bottom_light_blue_input_shape"
             android:paddingTop="5dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_send_notification_system"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_invited" />
@@ -518,7 +524,8 @@
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toTopOf="@id/button_send_notification_system"
             app:layout_constraintEnd_toEndOf="@+id/button_send_notification_system"
-            app:layout_constraintStart_toStartOf="@+id/button_send_notification_system" />
+            app:layout_constraintStart_toStartOf="@+id/button_send_notification_system"
+            tools:visibility="gone" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container_not_sampled"
