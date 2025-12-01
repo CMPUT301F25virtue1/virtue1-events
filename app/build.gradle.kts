@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation(files("C:/Users/Kimi/AppData/Local/Android/Sdk/platforms/android-36/android.jar"))
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")

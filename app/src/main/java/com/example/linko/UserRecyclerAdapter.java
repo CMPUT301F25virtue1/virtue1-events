@@ -101,5 +101,4 @@ public class UserRecyclerAdapter extends RecyclerView.Adapter<UserRecyclerAdapte
             background = itemView.findViewById(R.id.backgroundChange);
         }
     }
-
 }

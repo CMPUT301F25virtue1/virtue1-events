@@ -95,6 +95,10 @@ public class SettingsActivity extends AppCompatActivity {
         navigationListener(this);
     }
 
+    /**
+     *  Method that updates the users notification preferences
+     * @param enabled   A boolean for seeing if the user wants notifications enabled.
+     */
     private void updateNotificationSettings(boolean enabled) {
         if (userRef != null) {
             userRef.update("notificationsEnabled", enabled)

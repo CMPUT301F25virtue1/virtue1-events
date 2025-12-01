@@ -59,8 +59,6 @@ public class OrganizerEventDetailsActivityTest {
         FirebaseFirestore.getInstance().useEmulator(androidLocalhost, 4400);
     }
 
-
-
     @Before
     public void testEventMaker() {
 

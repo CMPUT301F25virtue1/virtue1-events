@@ -78,6 +78,7 @@ public class EventDetailsActivityTest {
         testerEvent.setEventPosterURL(null);
     }
 
+
 //    @After
 //    public void tearDown() {
 //        String projectId = "linko-234f5"; // CHANGE TO YOUR PROJECT ID - Can be found under Project Settings in the Firebase Console
