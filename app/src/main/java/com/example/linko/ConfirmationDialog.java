@@ -12,6 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+/**
+ * This class contains the logic for the ui interactions with tasks that need extra confirmation.
+ * Used in cancelling entrants and all admin deletion tasks.
+ */
 public class ConfirmationDialog extends DialogFragment {
     private OnConfirmedListener listener;
     private String toDo;

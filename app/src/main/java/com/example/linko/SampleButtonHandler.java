@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ *  Handles the logic for randomly sampling waitlisted entrants in the OrganizerEventDetails activity
+ */
 public class SampleButtonHandler {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -22,6 +25,7 @@ public class SampleButtonHandler {
             return;
         }
 
+
         List<String> invited = new ArrayList<>(event.getInvitedEntrants());
         List<String> signedUp = new ArrayList<>(event.getSignedUpEntrants());
         List<String> cancelled = new ArrayList<>(event.getCancelledEntrants());
@@ -34,9 +38,10 @@ public class SampleButtonHandler {
             return;
         }
 
-        //Event capacity - num of invited - num of signed up = amount of free space.
-        // to calc how many more entrants to invite
-        int freeSpace = event.getEventCapacity() - (signedUp.size() + invited.size());
+        //Event capacity - num of invited = amount of free space. Debating on which to use
+        //Signed up will stop me from sampling if I max out on signed up users even if they dont accept
+        //Invited will allow me to keep sending out invites if sampled users havent accepted.
+        int freeSpace = event.getEventCapacity() - signedUp.size();
 
         if(freeSpace <= 0){
             callback.onFail("Event full");
@@ -55,8 +60,9 @@ public class SampleButtonHandler {
             return;
         }
 
+
         for(int i = freeSpace; i > 0; i--){
-            randomSelector(signedUp, newInvited, invited, okToAdd);
+            randomSelector(newInvited, invited, okToAdd);
         }
 
         db.collection("events").document(event.getEventId()).update("invitedEntrants", invited, "signedUpEntrants", signedUp)
@@ -69,8 +75,17 @@ public class SampleButtonHandler {
 
     }
 
+    /**
+     *  This method contains the logic for the random selector
+     * @param newInvited Adds users to a list of newInvited users. Allows us to keep the two lists separate
+     *                   so if a user declines an invite another user can take their spot without effecting
+     *                   the rest of the invited users
+     * @param invited   The list of invited users
+     * @param okToAdd   A list of entrants that are eligible to be sampled. Entrants are removed from this
+     *                  list once they are sampled.
+     */
     //Random Selector
-    public void randomSelector(List<String> signedUp, List<String> newInvited, List<String> invited, List<String> okToAdd){
+    public void randomSelector(List<String> newInvited, List<String> invited, List<String> okToAdd){
         Random rand = new Random();
 
         if(!okToAdd.isEmpty()) {

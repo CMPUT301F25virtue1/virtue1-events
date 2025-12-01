@@ -16,6 +16,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
+/**
+ * This class contains the logic for sending entrants notification from the organizer of the event
+ * when the organizer clicks the send notifications button in the OrganizerEventDetails activity.
+ *
+ */
 public class OrganizerNotificationsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference notifsRef;
