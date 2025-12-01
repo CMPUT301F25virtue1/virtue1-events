@@ -36,61 +36,14 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class MyEventsActivityTest {
-    // Firestore emulator port
-    static int firestorePort = 8080; // CHANGE IF NEEDED - Depends on your emulator config
-    // Specific address for emulated device to access our localHost
-    static String androidLocalhost = "10.0.2.2";
+public class MyEventsActivityTest extends BaseTestClass{
 
     //Edit Per Class
     @Rule
     public ActivityScenarioRule<MyEventsActivity> activityRule = new ActivityScenarioRule<>(MyEventsActivity.class);
 
-    @BeforeClass
-    public static void setup(){
-        FirebaseFirestore.getInstance().useEmulator(androidLocalhost, 4400);
-    }
-
-    @After
-    public void tearDown() {
-        String projectId = "linko-234f5"; // CHANGE TO YOUR PROJECT ID - Can be found under Project Settings in the Firebase Console
-        URL url = null;
-        try {
-            url = new URL("http://127.0.0.1:" + firestorePort + "/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
-        } catch (MalformedURLException exception) {
-            Log.e("URL Error", Objects.requireNonNull(exception.getMessage()));
-        }
-        HttpURLConnection urlConnection = null;
-        try {
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("DELETE");
-            int response = urlConnection.getResponseCode();
-            Log.i("Response Code", "Response Code: " + response);
-        } catch (IOException exception) {
-            Log.e("IO Error", Objects.requireNonNull(exception.getMessage()));
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-        }
-    }
 
     //NEED MORE FOR ALL FUNCTIONALITY. JUST ADDING SOME FOR NOW TO MAKE SURE ACTIVITY WORKS
-    //Edit per class
-
-    //NEED TO FIGURE OUT HOW TO WORK WITH HIDDEN UI
-//    @Test
-//    public void testUIDisplay() {
-//        onView(withId(R.id.button_registered)).check(matches(isDisplayed()));
-//
-//        onView(withId(R.id.button_organized)).perform(click());
-//        onView(withId(R.id.recycler_organized_events)).check(matches(isDisplayed()));
-//        onView(withId(R.id.text_no_event_organized)).check(matches(isDisplayed()));
-//
-//        onView(withId(R.id.button_organize_event)).check(matches(isDisplayed()));
-//        onView(withId(R.id.recycler_registered_events)).check(matches(isDisplayed()));
-//        onView(withId(R.id.recycler_organized_events)).check(matches(isDisplayed()));
-//    }
 
     @Test
     public void testOrganizedTab() {
@@ -104,11 +57,11 @@ public class MyEventsActivityTest {
 
     }
 
-    //NEED TO FIGURE OUT HOW TO TEST WHEN ANIMATIONS ARE INVOLVED
-//    @Test
-//    public void testOrganizeEventButton() {
-//        onView(withId(R.id.button_organize_event)).perform(click());
-//
-//    }
+
+    @Test
+    public void testSystemTab() {
+        onView(withId(R.id.button_system)).perform(click());
+
+    }
 
 }

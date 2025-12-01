@@ -50,23 +50,45 @@ public class OrganizerEventDetailsActivityTest extends BaseTestClass{
     @Rule
     public ActivityScenarioRule<OrganizerEventDetailsActivity> activityRule = new ActivityScenarioRule<>(OrganizerEventDetailsActivity.class);
 
-    @Before
-    public void testEventMaker() {
+//    @Before
+//    public void testEventMaker() {
+//
+//        testerEvent = new Event();
+//        testerEvent.setEventId("EventId");
+//        testerEvent.setName("Event");
+//        testerEvent.setEventCapacity(50);
+//        testerEvent.setEntrantLimit(50);
+//        testerEvent.setEntrants(new ArrayList<>());
+//        testerEvent.setGeolocationRequired(false);
+//        testerEvent.setEventTime(new Date(System.currentTimeMillis() + 3600000));
+//        testerEvent.setRegistrationStart(new Date(System.currentTimeMillis() - 3600000));
+//        testerEvent.setRegistrationEnd(new Date(System.currentTimeMillis() + 1800000));
+//        testerEvent.setDescription("Test");
+//        testerEvent.setGuidelines("Guidelines");
+//        testerEvent.setOwnerId("OwnerUserId");
+//        testerEvent.setEventPosterURL(null);
+//    }
 
-        testerEvent = new Event();
-        testerEvent.setEventId("EventId");
-        testerEvent.setName("Event");
-        testerEvent.setEventCapacity(50);
-        testerEvent.setEntrantLimit(50);
-        testerEvent.setEntrants(new ArrayList<>());
-        testerEvent.setGeolocationRequired(false);
-        testerEvent.setEventTime(new Date(System.currentTimeMillis() + 3600000));
-        testerEvent.setRegistrationStart(new Date(System.currentTimeMillis() - 3600000));
-        testerEvent.setRegistrationEnd(new Date(System.currentTimeMillis() + 1800000));
-        testerEvent.setDescription("Test");
-        testerEvent.setGuidelines("Guidelines");
-        testerEvent.setOwnerId("OwnerUserId");
-        testerEvent.setEventPosterURL(null);
+    @Test
+    public void testBasicUi(){
+        Intent intent = new Intent(androidx.test.core.app.ApplicationProvider.getApplicationContext(), OrganizerEventDetailsActivity.class);
+        intent.putExtra("eventId", "fake_event_id");
+        try(ActivityScenario<OrganizerEventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.button_event)).check(matches(isDisplayed()));
+            onView(withId(R.id.button_entrants)).check(matches(isDisplayed()));
+            onView(withId(R.id.button_system)).check(matches(isDisplayed()));
+
+            onView(withId(R.id.event_details_container)).check(matches(isDisplayed()));
+
+            onView(withId(R.id.button_entrants)).perform(click());
+            onView(withId(R.id.event_entrants_container)).check(matches(isDisplayed()));
+            onView(withId(R.id.button_system)).perform(click());
+            onView(withId(R.id.system_container)).check(matches(isDisplayed()));
+
+            onView(withId(R.id.sample_button)).check(matches(isDisplayed()));
+
+
+        }
     }
 
 
