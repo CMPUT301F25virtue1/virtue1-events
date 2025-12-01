@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class EditEventActivityTest {
+public class EditEventActivityTest extends BaseTestClass{
 
 
     //Edit Per Class

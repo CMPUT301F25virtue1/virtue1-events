@@ -43,20 +43,13 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class EventDetailsActivityTest {
-//    // Firestore emulator port
-//    static int firestorePort = 8080; // CHANGE IF NEEDED - Depends on your emulator config
-//    // Specific address for emulated device to access our localHost
-//    static String androidLocalhost = "10.0.2.2";
+public class EventDetailsActivityTest extends BaseTestClass{
+
 
     //Edit Per Class
     @Rule
     public ActivityScenarioRule<EventDetailsActivity> activityRule = new ActivityScenarioRule<>(EventDetailsActivity.class);
-//
-//    @BeforeClass
-//    public static void setup(){
-//        FirebaseFirestore.getInstance().useEmulator(androidLocalhost, 4400);
-//    }
+
 
     private Event testerEvent;
     @Before
@@ -78,55 +71,17 @@ public class EventDetailsActivityTest {
         testerEvent.setEventPosterURL(null);
     }
 
+    @Test
+    public void testUIElements(){
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
+        intent.putExtra("eventId", testerEvent.getEventId());
 
-//    @After
-//    public void tearDown() {
-//        String projectId = "linko-234f5"; // CHANGE TO YOUR PROJECT ID - Can be found under Project Settings in the Firebase Console
-//        URL url = null;
-//        try {
-//            url = new URL("http://127.0.0.1:" + firestorePort + "/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
-//        } catch (MalformedURLException exception) {
-//            Log.e("URL Error", Objects.requireNonNull(exception.getMessage()));
-//        }
-//        HttpURLConnection urlConnection = null;
-//        try {
-//            urlConnection = (HttpURLConnection) url.openConnection();
-//            urlConnection.setRequestMethod("DELETE");
-//            int response = urlConnection.getResponseCode();
-//            Log.i("Response Code", "Response Code: " + response);
-//        } catch (IOException exception) {
-//            Log.e("IO Error", Objects.requireNonNull(exception.getMessage()));
-//        } finally {
-//            if (urlConnection != null) {
-//                urlConnection.disconnect();
-//            }
-//        }
-//    }
+        try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)){
+            onView(withId(R.id.button_join_waitlist)).check(matches(isDisplayed()));
+        }
 
-    //NEED MORE FOR ALL FUNCTIONALITY. JUST ADDING SOME FOR NOW TO MAKE SURE ACTIVITY WORKS
-    //Edit per class
+    }
 
-    //ONCE AGAIN WITH THE VISIBILITY
-//    @Test
-//    public void testUIDisplay() {
-//        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
-//        intent.putExtra("clickedEvent", testerEvent);
-//
-//        try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
-//            onView(withId(R.id.text_event_name)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_event_capacity)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_entrant_count)).check(matches(isDisplayed()));
-//            onView(withId(R.id.checkBox)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_event_start_time)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_event_registration_start)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_event_registration_end)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_event_description)).check(matches(isDisplayed()));
-//            onView(withId(R.id.text_event_guidelines)).check(matches(isDisplayed()));
-//            onView(withId(R.id.image_event_poster)).check(matches(isDisplayed()));
-//            onView(withId(R.id.button_join_waitlist)).check(matches(isDisplayed()));
-//            onView(withId(R.id.button_leave_waitlist)).check(matches(isDisplayed()));
-//        }
-//    }
 
 
 }
