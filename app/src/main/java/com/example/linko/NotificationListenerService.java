@@ -28,6 +28,12 @@ import java.util.Collection;
 import java.util.List;
 
 // https://developer.android.com/develop/background-work/services/fgs/declare
+
+/**
+ * This class contains all the logic for the the notification listener. Handles all the logic for
+ * deciding when to display notifications and what happens when a user has notifications turned off.
+ * Also builds the notifications when one happens.
+ */
 public class NotificationListenerService extends Service {
     private   String CHANNEL_ID_FOREGROUND = "LINKOFOREGROUND";
     private String CHANNEL_ID_USER_NOTIFS = "LINKONOTIFICATIONS";
@@ -108,6 +114,10 @@ public class NotificationListenerService extends Service {
         return null;
     }
 
+    /**
+     * Creates the notification channels for the users notifications. Due to how android works,
+     * we need to assign the notifications to a channel (essentially a notification urgency classification.)
+     */
     // https://developer.android.com/develop/ui/views/notifications/channels
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -127,6 +137,10 @@ public class NotificationListenerService extends Service {
         }
     }
 
+    /**
+     * Builds a notification for the foreground channel
+     * @return returns a new, built notification for the foreground channel
+     */
     private Notification buildForegroundNotification() {
         return new NotificationCompat.Builder(this, CHANNEL_ID_FOREGROUND)
                 .setContentTitle("Linko")
@@ -137,6 +151,12 @@ public class NotificationListenerService extends Service {
                 .build();
     }
 
+    /**
+     * Displays the users notifications for them if they have notifications turned on.
+     * @param title The title of the notification
+     * @param message   The message contained within the notification
+     * @param notifId   The Firestore id for the notification
+     */
     private void showUserNotification(String title, String message, int notifId) {
         // if the users notif permissions are off, don't send anything
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {

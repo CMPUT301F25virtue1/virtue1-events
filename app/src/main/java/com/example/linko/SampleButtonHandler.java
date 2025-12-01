@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ *  Handles the logic for randomly sampling waitlisted entrants in the OrganizerEventDetails activity
+ */
 public class SampleButtonHandler {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -59,7 +62,7 @@ public class SampleButtonHandler {
 
 
         for(int i = freeSpace; i > 0; i--){
-            randomSelector(signedUp, newInvited, invited, okToAdd);
+            randomSelector(newInvited, invited, okToAdd);
         }
 
         db.collection("events").document(event.getEventId()).update("invitedEntrants", invited, "signedUpEntrants", signedUp)
@@ -72,8 +75,17 @@ public class SampleButtonHandler {
 
     }
 
+    /**
+     *  This method contains the logic for the random selector
+     * @param newInvited Adds users to a list of newInvited users. Allows us to keep the two lists separate
+     *                   so if a user declines an invite another user can take their spot without effecting
+     *                   the rest of the invited users
+     * @param invited   The list of invited users
+     * @param okToAdd   A list of entrants that are eligible to be sampled. Entrants are removed from this
+     *                  list once they are sampled.
+     */
     //Random Selector
-    public void randomSelector(List<String> signedUp, List<String> newInvited, List<String> invited, List<String> okToAdd){
+    public void randomSelector(List<String> newInvited, List<String> invited, List<String> okToAdd){
         Random rand = new Random();
 
         if(!okToAdd.isEmpty()) {

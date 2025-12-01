@@ -733,6 +733,12 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     // csv export
+
+    /**
+     * Builds the csv of entrants file
+     * @param entrants  List of all the entrants in the event
+     * @return  returns the csv in string format
+     */
     private String csvBuilder(List<User> entrants) {
         StringBuilder csv = new StringBuilder();
         csv.append("First Name,Last Name,Email,Phone Number\n");
@@ -753,6 +759,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         return csv.toString();
     }
 
+    /**
+     *  Method that contains the logic for building the initial csv file
+     */
     private void openFileChooser() {
         Intent documentSaveIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         documentSaveIntent.setType("text/csv");
@@ -785,6 +794,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     *  Allows us to update the OrganizerEventDetails activity whenever we call this
+     */
     private void updateOrganizerEventDetails() {
         eventName.setText(eventReceived.getName());
         Integer eventCapacityNumber = eventReceived.getEventCapacity();
