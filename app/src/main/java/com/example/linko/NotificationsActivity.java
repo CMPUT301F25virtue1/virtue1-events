@@ -4,14 +4,17 @@ import static com.example.linko.NavigationBarHandler.navigationListener;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,7 +46,7 @@ public class NotificationsActivity extends AppCompatActivity {
         TextView noNotifications = findViewById(R.id.text_no_notifications);
 
         notificationsList = new ArrayList<>();
-        notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
+        notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList, false);
         notificationsRecyclerView.setAdapter(notificationsRecyclerAdapter);
 
         LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -54,6 +57,9 @@ public class NotificationsActivity extends AppCompatActivity {
         usersRef = db.collection("users");
 
         usersRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -93,10 +99,8 @@ public class NotificationsActivity extends AppCompatActivity {
                 @Override
                 public void eventFetch(Event event) {
                     Intent intent = new Intent(NotificationsActivity.this, EventDetailsActivity.class);
-                    intent.putExtra("clickedEvent", event);
-                    intent.putExtra("activity", "notifications");
+                    intent.putExtra("eventId", event.getEventId());
                     startActivity(intent);
-                    finish();
                 }
 
                 @Override
@@ -106,21 +110,90 @@ public class NotificationsActivity extends AppCompatActivity {
             });
         });
 
-        // when the user is in the app, start sending out notifs if they have any (this also listens if a notif is sent out while the user is already in the app)
-        Intent serviceIntent = new Intent(this, NotificationListenerService.class);
-        ContextCompat.startForegroundService(this, serviceIntent);
-
 
         // check app notification permissions
         // https://developer.android.com/training/permissions/requesting
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            // when the user is in the app, start sending out notifs if they have any (this also listens if a notif is sent out while the user is already in the app)
+            // update the notification boolean in the database if the user enabled it OUT of the app
+            new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
+                @Override
+                public void userLoaded(User user) {
+                    user.setNotificationsEnabled(true);
+                    new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                        @Override
+                        public void userAdd() {
+                            // start the notification listener, which sends the local notifications
+                            Intent serviceIntent = new Intent(NotificationsActivity.this, NotificationListenerService.class);
+                            ContextCompat.startForegroundService(NotificationsActivity.this, serviceIntent);
+                        }
+
+                        @Override
+                        public void userFailedToAdd(Exception e) {
+
+                        }
+                    });
+                }
+            });
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)) {
+            // if user already denied before, don't do anything
+        } else {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 527);
         }
         navigationListener(this);
     }
 
+    // https://developer.android.com/training/permissions/requesting
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 527:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // update the notification boolean in the database
+                    new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
+                        @Override
+                        public void userLoaded(User user) {
+                            user.setNotificationsEnabled(true);
+                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                @Override
+                                public void userAdd() {
+                                    // start the notification listener, which sends the local notifications
+                                    Intent serviceIntent = new Intent(NotificationsActivity.this, NotificationListenerService.class);
+                                    ContextCompat.startForegroundService(NotificationsActivity.this, serviceIntent);
+                                }
+
+                                @Override
+                                public void userFailedToAdd(Exception e) {
+
+                                }
+                            });
+                        }
+                    });
+                }  else {
+                    Toast.makeText(NotificationsActivity.this, "You will not receive any notifications.", Toast.LENGTH_SHORT).show();
+
+                    // update the notification boolean in the database
+                    new UserDatabaseHandler().getCurrentUser(NotificationsActivity.this, new UserDatabaseHandler.UserFetched() {
+                        @Override
+                        public void userLoaded(User user) {
+                            user.setNotificationsEnabled(false);
+                            new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                @Override
+                                public void userAdd() {
+
+                                }
+
+                                @Override
+                                public void userFailedToAdd(Exception e) {
+
+                                }
+                            });
+                        }
+                    });
+                }
+        }
     }
 }

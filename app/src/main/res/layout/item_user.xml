@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    app:cardCornerRadius="10dp">
+    app:cardBackgroundColor="@color/zxing_transparent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/backgroundChange"
@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/outline_person_24" />
+            app:srcCompat="@drawable/outline_person_black_24" />
 
         <TextView
             android:id="@+id/text_user_name"

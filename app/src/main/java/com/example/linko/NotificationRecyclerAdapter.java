@@ -20,10 +20,11 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
 
     private List<UserNotification> notificationsList;
     private OnItemClickListener listener;
-
     private boolean fromAdmin;
-    public NotificationRecyclerAdapter(List<UserNotification> notificationsList) {
+
+    public NotificationRecyclerAdapter(List<UserNotification> notificationsList, boolean fromAdmin) {
         this.notificationsList = notificationsList;
+        this.fromAdmin = fromAdmin;
     }
 
     @NonNull
@@ -61,9 +62,18 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
             holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkGreen));
             holder.chevron.setVisibility(View.VISIBLE);
         }
+        else if (notification.getType().equals("cancelled")){
+            holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkestRed));
+            holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.blackRed));
+            holder.chevron.setVisibility(View.GONE);
+        }
         else {
             holder.background.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkRed));
             holder.shadow.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.darkerRed));
+            holder.chevron.setVisibility(View.VISIBLE);
+        }
+
+        if (fromAdmin) {
             holder.chevron.setVisibility(View.GONE);
         }
     }

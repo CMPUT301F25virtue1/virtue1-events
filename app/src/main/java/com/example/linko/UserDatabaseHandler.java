@@ -143,7 +143,7 @@ public class UserDatabaseHandler {
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     CollectionReference eventsRef = db.collection("events");
 
-                    // update event lists (ONLY
+                    // update event lists
                     eventsRef.get().addOnCompleteListener(eventsTask -> {
                         if (!eventsTask.isSuccessful() || eventsTask.getResult() == null) {
                             Log.e("Firestore", "Error fetching events", eventsTask.getException());
@@ -178,6 +178,8 @@ public class UserDatabaseHandler {
                                 signedUpEntrants.remove(userId);
                                 event.setSignedUpEntrants(signedUpEntrants);
                             }
+
+                            event.getEntrantLocations().remove(userId);
 
                             EventDatabaseHandler eventUpdateHelper = new EventDatabaseHandler();
                             eventUpdateHelper.update(event, new EventDatabaseHandler.EventUpdated() {

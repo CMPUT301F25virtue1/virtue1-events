@@ -18,29 +18,44 @@ public abstract class NavigationBarHandler {
         ImageView settings = activity.findViewById(R.id.img_settings_icon);
 
         notifications.setOnClickListener(v -> {
+            if (activity.getClass() == NotificationsActivity.class) {
+                return;
+            }
             activity.startActivity(new Intent(activity, NotificationsActivity.class));
             activity.finish();
         });
 
         myEvents.setOnClickListener(v -> {
+            if (activity.getClass() == MyEventsActivity.class) {
+                return;
+            }
             activity.startActivity(new Intent(activity, MyEventsActivity.class));
             activity.finish();
 
         });
 
         exploreEvents.setOnClickListener(v -> {
+            if (activity.getClass() == ExploreEventsActivity.class) {
+                return;
+            }
             activity.startActivity(new Intent(activity, ExploreEventsActivity.class));
             activity.finish();
 
         });
 
         profile.setOnClickListener(v -> {
+            if (activity.getClass() == ProfileActivity.class) {
+                return;
+            }
             activity.startActivity(new Intent(activity, ProfileActivity.class));
             activity.finish();
 
         });
 
         settings.setOnClickListener(v -> {
+            if (activity.getClass() == SettingsActivity.class) {
+                return;
+            }
             activity.startActivity(new Intent(activity, SettingsActivity.class));
             activity.finish();
 

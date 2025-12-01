@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,20 +31,22 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
         EditText customMessage = findViewById(R.id.input_custom_message);
 
         List<User> listToNotify = (List<User>) getIntent().getSerializableExtra("listToNotify");
-        Event eventReceived = (Event) getIntent().getSerializableExtra("event");
-
+        String eventIdReceived = getIntent().getStringExtra("eventId");
         sendNotification.setOnClickListener(v -> {
             db = FirebaseFirestore.getInstance();
             notifsRef = db.collection("notifications");
             DocumentReference docRef = notifsRef.document();
             String notifId = docRef.getId();
             String message = customMessage.getText().toString().trim();
-            UserNotification notificationToSend = new UserNotification(notifId, eventReceived.getEventId(), message, "custom");
+            UserNotification notificationToSend = new UserNotification(notifId, eventIdReceived, message, "custom");
             // add notif to db
             docRef.set(notificationToSend).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     // add notif to the users of the list received
                     for (User user : listToNotify) {
+                        if (!user.isNotificationsEnabled()) {
+                            return;
+                        }
                         user.getNotificationList().add(notifId);
                         user.getLocalAndroidNotificationlist().add(notifId);
                         new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
@@ -63,7 +66,7 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
                     Log.e("notification", "Error adding notification to database", task.getException());
                 }
             });
-
+            Toast.makeText(OrganizerNotificationsActivity.this, "Successfully sent notifications!", Toast.LENGTH_SHORT).show();
             finish();
         });
 

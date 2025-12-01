@@ -43,7 +43,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/rounded_teal"
-        android:elevation="5dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:text="Event Name"
@@ -301,17 +300,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/rounded_bottom_light_blue_input_shape"
-            android:padding="5dp"
+            android:padding="8dp"
             android:text="You have no event description."
             android:textColor="@color/darkestBlue"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:visibility="gone" />
 
         <ImageView
             android:id="@+id/image_event_poster"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/rounded_bottom_white"
-            android:visibility="gone" />
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/text_event_guidelines"
@@ -319,11 +320,12 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/rounded_bottom_light_blue_input_shape"
-            android:padding="5dp"
+            android:padding="8dp"
             android:text="You have no event guidelines."
             android:textColor="@color/darkestBlue"
             android:textSize="16sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 
     <Button
@@ -361,7 +363,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
         app:layout_constraintStart_toStartOf="@+id/description_poster_container"
-        app:layout_constraintTop_toBottomOf="@+id/description_poster_container" />
+        app:layout_constraintTop_toBottomOf="@+id/description_poster_container"
+        tools:visibility="gone" />
 
 
     <Button
@@ -375,13 +378,13 @@
         android:text="Accept"
         android:textColor="@color/white"
         android:textSize="24sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_decline"
         app:layout_constraintStart_toStartOf="@+id/description_poster_container"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container"
-        tools:visibility="invisible" />
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/button_decline"
@@ -394,13 +397,13 @@
         android:text="Decline"
         android:textColor="@color/white"
         android:textSize="24sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/description_poster_container"
         app:layout_constraintStart_toEndOf="@+id/button_accept"
         app:layout_constraintTop_toBottomOf="@+id/description_poster_container"
-        tools:visibility="invisible" />
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/text_accepted_invitation"

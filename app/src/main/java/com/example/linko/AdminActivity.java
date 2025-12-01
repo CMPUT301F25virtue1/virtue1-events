@@ -118,6 +118,16 @@ public class AdminActivity extends AppCompatActivity {
         LinearLayoutManager organizerLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         organizersRecyclerView.setLayoutManager(organizerLayoutManager);
 
+        // notif recycler view setup
+        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList, true);
+        notificationLogsRecyclerView.setAdapter(notificationsRecyclerAdapter);
+
+        LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        notificationLogsRecyclerView.setLayoutManager(notificationsLayoutManager);
+
+        db = FirebaseFirestore.getInstance();
+        notifsRef = db.collection("notifications");
+
         // swipe to delete events
         ItemTouchHelper.SimpleCallback swipeToDeleteEvent = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -129,28 +139,39 @@ public class AdminActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
 
-                Event eventToDelete = allEventsList.get(position);
-                EventDatabaseHandler deleteHelper = new EventDatabaseHandler();
-
-                deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
-                    @Override
-                    public void eventDelete() {
-                        Toast.makeText(AdminActivity.this, "Events successfully deleted!", Toast.LENGTH_SHORT).show();
-                        allEventsList.remove(eventToDelete);
-                        originalEventsList.remove(eventToDelete);
-                        allEventPostersList.remove(eventToDelete);
-                        originalEventPostersList.remove(eventToDelete);
-                        eventPostersRecyclerAdapter.notifyDataSetChanged();
+                ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("event");
+                confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
+                    if (!deleteConfirmed) {
                         eventRecyclerAdapter.notifyDataSetChanged();
+                        return;
                     }
 
-                    @Override
-                    public void eventDeleteFailed(Exception e) {
-                        Toast.makeText(AdminActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
-                        eventRecyclerAdapter.notifyDataSetChanged();
-                    }
+                    Event eventToDelete = allEventsList.get(position);
+                    EventDatabaseHandler deleteHelper = new EventDatabaseHandler();
+
+                    deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
+                        @Override
+                        public void eventDelete() {
+                            Toast.makeText(AdminActivity.this, "Event successfully deleted!", Toast.LENGTH_SHORT).show();
+                            allEventsList.remove(eventToDelete);
+                            originalEventsList.remove(eventToDelete);
+                            allEventPostersList.remove(eventToDelete);
+                            originalEventPostersList.remove(eventToDelete);
+
+                            notificationsList.removeIf(notif -> notif.getEventId().equals(eventToDelete.getEventId()));
+                            notificationsRecyclerAdapter.notifyDataSetChanged();
+                            eventPostersRecyclerAdapter.notifyDataSetChanged();
+                            eventRecyclerAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void eventDeleteFailed(Exception e) {
+                            Toast.makeText(AdminActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
+                            eventRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    });
                 });
-
+                confirmationDialog.show(getSupportFragmentManager(), "confirmationDialog");
             }
         };
         // attach swipe to delete to the all events recyclerview
@@ -167,44 +188,56 @@ public class AdminActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
 
-                User organizerToDelete = allOrganizerList.get(position);
-                String organizerId = organizerToDelete.getUserId();
-                EventDatabaseHandler deleteHelper = new EventDatabaseHandler();
-
-                // delete all events that have the organizer's id as their owner
-                db = FirebaseFirestore.getInstance();
-                eventsRef = db.collection("events");
-                eventsRef.get().addOnSuccessListener(query -> {
-                    for (QueryDocumentSnapshot snapshot : query) {
-                        Event eventToDelete = snapshot.toObject(Event.class);
-                        if (eventToDelete.getOwnerId().equals(organizerId)) {
-                            deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
-                                @Override
-                                public void eventDelete() {
-                                    // delete from lists since not using snapshot listener (update manually)
-                                    allEventsList.remove(eventToDelete);
-                                    originalEventsList.remove(eventToDelete);
-                                    allEventPostersList.remove(eventToDelete);
-                                    originalEventPostersList.remove(eventToDelete);
-                                    eventPostersRecyclerAdapter.notifyDataSetChanged();
-                                    eventRecyclerAdapter.notifyDataSetChanged();
-                                }
-                                @Override
-                                public void eventDeleteFailed(Exception e) {
-                                    Toast.makeText(AdminActivity.this, "Error deleting event.", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
+                ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("organizer");
+                confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
+                    if (!deleteConfirmed) {
+                        organizerRecyclerAdapter.notifyDataSetChanged();
+                        return;
                     }
-                    // remove organizer
-                    allOrganizerList.remove(organizerToDelete);
-                    organizerRecyclerAdapter.notifyDataSetChanged();
-                    Toast.makeText(AdminActivity.this, "Organizer deleted!", Toast.LENGTH_SHORT).show();
 
-                }).addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error fetching events", e);
-                    organizerRecyclerAdapter.notifyDataSetChanged();
+                    User organizerToDelete = allOrganizerList.get(position);
+                    String organizerId = organizerToDelete.getUserId();
+                    EventDatabaseHandler deleteHelper = new EventDatabaseHandler();
+
+                    // delete all events that have the organizer's id as their owner
+                    eventsRef = db.collection("events");
+                    eventsRef.get().addOnSuccessListener(query -> {
+                        for (QueryDocumentSnapshot snapshot : query) {
+                            Event eventToDelete = snapshot.toObject(Event.class);
+                            if (eventToDelete.getOwnerId().equals(organizerId)) {
+                                deleteHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
+                                    @Override
+                                    public void eventDelete() {
+                                        // delete from lists since not using snapshot listener (update manually)
+                                        allEventsList.remove(eventToDelete);
+                                        originalEventsList.remove(eventToDelete);
+                                        allEventPostersList.remove(eventToDelete);
+                                        originalEventPostersList.remove(eventToDelete);
+
+                                        notificationsList.removeIf(notif -> notif.getEventId().equals(eventToDelete.getEventId()));
+                                        notificationsRecyclerAdapter.notifyDataSetChanged();
+                                        eventPostersRecyclerAdapter.notifyDataSetChanged();
+                                        eventRecyclerAdapter.notifyDataSetChanged();
+                                    }
+
+                                    @Override
+                                    public void eventDeleteFailed(Exception e) {
+                                        Toast.makeText(AdminActivity.this, "Error deleting event.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                        // remove organizer
+                        allOrganizerList.remove(organizerToDelete);
+                        organizerRecyclerAdapter.notifyDataSetChanged();
+                        Toast.makeText(AdminActivity.this, "Organizer's events successfully deleted!", Toast.LENGTH_SHORT).show();
+
+                    }).addOnFailureListener(e -> {
+                        Log.e("Firestore", "Error fetching events", e);
+                        organizerRecyclerAdapter.notifyDataSetChanged();
+                    });
                 });
+                confirmationDialog.show(getSupportFragmentManager(), "confirmationDialog");
             }
         };
         // attach swipe to delete to the all organizers recyclerview
@@ -335,7 +368,6 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
-
                 User userToDelete = allProfilesList.get(position);
                 UserDatabaseHandler deleteHelper = new UserDatabaseHandler();
                 String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -344,56 +376,66 @@ public class AdminActivity extends AppCompatActivity {
                     profilesRecyclerAdapter.notifyDataSetChanged();
                     return;
                 }
-
-                String organizerId = userToDelete.getUserId();
-                EventDatabaseHandler deleteEventsHelper = new EventDatabaseHandler();
-                // delete all events that have this user as their organizer first
-                eventsRef.get().addOnSuccessListener(query -> {
-                    for (QueryDocumentSnapshot snapshot : query) {
-                        Event eventToDelete = snapshot.toObject(Event.class);
-                        if (eventToDelete.getOwnerId().equals(organizerId)) {
-                            deleteEventsHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
-                                @Override
-                                public void eventDelete() {
-                                    // manually update lists
-                                    allEventsList.remove(eventToDelete);
-                                    originalEventsList.remove(eventToDelete);
-                                    allEventPostersList.remove(eventToDelete);
-                                    originalEventPostersList.remove(eventToDelete);
-                                    eventPostersRecyclerAdapter.notifyDataSetChanged();
-                                    eventRecyclerAdapter.notifyDataSetChanged();
-                                }
-
-                                @Override
-                                public void eventDeleteFailed(Exception e) {
-                                    Toast.makeText(AdminActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
+                ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("profile");
+                confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
+                    if (!deleteConfirmed) {
+                        profilesRecyclerAdapter.notifyDataSetChanged();
+                        return;
                     }
-                    // now delete their document and update event lists they are in
-                    deleteHelper.deleteUserById(userToDelete.getUserId(), new UserDatabaseHandler.UserDeletedFromId() {
-                        @Override
-                        public void userDelete() {
-                            // update
-                            allProfilesList.remove(userToDelete);
-                            allOrganizerList.remove(userToDelete);
-                            originalProfilesList.remove(userToDelete);
-                            allProfilePicturesList.remove(userToDelete);
-                            originalProfilePicturesList.remove(userToDelete);
+                    String organizerId = userToDelete.getUserId();
+                    EventDatabaseHandler deleteEventsHelper = new EventDatabaseHandler();
+                    // delete all events that have this user as their organizer first
+                    eventsRef.get().addOnSuccessListener(query -> {
+                        for (QueryDocumentSnapshot snapshot : query) {
+                            Event eventToDelete = snapshot.toObject(Event.class);
+                            if (eventToDelete.getOwnerId().equals(organizerId)) {
+                                deleteEventsHelper.deleteEvent(eventToDelete, new EventDatabaseHandler.EventDeleted() {
+                                    @Override
+                                    public void eventDelete() {
+                                        // manually update lists
+                                        allEventsList.remove(eventToDelete);
+                                        originalEventsList.remove(eventToDelete);
+                                        allEventPostersList.remove(eventToDelete);
+                                        originalEventPostersList.remove(eventToDelete);
+                                        notificationsList.removeIf(notif -> notif.getEventId().equals(eventToDelete.getEventId()));
+                                        notificationsRecyclerAdapter.notifyDataSetChanged();
 
-                            profilePicturesRecyclerAdapter.notifyDataSetChanged();
-                            profilesRecyclerAdapter.notifyDataSetChanged();
-                            organizerRecyclerAdapter.notifyDataSetChanged();
-                            Toast.makeText(AdminActivity.this, "Profile successfully deleted!", Toast.LENGTH_SHORT).show();
-                        }
+                                        eventPostersRecyclerAdapter.notifyDataSetChanged();
+                                        eventRecyclerAdapter.notifyDataSetChanged();
+                                    }
 
-                        @Override
-                        public void userDeleteFailed(Exception e) {
-                            Toast.makeText(AdminActivity.this, "Error deleting profile.", Toast.LENGTH_SHORT).show();
+                                    @Override
+                                    public void eventDeleteFailed(Exception e) {
+                                        Toast.makeText(AdminActivity.this, "Error deleting events.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
                         }
+                        // now delete their document and update event lists they are in
+                        deleteHelper.deleteUserById(userToDelete.getUserId(), new UserDatabaseHandler.UserDeletedFromId() {
+                            @Override
+                            public void userDelete() {
+                                // update
+                                allProfilesList.remove(userToDelete);
+                                allOrganizerList.remove(userToDelete);
+                                originalProfilesList.remove(userToDelete);
+                                allProfilePicturesList.remove(userToDelete);
+                                originalProfilePicturesList.remove(userToDelete);
+
+                                profilePicturesRecyclerAdapter.notifyDataSetChanged();
+                                profilesRecyclerAdapter.notifyDataSetChanged();
+                                organizerRecyclerAdapter.notifyDataSetChanged();
+                                Toast.makeText(AdminActivity.this, "Profile successfully deleted!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void userDeleteFailed(Exception e) {
+                                Toast.makeText(AdminActivity.this, "Error deleting profile.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     });
                 });
+                confirmationDialog.show(getSupportFragmentManager(), "confirmationDialog");
             }
         };
         // attach swipe to delete to the all events recyclerview
@@ -451,82 +493,98 @@ public class AdminActivity extends AppCompatActivity {
 
         // images tab recycler view setup
         eventPostersRecyclerAdapter.setOnItemClickListener(position -> {
-            Event clickedEvent = allEventPostersList.get(position);
-            if (clickedEvent.getEventPosterURL() != null && !clickedEvent.getEventPosterURL().isEmpty()) {
-                FirebaseStorage.getInstance().getReferenceFromUrl(clickedEvent.getEventPosterURL())
-                        .delete()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Log.d("Storage", "Event poster deleted");
-                            } else {
-                                Log.e("Storage", "Error deleting poster", task.getException());
-                            }
-                        });
-            }
-            clickedEvent.setEventPosterURL(null);
-            EventDatabaseHandler eventDb = new EventDatabaseHandler();
-            eventDb.update(clickedEvent, new EventDatabaseHandler.EventUpdated() {
-                @Override
-                public void eventUpdate() {
-
+            ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("poster");
+            confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
+                if (!deleteConfirmed) {
+                    eventPostersRecyclerAdapter.notifyDataSetChanged();
+                    return;
                 }
-
-                @Override
-                public void eventUpdateFailed(Exception e) {
-                    Log.e("Admin", "event update failed");
+                Event clickedEvent = allEventPostersList.get(position);
+                if (clickedEvent.getEventPosterURL() != null && !clickedEvent.getEventPosterURL().isEmpty()) {
+                    FirebaseStorage.getInstance().getReferenceFromUrl(clickedEvent.getEventPosterURL())
+                            .delete()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Log.d("Storage", "Event poster deleted");
+                                } else {
+                                    Log.e("Storage", "Error deleting poster", task.getException());
+                                }
+                            });
                 }
+                clickedEvent.setEventPosterURL(null);
+                EventDatabaseHandler eventDb = new EventDatabaseHandler();
+                eventDb.update(clickedEvent, new EventDatabaseHandler.EventUpdated() {
+                    @Override
+                    public void eventUpdate() {
+
+                    }
+
+                    @Override
+                    public void eventUpdateFailed(Exception e) {
+                        Log.e("Admin", "event update failed");
+                    }
+                });
+                Toast.makeText(AdminActivity.this, "Event poster successfully deleted!", Toast.LENGTH_SHORT).show();
+
+                allEventsList.set(allEventsList.indexOf(clickedEvent), clickedEvent);
+                originalEventsList.set(originalEventsList.indexOf(clickedEvent), clickedEvent);
+
+                allEventPostersList.remove(clickedEvent);
+                originalEventPostersList.remove(clickedEvent);
+
+                eventRecyclerAdapter.notifyDataSetChanged();
+                eventPostersRecyclerAdapter.notifyDataSetChanged();
             });
-            Toast.makeText(AdminActivity.this, "Event poster deleted!", Toast.LENGTH_SHORT).show();
-
-            allEventsList.set(allEventsList.indexOf(clickedEvent), clickedEvent);
-            originalEventsList.set(originalEventsList.indexOf(clickedEvent), clickedEvent);
-
-            allEventPostersList.remove(clickedEvent);
-            originalEventPostersList.remove(clickedEvent);
-
-            eventRecyclerAdapter.notifyDataSetChanged();
-            eventPostersRecyclerAdapter.notifyDataSetChanged();
+            confirmationDialog.show(getSupportFragmentManager(), "confirmationDialog");
         });
 
         profilePicturesRecyclerAdapter.setOnItemClickListener(position -> {
-            User clickedUser = allProfilePicturesList.get(position);
-            if (clickedUser.getProfileUrl() != null && !clickedUser.getProfileUrl().isEmpty()) {
-                FirebaseStorage.getInstance().getReferenceFromUrl(clickedUser.getProfileUrl())
-                        .delete()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Log.d("Storage", "User profile picture deleted");
-                            } else {
-                                Log.e("Storage", "Error deleting profile picture", task.getException());
-                            }
-                        });
-            }
-
-            clickedUser.setProfileUrl(null);
-            UserDatabaseHandler userDb = new UserDatabaseHandler();
-            // logic for adding a user is the same as updating the user for userdatabasehandler
-            userDb.addUser(clickedUser, new UserDatabaseHandler.UserAdded() {
-                @Override
-                public void userAdd() {
-
+            ConfirmationDialog confirmationDialog = ConfirmationDialog.newInstance("profilePicture");
+            confirmationDialog.setOnConfirmedListener(deleteConfirmed -> {
+                if (!deleteConfirmed) {
+                    profilePicturesRecyclerAdapter.notifyDataSetChanged();
+                    return;
+                }
+                User clickedUser = allProfilePicturesList.get(position);
+                if (clickedUser.getProfileUrl() != null && !clickedUser.getProfileUrl().isEmpty()) {
+                    FirebaseStorage.getInstance().getReferenceFromUrl(clickedUser.getProfileUrl())
+                            .delete()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Log.d("Storage", "User profile picture deleted");
+                                } else {
+                                    Log.e("Storage", "Error deleting profile picture", task.getException());
+                                }
+                            });
                 }
 
-                @Override
-                public void userFailedToAdd(Exception e) {
-                    Log.e("Admin", "user update failed");
+                clickedUser.setProfileUrl(null);
+                UserDatabaseHandler userDb = new UserDatabaseHandler();
+                // logic for adding a user is the same as updating the user for userdatabasehandler
+                userDb.addUser(clickedUser, new UserDatabaseHandler.UserAdded() {
+                    @Override
+                    public void userAdd() {
 
-                }
+                    }
+
+                    @Override
+                    public void userFailedToAdd(Exception e) {
+                        Log.e("Admin", "user update failed");
+
+                    }
+                });
+                Toast.makeText(AdminActivity.this, "Profile picture successfully deleted!", Toast.LENGTH_SHORT).show();
+
+                allProfilesList.set(allProfilesList.indexOf(clickedUser), clickedUser);
+                originalProfilesList.set(originalProfilesList.indexOf(clickedUser), clickedUser);
+
+                allProfilePicturesList.remove(clickedUser);
+                originalProfilePicturesList.remove(clickedUser);
+
+                profilesRecyclerAdapter.notifyDataSetChanged();
+                profilePicturesRecyclerAdapter.notifyDataSetChanged();
             });
-            Toast.makeText(AdminActivity.this, "User profile picture deleted!", Toast.LENGTH_SHORT).show();
-
-            allProfilesList.set(allProfilesList.indexOf(clickedUser), clickedUser);
-            originalProfilesList.set(originalProfilesList.indexOf(clickedUser), clickedUser);
-
-            allProfilePicturesList.remove(clickedUser);
-            originalProfilePicturesList.remove(clickedUser);
-
-            profilesRecyclerAdapter.notifyDataSetChanged();
-            profilePicturesRecyclerAdapter.notifyDataSetChanged();
+            confirmationDialog.show(getSupportFragmentManager(), "confirmationDialog");
         });
 
         imagesPostersButton.setOnClickListener(view -> {
@@ -602,28 +660,12 @@ public class AdminActivity extends AppCompatActivity {
         });
 
         // notification logs setup
-        NotificationRecyclerAdapter notificationsRecyclerAdapter = new NotificationRecyclerAdapter(notificationsList);
-        notificationLogsRecyclerView.setAdapter(notificationsRecyclerAdapter);
-
-        LinearLayoutManager notificationsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        notificationLogsRecyclerView.setLayoutManager(notificationsLayoutManager);
-
-        notifsRef = db.collection("notifications");
-
-        notifsRef.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-            }
-            if (value != null && !value.isEmpty()) {
-                Log.d("firebase", "checking documents");
-
-                notificationsList.clear();
-
-                for (QueryDocumentSnapshot snapshot : value) {
-                    UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
-                    notificationsList.add(notificationToAdd);
-                    notificationsRecyclerAdapter.notifyDataSetChanged();
-                }
+        notifsRef.get().addOnSuccessListener(query -> {
+            notificationsList.clear();
+            for (QueryDocumentSnapshot snapshot : query) {
+                UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
+                notificationsList.add(notificationToAdd);
+                notificationsRecyclerAdapter.notifyDataSetChanged();
             }
         });
 

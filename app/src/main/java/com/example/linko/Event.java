@@ -1,24 +1,31 @@
 package com.example.linko;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
  * This is for Event objects. Stores all the necessary info for events as well as
  * lists for managing entrants. Has an empty constructor for Firebase.
+ *
  * <p>
  *     There are two separate constructors in this class. One for when the
  *     Firebase ownerId is known before creation and then the main constructor
  *     that's used more often where the ownerId isn't known ahead of time.
  * </p>
+ *
  * @see EditEventActivity
  * @see EventDatabaseHandler
  * @see AddEventActivity
  */
 public class Event implements Serializable {
+
     private String ownerId;
     private String name;
     private Integer eventCapacity;
@@ -30,38 +37,46 @@ public class Event implements Serializable {
     private String description;
     private String guidelines;
     private String eventPosterURL;
+
+    // entrant status lists
     private List<String> entrants;
     private List<String> invitedEntrants;
     private List<String> signedUpEntrants;
     private List<String> cancelledEntrants;
+
     private String eventId;
 
+    // Map of userId → GeoPoint (where each entrant joined from)
+    private Map<String, GeoPoint> entrantLocations;
 
     public Event() {
         this.entrants = new ArrayList<>();
         this.invitedEntrants = new ArrayList<>();
         this.signedUpEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
+        this.entrantLocations = new HashMap<>();
     }
 
     /**
      * Event info object. On constructor call, makes new entrants, invitedEntrants,
-     * signedUpEntrants, and cancelledEntrants arrayLists.
+     * signedUpEntrants, and cancelledEntrants ArrayLists, and initializes entrantLocations.
+     *
      * <p>
-     *     ownerId and eventId are added
-     *     added later when info is pulled from Firebase database
+     *     ownerId and eventId are often added later when info is pulled from the Firebase database.
      * </p>
-     * @param ownerId Owner ID
-     * @param name Event name
-     * @param eventCapacity Entrant capacity for event
-     * @param entrantLimit:
+     *
+     * @param ownerId             Owner ID
+     * @param name                Event name
+     * @param eventCapacity       Entrant capacity for event
+     * @param entrantLimit        Optional limit on entrants (may be null)
      * @param geolocationRequired Boolean used to check if geolocation is necessary for event
-     * @param eventTime What time the event takes place
-     * @param registrationStart When registration for the event starts
-     * @param registrationEnd When event registration closes
-     * @param description Event description
-     * @param eventPosterURL Firebase URL for the events poster
-     * @param eventId Event ID
+     * @param eventTime           What time the event takes place
+     * @param registrationStart   When registration for the event starts
+     * @param registrationEnd     When event registration closes
+     * @param description         Event description
+     * @param guidelines          Event guidelines
+     * @param eventPosterURL      Firebase URL for the event's poster
+     * @param eventId             Event ID
      */
     public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String guidelines, String eventPosterURL, String eventId) {
         this.ownerId = ownerId;
@@ -75,11 +90,13 @@ public class Event implements Serializable {
         this.description = description;
         this.guidelines = guidelines;
         this.eventPosterURL = eventPosterURL;
+        this.eventId = eventId;
+
         this.entrants = new ArrayList<>();
         this.invitedEntrants = new ArrayList<>();
         this.signedUpEntrants = new ArrayList<>();
         this.cancelledEntrants = new ArrayList<>();
-        this.eventId = eventId;
+        this.entrantLocations = new HashMap<>();
     }
 
     public String getOwnerId() {
@@ -211,7 +228,15 @@ public class Event implements Serializable {
     }
 
     public String getEntrantCount() {
-        return String.valueOf(entrants.size());
+        return String.valueOf(entrants != null ? entrants.size() : 0);
+    }
+
+    public Map<String, GeoPoint> getEntrantLocations() {
+        return entrantLocations;
+    }
+
+    public void setEntrantLocations(Map<String, GeoPoint> entrantLocations) {
+        this.entrantLocations = entrantLocations;
     }
 
     @Override

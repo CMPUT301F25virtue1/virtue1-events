@@ -146,7 +146,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_teal"
-            android:elevation="10dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="Event Name"
@@ -313,7 +312,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/rounded_bottom_light_blue_input_shape"
-                android:padding="5dp"
+                android:padding="8dp"
                 android:text="You have no event description."
                 android:textColor="@color/darkestBlue"
                 android:textSize="16sp" />
@@ -322,8 +321,9 @@
                 android:id="@+id/image_event_poster"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/rounded_bottom_white"
-                android:visibility="gone" />
+                android:background="@drawable/rounded_bottom_light_blue_input_shape"
+                android:visibility="gone"
+                tools:visibility="gone" />
 
             <TextView
                 android:id="@+id/text_event_guidelines"
@@ -331,7 +331,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_bottom_light_blue_input_shape"
-                android:padding="5dp"
+                android:padding="8dp"
                 android:text="You have no event guidelines."
                 android:textColor="@color/darkestBlue"
                 android:textSize="16sp"
@@ -383,40 +383,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <Button
             android:id="@+id/button_send_notification"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="@color/darkerBlue"
-            android:text="Send Notifications"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/button_export_csv"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
             android:backgroundTint="@color/darkerBlue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Export Entrants as CSV"
+            android:text="Send Notifications"
             android:textColor="@color/white"
             android:textSize="20sp"
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/button_entrant_location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_entrant_location"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintEnd_toStartOf="@id/button_entrant_location"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/button_entrant_location" />
 
         <ImageView
             android:id="@+id/button_entrant_location"
@@ -433,10 +417,11 @@
             android:id="@+id/recycler_event_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_send_notification"
+            android:paddingTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_export_csv" />
+            app:layout_constraintTop_toBottomOf="@+id/button_entrant_location" />
 
         <TextView
             android:id="@+id/text_no_entrants"
@@ -466,37 +451,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_entrants"
-        tools:visibility="gone">
+        tools:visibility="visible">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_invited" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_invited_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:paddingTop="5dp"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_send_notification_system"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited" />
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"
+            tools:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_signed_up_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:paddingTop="5dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_export_csv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_invited" />
+            app:layout_constraintTop_toBottomOf="@+id/button_invited"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_cancelled_entrants"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_bottom_light_blue_input_shape"
+            android:paddingTop="5dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_send_notification_system"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_invited" />
@@ -517,6 +512,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <Button
+            android:id="@+id/button_export_csv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/darkerBlue"
+            android:text="Export Final Entrants as CSV"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="gone"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toTopOf="@id/button_send_notification_system"
+            app:layout_constraintEnd_toEndOf="@+id/button_send_notification_system"
+            app:layout_constraintStart_toStartOf="@+id/button_send_notification_system"
+            tools:visibility="gone" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container_not_sampled"
             android:layout_width="0dp"
@@ -525,7 +535,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_signed_up">
+            app:layout_constraintTop_toBottomOf="@+id/button_signed_up"
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -570,14 +581,17 @@
         <Button
             android:id="@+id/button_invited"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:backgroundTint="@color/blue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:text="Invited"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:cornerRadius="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_signed_up"
+            app:layout_constraintEnd_toStartOf="@+id/button_signed_up"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
@@ -588,11 +602,12 @@
             android:backgroundTint="@color/darkerBlue"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Signed Up"
+            android:text="Accepted"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:cornerRadius="0dp"
             app:layout_constraintEnd_toStartOf="@+id/button_cancelled"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/button_invited"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
@@ -605,9 +620,12 @@
             android:insetBottom="0dp"
             android:text="Cancelled"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:cornerRadius="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_signed_up"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/button_signed_up"
             app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
         <TextView

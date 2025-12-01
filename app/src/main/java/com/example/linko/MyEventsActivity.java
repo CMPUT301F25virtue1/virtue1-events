@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,7 +53,9 @@ public class MyEventsActivity extends AppCompatActivity {
         TextView noEventsOrganized = findViewById(R.id.text_no_event_organized);
         RecyclerView organizedRecyclerView = findViewById(R.id.recycler_organized_events);
         RecyclerView registeredRecyclerView = findViewById(R.id.recycler_registered_events);
-
+        ConstraintLayout registeredContainer = findViewById(R.id.registered_container);
+        ConstraintLayout organizedContainer = findViewById(R.id.organized_container)
+                ;
         // create event array
         organizedEventsList = new ArrayList<>();
         organizedEventRecyclerAdapter = new EventRecyclerAdapter(organizedEventsList, false);
@@ -72,6 +75,9 @@ public class MyEventsActivity extends AppCompatActivity {
 
         // get registered events list from database
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -101,20 +107,22 @@ public class MyEventsActivity extends AppCompatActivity {
                 // update the registered tab
                 if (registeredEventsList.isEmpty()) {
                     noEventsRegistered.setVisibility(View.VISIBLE);
-                    noEventsOrganized.setVisibility(View.GONE);
                     registeredRecyclerView.setVisibility(View.GONE);
                 }
                 else {
                     noEventsRegistered.setVisibility(View.GONE);
-                    noEventsOrganized.setVisibility(View.GONE);
                     registeredRecyclerView.setVisibility(View.VISIBLE);
                 }
+
                 registeredEventRecyclerAdapter.notifyDataSetChanged();
             }
         });
 
         // get organized events list from database
         eventsRef.addSnapshotListener((value, error) -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
@@ -132,24 +140,22 @@ public class MyEventsActivity extends AppCompatActivity {
                     Event eventToAdd = snapshot.toObject(Event.class);
                     organizedEventsList.add(eventToAdd);
                 }
+                if (organizedEventsList.isEmpty()) {
+                    noEventsOrganized.setVisibility(View.VISIBLE);
+                    organizedRecyclerView.setVisibility(View.GONE);
+                }
+                else {
+                    noEventsOrganized.setVisibility(View.GONE);
+                    organizedRecyclerView.setVisibility(View.VISIBLE);
+                }
                 organizedEventRecyclerAdapter.notifyDataSetChanged();
             }
         });
 
 
         registeredEvents.setOnClickListener( v -> {
-            if (registeredEventsList.isEmpty()) {
-                noEventsRegistered.setVisibility(View.VISIBLE);
-                noEventsOrganized.setVisibility(View.GONE);
-                registeredRecyclerView.setVisibility(View.GONE);
-            }
-            else {
-                noEventsRegistered.setVisibility(View.GONE);
-                noEventsOrganized.setVisibility(View.GONE);
-                registeredRecyclerView.setVisibility(View.VISIBLE);
-            }
-            organizeAnEvent.setVisibility(View.GONE);
-            organizedRecyclerView.setVisibility(View.GONE);
+            registeredContainer.setVisibility(View.VISIBLE);
+            organizedContainer.setVisibility(View.GONE);
             registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
             organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             registeredEvents.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlue)));
@@ -157,18 +163,8 @@ public class MyEventsActivity extends AppCompatActivity {
         });
 
         organizedEvents.setOnClickListener( v -> {
-            if (organizedEventsList.isEmpty()) {
-                noEventsRegistered.setVisibility(View.GONE);
-                noEventsOrganized.setVisibility(View.VISIBLE);
-                organizedRecyclerView.setVisibility(View.GONE);
-            }
-            else {
-                noEventsRegistered.setVisibility(View.GONE);
-                noEventsOrganized.setVisibility(View.GONE);
-                organizedRecyclerView.setVisibility(View.VISIBLE);
-            }
-            organizeAnEvent.setVisibility(View.VISIBLE);
-            registeredRecyclerView.setVisibility(View.GONE);
+            registeredContainer.setVisibility(View.GONE);
+            organizedContainer.setVisibility(View.VISIBLE);
             registeredEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.lightBlue)));
             organizedEvents.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white)));
             registeredEvents.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.darkestBlueNotSelected)));
@@ -183,18 +179,15 @@ public class MyEventsActivity extends AppCompatActivity {
         organizedEventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = organizedEventsList.get(position);
             Intent intent = new Intent(this, OrganizerEventDetailsActivity.class);
-            intent.putExtra("clickedEvent", clickedEvent);
+            intent.putExtra("eventId", clickedEvent.getEventId());
             startActivity(intent);
-            finish();
         });
 
         registeredEventRecyclerAdapter.setOnItemClickListener(position -> {
             Event clickedEvent = registeredEventsList.get(position);
             Intent intent = new Intent(this, EventDetailsActivity.class);
-            intent.putExtra("clickedEvent", clickedEvent);
-            intent.putExtra("activity", "myEvents");
+            intent.putExtra("eventId", clickedEvent.getEventId());
             startActivity(intent);
-            finish();
         });
         navigationListener(this);
 

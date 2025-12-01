@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 // https://developer.android.com/develop/background-work/services/fgs/declare
@@ -44,92 +45,57 @@ public class NotificationListenerService extends Service {
 
         db = FirebaseFirestore.getInstance();
         CollectionReference notifsRef = db.collection("notifications");
+        CollectionReference usersRef = db.collection("users");
 
-        // IF THE FOREGROUND SERVICE HASN'T BEEN MADE YET FOR WHATEVER REASON (or if the user killed the apps process)
-        // retrieve all notifs that were made when the user wasn't on the app, and send those
-        notifsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            new UserDatabaseHandler().getCurrentUser(NotificationListenerService.this, new UserDatabaseHandler.UserFetched() {
-                @Override
-                public void userLoaded(User user) {
-                    for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                        UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
-                        // if notification isn't in the current user's local android list, skip
-                        if (!user.getLocalAndroidNotificationlist().contains(notificationToAdd.getNotificationId())) {
-                            continue;
-                        }
-                        // show the notif otherwise
-                        new EventDatabaseHandler().fetchEventById(notificationToAdd.getEventId(), new EventDatabaseHandler.EventFetched() {
-                            @Override
-                            public void eventFetch(Event event) {
-                                showUserNotification(event.getName(), notificationToAdd.getMessage(), notificationToAdd.getNotificationId().hashCode());
-                                user.getLocalAndroidNotificationlist().remove(notificationToAdd.getNotificationId());
-                                new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
-                                    @Override
-                                    public void userAdd() {
-
-                                    }
-
-                                    @Override
-                                    public void userFailedToAdd(Exception e) {
-
-                                    }
-                                });
-
-                            }
-
-                            @Override
-                            public void eventFetchFailed(Exception e) {
-
-                            }
-                        });
-                    }
-                }
-            });
-        });
-
-        // ONCE THE FOREGROUND SERVICE WAS MADE/INSTANTIATED
-        // if the user is on the app, WHILE an organizer sends a notif, get notifs
-        notifsRef.addSnapshotListener((value, error) -> {
+        usersRef.addSnapshotListener((value, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
             }
             if (value != null && !value.isEmpty()) {
-                Log.d("firebase", "checking documents");
-
                 new UserDatabaseHandler().getCurrentUser(NotificationListenerService.this, new UserDatabaseHandler.UserFetched() {
                     @Override
                     public void userLoaded(User user) {
-                        for (QueryDocumentSnapshot snapshot : value) {
-                            UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
-                            if (!user.getLocalAndroidNotificationlist().contains(notificationToAdd.getNotificationId())) {
-                                continue;
-                            }
-                            new EventDatabaseHandler().fetchEventById(notificationToAdd.getEventId(), new EventDatabaseHandler.EventFetched() {
-                                @Override
-                                public void eventFetch(Event event) {
-                                    showUserNotification(event.getName(), notificationToAdd.getMessage(), notificationToAdd.getNotificationId().hashCode());
-                                    user.getLocalAndroidNotificationlist().remove(notificationToAdd.getNotificationId());
-
-                                    new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
-                                        @Override
-                                        public void userAdd() {
-
-                                        }
-
-                                        @Override
-                                        public void userFailedToAdd(Exception e) {
-
-                                        }
-                                    });
-
-                                }
-
-                                @Override
-                                public void eventFetchFailed(Exception e) {
-
-                                }
-                            });
+                        if (user == null) {
+                            return;
                         }
+                        Log.d("notiftest", "loaded user!");
+
+                        notifsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+                            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                UserNotification notificationToAdd = snapshot.toObject(UserNotification.class);
+
+                                if (!user.getLocalAndroidNotificationlist().contains(notificationToAdd.getNotificationId())) {
+                                    continue;
+                                }
+
+                                // show the notif otherwise
+                                new EventDatabaseHandler().fetchEventById(notificationToAdd.getEventId(), new EventDatabaseHandler.EventFetched() {
+                                    @Override
+                                    public void eventFetch(Event event) {
+                                        showUserNotification(event.getName(), notificationToAdd.getMessage(), notificationToAdd.getNotificationId().hashCode());
+                                        user.getLocalAndroidNotificationlist().remove(notificationToAdd.getNotificationId());
+                                        new UserDatabaseHandler().addUser(user, new UserDatabaseHandler.UserAdded() {
+                                            @Override
+                                            public void userAdd() {
+
+                                            }
+
+                                            @Override
+                                            public void userFailedToAdd(Exception e) {
+
+                                            }
+                                        });
+
+                                    }
+
+                                    @Override
+                                    public void eventFetchFailed(Exception e) {
+
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -147,7 +113,7 @@ public class NotificationListenerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "linko";
             String description = "local android notifications for linko events";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel userNotifChannel = new NotificationChannel(CHANNEL_ID_USER_NOTIFS, name, importance);
             userNotifChannel.setDescription(description);
 
@@ -181,7 +147,7 @@ public class NotificationListenerService extends Service {
                 .setContentText(message)
                 .setSmallIcon(R.drawable.outline_notifications_24)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build();
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
