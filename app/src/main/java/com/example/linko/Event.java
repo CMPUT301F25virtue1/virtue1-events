@@ -118,8 +118,6 @@ public class Event implements Serializable {
         this.entrantLocations = new HashMap<>();
     }
 
-    // ===== Getters & Setters =====
-
     public String getOwnerId() {
         return ownerId;
     }
@@ -267,8 +265,6 @@ public class Event implements Serializable {
     public void setEntrantLocations(Map<String, GeoPoint> entrantLocations) {
         this.entrantLocations = entrantLocations;
     }
-
-    // ===== Equality / hash =====
 
     @Override
     public boolean equals(Object o) {
