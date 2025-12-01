@@ -20,9 +20,6 @@ import java.util.Objects;
  *     that's used more often where the ownerId isn't known ahead of time.
  * </p>
  *
- * Supports entrant geolocation:
- * - entrantLocations: Map of userId -> GeoPoint (latitude/longitude)
- *
  * @see EditEventActivity
  * @see EventDatabaseHandler
  * @see AddEventActivity
@@ -52,10 +49,6 @@ public class Event implements Serializable {
     // Map of userId → GeoPoint (where each entrant joined from)
     private Map<String, GeoPoint> entrantLocations;
 
-    /**
-     * Empty constructor for Firebase.
-     * Initializes the entrant lists and the entrantLocations map.
-     */
     public Event() {
         this.entrants = new ArrayList<>();
         this.invitedEntrants = new ArrayList<>();
@@ -85,19 +78,7 @@ public class Event implements Serializable {
      * @param eventPosterURL      Firebase URL for the event's poster
      * @param eventId             Event ID
      */
-    public Event(String ownerId,
-                 String name,
-                 Integer eventCapacity,
-                 Integer entrantLimit,
-                 boolean geolocationRequired,
-                 Date eventTime,
-                 Date registrationStart,
-                 Date registrationEnd,
-                 String description,
-                 String guidelines,
-                 String eventPosterURL,
-                 String eventId) {
-
+    public Event(String ownerId, String name, Integer eventCapacity, Integer entrantLimit, boolean geolocationRequired, Date eventTime, Date registrationStart, Date registrationEnd, String description, String guidelines, String eventPosterURL, String eventId) {
         this.ownerId = ownerId;
         this.name = name;
         this.eventCapacity = eventCapacity;
@@ -246,18 +227,10 @@ public class Event implements Serializable {
         this.eventId = eventId;
     }
 
-    /**
-     * @return number of entrants as a String (used by UI)
-     */
     public String getEntrantCount() {
         return String.valueOf(entrants != null ? entrants.size() : 0);
     }
 
-    // EntrantLocations getters/setters
-
-    /**
-     * Returns a map of userId → GeoPoint representing where each entrant joined from.
-     */
     public Map<String, GeoPoint> getEntrantLocations() {
         return entrantLocations;
     }
