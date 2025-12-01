@@ -10,13 +10,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertNotNull;
 
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -30,50 +35,16 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class ExploreEventsActivityTest {
-    // Firestore emulator port
-    static int firestorePort = 8080; // CHANGE IF NEEDED - Depends on your emulator config
-    // Specific address for emulated device to access our localHost
-    static String androidLocalhost = "10.0.2.2";
+public class ExploreEventsActivityTest extends BaseTestClass{
 
-    //Edit Per Class
-    @Rule
-    public ActivityScenarioRule<ExploreEventsActivity> activityRule = new ActivityScenarioRule<>(ExploreEventsActivity.class);
-
-    @BeforeClass
-    public static void setup(){
-        FirebaseFirestore.getInstance().useEmulator(androidLocalhost, 4400);
-    }
-
-    @After
-    public void tearDown() {
-        String projectId = "linko-234f5"; // CHANGE TO YOUR PROJECT ID - Can be found under Project Settings in the Firebase Console
-        URL url = null;
-        try {
-            url = new URL("http://127.0.0.1:" + firestorePort + "/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
-        } catch (MalformedURLException exception) {
-            Log.e("URL Error", Objects.requireNonNull(exception.getMessage()));
-        }
-        HttpURLConnection urlConnection = null;
-        try {
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("DELETE");
-            int response = urlConnection.getResponseCode();
-            Log.i("Response Code", "Response Code: " + response);
-        } catch (IOException exception) {
-            Log.e("IO Error", Objects.requireNonNull(exception.getMessage()));
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-        }
-    }
 
     //NEED MORE FOR ALL FUNCTIONALITY. JUST ADDING SOME FOR NOW TO MAKE SURE ACTIVITY WORKS
     //Edit per class
@@ -87,11 +58,16 @@ public class ExploreEventsActivityTest {
 //        onView(withId(R.id.button_qr_scanner)).check(matches(isDisplayed()));
 //    }
 
-
     //Right now were failing due to no null catching in the search bar
     @Test
     public void testTypingSearchbar() {
-        onView(withId(R.id.input_search)).perform(typeText("test"), closeSoftKeyboard());
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ExploreEventsActivity.class);
+
+        try (ActivityScenario<ExploreEventsActivity> scenario = ActivityScenario.launch(intent)){
+            onView(withId(R.id.input_search)).check(matches(isDisplayed()));
+
+            onView(withId(R.id.input_search)).perform(typeText("test"), closeSoftKeyboard());
+        }
 
     }
 
