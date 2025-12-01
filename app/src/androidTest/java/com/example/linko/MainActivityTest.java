@@ -1,4 +1,4 @@
 package com.example.linko;
 
-public class MainActivityTest {
+public class MainActivityTest extends BaseTestClass{
 }
